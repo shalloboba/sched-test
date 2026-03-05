@@ -1,23 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<title>SCHED | Minimal Daily Planner & Pomodoro Timer</title>
-<meta name="description" content="SCHED is a minimal daily planner with task management, pomodoro timer and focus tools. Simple productivity web app.">
-<meta name="keywords" content="
-pomodoro timer,
-daily planner,
-todo app,
-schedule manager,
-focus timer,
-productivity app,
-task planner
-">
-<meta name="author" content="YOUR NAME">
-<meta name="robots" content="index, follow">
-<meta name="google-site-verification" content="tiOXdxfpidxrB5RvqPi8HzKwIGwLmX0JNPQsYrf3R1g" />
-<link rel="canonical" href="https://shalloboba.github.io/sched-test/">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="SCHED — シンプルで美しい日程管理・ポモドーロタイマーアプリ">
 <meta name="theme-color" content="#050509">
 <meta property="og:title" content="SCHED">
@@ -748,20 +733,14 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 <!-- ═══ DONATE ═══ -->
 <div id="donBanner" class="hidden">
   <div class="donTxt"><p>☕ SCHEDを応援する</p><span>開発継続のため支援をお願いします</span></div>
-  <a class="bDon" href="https://ko-fi.com/sched" target="_blank" rel="noopener">サポート</a>
+  <a class="bDon" href="https://ko-fi.com" target="_blank" rel="noopener">サポート</a>
   <div class="donX" onclick="closeDonate()">×</div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-   
-function getX(e){
-  return e.touches ? e.touches[0].clientX : getX(e);
-}
-function getY(e){
-  return e.touches ? e.touches[0].clientY : getY(e);
-}
+
 /* safety: escape HTML */
 function esc(s){
   return String(s)
@@ -842,54 +821,17 @@ function snd(t){
    BGMプリセットもカスタムURLも同一プレイヤーを使う
 ════════════════════════════════════════════ */
 const BGM_YT={
-  "white": [
-    "nMfPqeZjc2c",
-    "BqI6H3Yq1fQ",
-    "DWcJFNfaw9c"
-  ],
-  "pink": [
-    "ZXtimhajVh4",
-    "8SHf6wmX5MU"
-  ],
-  "rain": [
-  "eKFTSSKCzWA",
-  "mPZkdNFkNps",
-  "q76bMs-NwRk"
-],
-"thunder": [
-  "zNAVAb7NFKY",
-  "c0_eJqRzHq0"
-],
-"lofi": [
-  "DWcJFNfaw9c",
-  "7NOSDKb0HlU",
-  "kgx4WGK0oNU"
-],
-"jazz": [
-  "Dx5qFachd3A",
-  "DSGyEsJ17cI",
-  "HMnrl0tmd3k"
-],
-"forest": [
-  "xNN7iTA57jM",
-  "sELpU8lE3Wk"
-],
-"ocean": [
-  "WHPEKQmMQFM",
-  "V-_O7nl0Ii0"
-],
-"cafe": [
-  "gaGrAZPuHR4",
-  "6K0Gg1pXb7w"
-],
-"space": [
-  "bGikFCOPPGI",
-  "F64YxXDGLOk"
-],
-"fire": [
-  "L_LUpnjgPso",
-  "eyU3bRy2x44"
-]
+  white:  'nMfPqeZjc2c',
+  pink:   'ZXtimhajVh4',
+  rain:   'mPZkdNFkNps',
+  thunder:'zNAVAb7NFKY',
+  lofi:   '5qap5aO4i9A',
+  jazz:   'DSGyEsJ17cI',
+  forest: 'xNN7iTA57jM',
+  ocean:  'WHPEKLQID4U',
+  cafe:   'gaGrAZPuHR4',
+  space:  'bGikFCOPPGI',
+  fire:   'L_LUpnjgPso',
 };
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -905,24 +847,6 @@ let _ytApiReady   = false;
 let _ytApiLoading = false;
 let _ytApiCbs     = [];
 let _ytLoop       = true;
-
-function _checkVideoDuration(){
-  try{
-    if(window.player && player.getDuration){
-      const d = player.getDuration();
-      if(d && d > 10800){ // >3h
-        console.warn("Video too long, switching...");
-        if(window._curBgm && BGM_LIST[window._curBgm]){
-          const arr=BGM_LIST[window._curBgm];
-          const id=arr[Math.floor(Math.random()*arr.length)];
-          player.loadVideoById(id);
-        }
-      }
-    }
-  }catch(e){}
-}
-setInterval(_checkVideoDuration,5000);
-
 let _ytInfoIv     = null;
 
 // onYouTubeIframeAPIReady はスクリプト挿入前にグローバル設定 (必須)
@@ -1004,16 +928,9 @@ function _spawnPlayer(videoId, onReadyCb){
       },
       onError: function(e){
         const errMsg={2:'動画IDが無効',5:'HTML5エラー',100:'動画が見つかりません',101:'埋め込み不可',150:'埋め込み不可'};
-        toast('⚠ 埋め込み不可の可能性。別の音源に切替…');
-        if(S.bgm.cur && BGM_YT[S.bgm.cur]){
-          const arr=BGM_YT[S.bgm.cur];
-          const vid=arr[Math.floor(Math.random()*arr.length)];
-          _destroyPlayer();
-          _spawnPlayer(vid);
-        }else{
-          _destroyPlayer();
-          _resetYtUI();
-        }
+        toast('⚠ ' + (errMsg[e.data]||'YouTube読み込みエラー') + ' ('+e.data+')');
+        _destroyPlayer();
+        _resetYtUI();
       }
     }
   });
@@ -1035,7 +952,7 @@ function _resetYtUI(){
 /* BGMプリセット再生 */
 function setBgm(type){
   if(S.bgm.cur===type){ _destroyPlayer(); _resetYtUI(); return; }
-  const list=BGM_YT[type]; if(!list){toast('BGMが見つかりません');return;} const vid=list[Math.floor(Math.random()*list.length)];
+  const vid = BGM_YT[type];
   if(!vid){ toast('BGMが見つかりません'); return; }
   _destroyPlayer();
   _resetYtUI();
@@ -1119,7 +1036,7 @@ function ytSeek(e){
   if(!S.ytP)return;
   try{
     const bar=$('ytProgBar');const r=bar.getBoundingClientRect();
-    const pct=(getX(e)-r.left)/r.width;
+    const pct=(e.clientX-r.left)/r.width;
     const dur=S.ytP.getDuration();
     S.ytP.seekTo(pct*dur,true);
   }catch{}
@@ -1161,14 +1078,14 @@ function _updateInfoBadge(state){
   $('bgmDragBar').addEventListener('mousedown',e=>{
     drag=true;
     const r=$('bgmPanel').getBoundingClientRect();
-    ox=getX(e)-r.left;oy=getY(e)-r.top;
+    ox=e.clientX-r.left;oy=e.clientY-r.top;
     $('bgmPanel').style.transition='none';
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
   });
   function mv(e){if(!drag)return;
     const p=$('bgmPanel');
-    let x=cl(getX(e)-ox,0,window.innerWidth-p.offsetWidth);
-    let y=cl(getY(e)-oy,0,window.innerHeight-p.offsetHeight);
+    let x=cl(e.clientX-ox,0,window.innerWidth-p.offsetWidth);
+    let y=cl(e.clientY-oy,0,window.innerHeight-p.offsetHeight);
     p.style.left=x+'px';p.style.top=y+'px';p.style.bottom='auto';p.style.transform='none';}
   function up(){drag=false;$('bgmPanel').style.transition='';
     document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
@@ -1498,7 +1415,7 @@ document.querySelectorAll('.fw').forEach(win=>{
     tb.addEventListener('mousedown',e=>{
       if(e.target.closest('.fwDots'))return;if(e.button!==0)return;
       const r=win.getBoundingClientRect();
-      let ox=getX(e)-r.left,oy=getY(e)-r.top;
+      let ox=e.clientX-r.left,oy=e.clientY-r.top;
       win.style.transition='none';
       document.querySelectorAll('.fw').forEach(w=>w.style.zIndex=50);win.style.zIndex=51;
       const mv=e2=>{
@@ -1529,7 +1446,7 @@ document.querySelectorAll('.fw').forEach(win=>{
       e.stopPropagation();e.preventDefault();
       const dir=h.dataset.d;
       const r=win.getBoundingClientRect();
-      let sx=getX(e),sy=getY(e),sl=r.left,st=r.top,sw=r.width,sh=r.height;
+      let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;
       const mv=e2=>{
         const dx=e2.clientX-sx,dy=e2.clientY-sy;
         let nl=sl,nt=st,nw=sw,nh=sh;
@@ -1590,17 +1507,17 @@ function _updateCollapseBtn(){
 (()=>{
   let drag=false,s0=0,d0=0;
   $('dockResize').addEventListener('mousedown',e=>{
-    drag=true;s0=S.dock.pos==='left'||S.dock.pos==='right'?getX(e):getY(e);
+    drag=true;s0=S.dock.pos==='left'||S.dock.pos==='right'?e.clientX:e.clientY;
     d0=S.dock.size;e.preventDefault();
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
   });
   function mv(e){
     if(!drag)return;
     const pos=S.dock.pos;let ns;
-    if(pos==='bottom')ns=cl(d0-(getY(e)-s0),80,window.innerHeight*.75);
-    else if(pos==='top')ns=cl(d0+(getY(e)-s0),80,window.innerHeight*.75);
-    else if(pos==='left')ns=cl(d0+(getX(e)-s0),160,window.innerWidth*.6);
-    else if(pos==='right')ns=cl(d0-(getX(e)-s0),160,window.innerWidth*.6);
+    if(pos==='bottom')ns=cl(d0-(e.clientY-s0),80,window.innerHeight*.75);
+    else if(pos==='top')ns=cl(d0+(e.clientY-s0),80,window.innerHeight*.75);
+    else if(pos==='left')ns=cl(d0+(e.clientX-s0),160,window.innerWidth*.6);
+    else if(pos==='right')ns=cl(d0-(e.clientX-s0),160,window.innerWidth*.6);
     else return;
     S.dock.size=ns;
     const dock=$('dock');
