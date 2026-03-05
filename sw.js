@@ -1,12 +1,13 @@
-const CACHE_NAME = "pwa-cache-v1";
+const CACHE_NAME = "pwa-cache-v2";
+
 const urlsToCache = [
-  "/",
-  "/favicon.ico",
-  "/favicon192.png",
-  "/favicon512.png",
-  "/index.html",
-  "/manifest.json"
-  "/sitemap.xml"
+  "/sched-test/",
+  "/sched-test/index.html",
+  "/sched-test/favicon.ico",
+  "/sched-test/favicon192.png",
+  "/sched-test/favicon512.png",
+  "/sched-test/manifest.json",
+  "/sched-test/sitemap.xml"
 ];
 
 self.addEventListener("install", event => {
@@ -22,6 +23,3 @@ self.addEventListener("fetch", event => {
       .then(response => response || fetch(event.request))
   );
 });
-
-
-
