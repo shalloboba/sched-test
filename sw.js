@@ -6,6 +6,7 @@ const urlsToCache = [
   "/sched-test/favicon.ico",
   "/sched-test/favicon192.png",
   "/sched-test/favicon512.png",
+  "/sched-test/ogp.png",
   "/sched-test/manifest.json",
   "/sched-test/sitemap.xml"
 ];
@@ -23,3 +24,4 @@ self.addEventListener("fetch", event => {
       .then(response => response || fetch(event.request))
   );
 });
+
