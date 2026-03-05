@@ -1,6 +1,8 @@
 const CACHE_NAME = "pwa-cache-v1";
 const urlsToCache = [
   "/",
+  "/favicon192.png",
+  "/favicon512.png",
   "/favicon.ico",
   "/index.html",
   "/manifest.json"
@@ -20,4 +22,5 @@ self.addEventListener("fetch", event => {
       .then(response => response || fetch(event.request))
   );
 });
+
 
