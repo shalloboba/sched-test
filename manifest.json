@@ -1,20 +1,21 @@
 {
-  "id": "/",
+  "id": "/sched-test/",
   "name": "SCHED",
   "short_name": "SCHED",
-  "start_url": "/",
+  "start_url": "/sched-test/",
+  "scope": "/sched-test/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "favicon192.png",
+      "src": "/sched-test/favicon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "favicon512.png",
+      "src": "/sched-test/favicon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
