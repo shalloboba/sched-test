@@ -1207,6 +1207,10 @@ input.tIn{font-size:11px;padding:4px 7px}
 </div>
 
 <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("Service Worker Registered"));
+}
 /* ═══ UTILS ═══ */
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 const $=id=>document.getElementById(id);
