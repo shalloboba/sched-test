@@ -56,7 +56,6 @@
   --bg:#030308;--sf:#0a0a14;--ra:#10101e;--gl:rgba(6,6,16,.9);
   --b1:rgba(255,255,255,.05);--b2:rgba(255,255,255,.09);--b3:rgba(255,255,255,.15);
   --tp:#e8e8f4;--ts:#5a5a8a;--tt:#222238;
-  --wave-alpha:1;
   --red:#ff4757;--blue:#3fa9f5;--green:#3fffa0;--purple:#a78bfa;
   --r:14px;--r2:8px;--r3:20px;
   --mono:'DM Mono',monospace;--ui:'Syne','Noto Sans JP',sans-serif;--jp:'Noto Sans JP',sans-serif;
@@ -102,41 +101,96 @@ input{font-family:var(--mono);outline:none;color:var(--tp)}
   font-family:var(--mono);font-size:8px;color:var(--ts);cursor:pointer;transition:all .2s;white-space:nowrap}
 #levelBadge:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0);box-shadow:0 0 10px var(--ac2)}
 .lvl-icon{font-size:11px;transition:filter .4s,transform .4s;display:inline-block}
-/* 7日+ : 炎エフェクト */
-.lvl-icon.tier-fire{
-  animation:fireFlicker .6s ease-in-out infinite alternate;
-  filter:drop-shadow(0 0 6px rgba(255,120,30,.9)) drop-shadow(0 0 12px rgba(255,60,0,.6));
-}
+/* Tier 1 : 3日+ 🌿 緑芽 */
+.lvl-icon.tier-sprout{animation:sproutSway 2s ease-in-out infinite alternate;filter:drop-shadow(0 0 5px rgba(80,220,100,.8));}
+@keyframes sproutSway{0%{transform:rotate(-4deg) scale(1)}100%{transform:rotate(4deg) scale(1.1)}}
+/* Tier 2 : 7日+ 🔥 炎 */
+.lvl-icon.tier-fire{animation:fireFlicker .6s ease-in-out infinite alternate;filter:drop-shadow(0 0 6px rgba(255,120,30,.9)) drop-shadow(0 0 12px rgba(255,60,0,.6));}
 @keyframes fireFlicker{
   0%{transform:scale(1) rotate(-2deg);filter:drop-shadow(0 0 4px rgba(255,140,0,.8)) drop-shadow(0 0 10px rgba(255,50,0,.5));}
   50%{transform:scale(1.12) rotate(1deg);filter:drop-shadow(0 0 8px rgba(255,200,50,1)) drop-shadow(0 0 18px rgba(255,80,0,.7));}
   100%{transform:scale(1.04) rotate(-1deg);filter:drop-shadow(0 0 6px rgba(255,120,30,.9)) drop-shadow(0 0 14px rgba(255,60,0,.6));}
 }
-/* 30日+ : 雷エフェクト */
-.lvl-icon.tier-thunder{
-  animation:thunderZap .5s ease-in-out infinite;
-  filter:drop-shadow(0 0 6px rgba(120,180,255,.9)) drop-shadow(0 0 16px rgba(80,140,255,.7));
-}
+/* Tier 3 : 14日+ ⚡ 雷 */
+.lvl-icon.tier-thunder{animation:thunderZap .5s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(120,180,255,.9)) drop-shadow(0 0 16px rgba(80,140,255,.7));}
 @keyframes thunderZap{
   0%,90%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(100,160,255,.8)) drop-shadow(0 0 12px rgba(60,120,255,.5));}
   93%{transform:scale(1.18) skewX(-4deg);filter:drop-shadow(0 0 12px rgba(200,220,255,1)) drop-shadow(0 0 24px rgba(100,160,255,.9)) drop-shadow(0 0 40px rgba(60,120,255,.6));}
   96%{transform:scale(1.05) skewX(2deg);filter:drop-shadow(0 0 8px rgba(180,210,255,.9)) drop-shadow(0 0 20px rgba(80,140,255,.7));}
 }
-/* ストリークバッジ tier styling */
+/* Tier 4 : 21日+ 💎 クリスタル */
+.lvl-icon.tier-crystal{animation:crystalSpin 3s linear infinite;filter:drop-shadow(0 0 8px rgba(180,255,255,.9)) drop-shadow(0 0 20px rgba(100,200,255,.6));}
+@keyframes crystalSpin{0%{filter:drop-shadow(0 0 6px rgba(180,255,255,.8))}33%{filter:drop-shadow(0 0 10px rgba(255,180,255,.9)) drop-shadow(0 0 20px rgba(180,100,255,.6))}66%{filter:drop-shadow(0 0 8px rgba(180,255,180,.8)) drop-shadow(0 0 18px rgba(100,255,180,.5))}100%{filter:drop-shadow(0 0 6px rgba(180,255,255,.8))}}
+/* Tier 5 : 28日+ 🌈 レインボー */
+.lvl-icon.tier-rainbow{animation:rainbowCycle 1.5s linear infinite;filter:drop-shadow(0 0 10px rgba(255,200,100,.8));}
+@keyframes rainbowCycle{0%{filter:drop-shadow(0 0 8px rgba(255,80,80,.9))}16%{filter:drop-shadow(0 0 8px rgba(255,180,0,.9))}33%{filter:drop-shadow(0 0 8px rgba(100,255,80,.9))}50%{filter:drop-shadow(0 0 8px rgba(0,200,255,.9))}66%{filter:drop-shadow(0 0 8px rgba(100,80,255,.9))}83%{filter:drop-shadow(0 0 8px rgba(255,0,200,.9))}100%{filter:drop-shadow(0 0 8px rgba(255,80,80,.9))}}
+/* Tier 6 : 42日+ ☄️ 彗星 */
+.lvl-icon.tier-comet{animation:cometTrail .8s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(255,220,100,.9)) drop-shadow(0 0 25px rgba(255,120,0,.7));}
+@keyframes cometTrail{0%,100%{transform:scale(1) translateX(0)}40%{transform:scale(1.2) translateX(3px)}70%{transform:scale(1.05) translateX(-2px)}}
+/* Tier 7 : 60日+ 🌌 コズミック */
+.lvl-icon.tier-cosmic{animation:cosmicPulse 2s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(180,120,255,.9)) drop-shadow(0 0 20px rgba(100,200,255,.6)) drop-shadow(0 0 40px rgba(255,150,200,.4));}
+@keyframes cosmicPulse{0%{transform:scale(1) rotate(0deg)}33%{transform:scale(1.15) rotate(5deg)}66%{transform:scale(1.08) rotate(-3deg)}100%{transform:scale(1) rotate(0deg)}}
+/* Tier 8 : 100日+ ✨ 超越 */
+.lvl-icon.tier-transcendent{animation:transAura 1.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,255,180,1)) drop-shadow(0 0 30px rgba(255,200,0,.8)) drop-shadow(0 0 60px rgba(255,100,0,.5));}
+@keyframes transAura{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.25);opacity:.85}}
+/* Tier 9 : 365日+ ♾️ 永遠 */
+.lvl-icon.tier-eternal{animation:eternalBlaze .6s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(255,255,255,1)) drop-shadow(0 0 32px rgba(200,180,255,.9)) drop-shadow(0 0 64px rgba(100,200,255,.7));}
+@keyframes eternalBlaze{0%{transform:scale(1) rotate(-3deg);filter:drop-shadow(0 0 12px rgba(255,200,100,1)) drop-shadow(0 0 28px rgba(255,50,0,.8))}50%{transform:scale(1.3) rotate(3deg);filter:drop-shadow(0 0 20px rgba(255,255,200,1)) drop-shadow(0 0 40px rgba(200,100,255,.9))}100%{transform:scale(1.05) rotate(-1deg);filter:drop-shadow(0 0 14px rgba(100,200,255,1)) drop-shadow(0 0 30px rgba(255,180,0,.8))}}
+
+/* STREAK BADGE — base */
 #streakBadge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;border:1px solid var(--b2);background:var(--sf);
   font-family:var(--mono);font-size:8px;color:var(--ts);cursor:pointer;transition:all .2s;white-space:nowrap}
 #streakBadge:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
 #streakBadge.active{border-color:rgba(255,180,50,.5);color:rgba(255,180,50,1);background:rgba(255,180,50,.08);box-shadow:0 0 12px rgba(255,180,50,.15)}
-#streakBadge[data-tier="1"]{border-color:rgba(255,100,20,.6);color:rgba(255,150,50,1);background:rgba(255,80,0,.1);box-shadow:0 0 14px rgba(255,80,0,.25)}
-#streakBadge[data-tier="2"]{border-color:rgba(100,160,255,.7);color:rgba(160,200,255,1);background:rgba(80,140,255,.12);box-shadow:0 0 16px rgba(80,140,255,.35),0 0 32px rgba(60,120,255,.15)}
+/* Tier 1: 3日 sprout */
+#streakBadge[data-tier="1"]{border-color:rgba(80,200,80,.6);color:rgba(120,240,120,1);background:rgba(60,180,60,.1);box-shadow:0 0 10px rgba(60,180,60,.2)}
+#streakBadge[data-tier="1"] .streak-icon{animation:streakSprout 2s ease-in-out infinite alternate;}
+@keyframes streakSprout{0%{transform:rotate(-4deg)}100%{transform:rotate(4deg) scale(1.1)}}
+/* Tier 2: 7日 fire */
+#streakBadge[data-tier="2"]{border-color:rgba(255,100,20,.6);color:rgba(255,150,50,1);background:rgba(255,80,0,.1);box-shadow:0 0 14px rgba(255,80,0,.25)}
+#streakBadge[data-tier="2"] .streak-icon{animation:streakFire2 .7s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(255,100,0,.8))}
+@keyframes streakFire2{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.2) rotate(3deg)}}
+/* Tier 3: 14日 thunder */
+#streakBadge[data-tier="3"]{border-color:rgba(100,160,255,.7);color:rgba(160,200,255,1);background:rgba(80,140,255,.12);box-shadow:0 0 16px rgba(80,140,255,.35)}
+#streakBadge[data-tier="3"] .streak-icon{animation:streakThunder2 .6s ease-in-out infinite}
+@keyframes streakThunder2{0%,85%,100%{transform:scale(1)}88%{transform:scale(1.3) skewX(-5deg)}92%{transform:scale(1.1) skewX(3deg)}}
+/* Tier 4: 21日 crystal */
+#streakBadge[data-tier="4"]{border-color:rgba(160,240,240,.7);color:rgba(200,255,255,1);background:rgba(100,220,220,.1);box-shadow:0 0 18px rgba(100,220,220,.3)}
+#streakBadge[data-tier="4"] .streak-icon{animation:crystalSpin 3s linear infinite}
+/* Tier 5: 28日 rainbow */
+#streakBadge[data-tier="5"]{border-color:rgba(255,180,255,.7);color:rgba(255,220,255,1);background:rgba(180,100,200,.1);box-shadow:0 0 18px rgba(180,100,200,.3),0 0 36px rgba(100,100,255,.15)}
+#streakBadge[data-tier="5"] .streak-icon{animation:rainbowCycle 1.5s linear infinite}
+/* Tier 6: 42日 comet */
+#streakBadge[data-tier="6"]{border-color:rgba(255,200,80,.7);color:rgba(255,230,150,1);background:rgba(200,140,0,.12);box-shadow:0 0 20px rgba(255,180,0,.35)}
+#streakBadge[data-tier="6"] .streak-icon{animation:cometTrail .8s ease-in-out infinite}
+/* Tier 7: 60日 cosmic */
+#streakBadge[data-tier="7"]{border-color:rgba(180,120,255,.7);color:rgba(220,180,255,1);background:rgba(120,80,200,.12);box-shadow:0 0 20px rgba(150,100,255,.4),0 0 40px rgba(80,150,255,.2)}
+#streakBadge[data-tier="7"] .streak-icon{animation:cosmicPulse 2s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(180,100,255,.9));}
+/* Tier 8: 100日 transcendent */
+#streakBadge[data-tier="8"]{border-color:rgba(255,255,180,.8);color:rgba(255,255,220,1);background:rgba(200,180,0,.15);box-shadow:0 0 24px rgba(255,220,0,.5),0 0 48px rgba(255,180,0,.3)}
+#streakBadge[data-tier="8"] .streak-icon{animation:transAura 1.2s ease-in-out infinite}
+/* Tier 9: 365日 eternal */
+#streakBadge[data-tier="9"]{border-color:rgba(255,255,255,.9);color:#fff;background:rgba(200,180,255,.15);box-shadow:0 0 28px rgba(255,255,255,.5),0 0 56px rgba(200,180,255,.4),0 0 80px rgba(100,200,255,.3)}
+#streakBadge[data-tier="9"] .streak-icon{animation:eternalBlaze .6s ease-in-out infinite}
 .streak-icon{display:inline-block;transition:all .3s}
-#streakBadge[data-tier="1"] .streak-icon{animation:streakFire .7s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(255,100,0,.8))}
-#streakBadge[data-tier="2"] .streak-icon{animation:streakThunder .6s ease-in-out infinite}
-@keyframes streakFire{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.2) rotate(3deg)}}
-@keyframes streakThunder{0%,85%,100%{transform:scale(1)}88%{transform:scale(1.3) skewX(-5deg)}92%{transform:scale(1.1) skewX(3deg)}}
 #streakNum{font-weight:500;font-size:10px}
 .lvl-bar-wrap{width:32px;height:3px;background:var(--b2);border-radius:2px;overflow:hidden}
 .lvl-bar{height:100%;background:linear-gradient(90deg,var(--ac),rgba(var(--ar),var(--ag),var(--ab),.6));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+
+/* ── Sakura Petal Canvas ── */
+#sakuraC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s}
+body.sakura-bg #sakuraC{opacity:1}
+body.sakura-bg #bgC{opacity:0}
+
+/* ── UI Scale CSS variable ── */
+:root{--ui-scale:1;--fs-base:13px}
+body{font-size:calc(var(--fs-base) * var(--ui-scale))}
+
+/* ── Scale/FontSize buttons ── */
+.scaleBtn,.fszBtn{padding:4px 9px;border-radius:6px;border:1px solid var(--b2);font-family:var(--mono);font-size:9px;color:var(--ts);cursor:pointer;transition:all .15s;background:var(--ra)}
+.scaleBtn.on,.fszBtn.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.scaleBtn:hover:not(.on),.fszBtn:hover:not(.on){border-color:var(--b3);color:var(--tp)}
+.scaleBtns,.fszBtns{display:flex;gap:4px;flex-wrap:wrap}
 
 /* MID */
 #mid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;position:relative;overflow:hidden}
@@ -285,7 +339,6 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
   backdrop-filter:blur(40px) saturate(1.6);
   box-shadow:0 32px 80px rgba(0,0,0,.55),0 8px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07);
   display:flex;flex-direction:column;overflow:hidden;transition:opacity .25s,transform .25s;will-change:transform}
-.fw.hidden{opacity:0;pointer-events:none;transform:scale(.97) translateY(6px)}
 .fw.hidden{opacity:0;pointer-events:none;transform:scale(.92) translateY(10px)}
 .fw .rn{position:absolute;top:0;left:8px;right:8px;height:4px;cursor:n-resize;z-index:5}
 .fw .rs{position:absolute;bottom:0;left:8px;right:8px;height:4px;cursor:s-resize;z-index:5}
@@ -977,11 +1030,11 @@ const firebaseConfig = {
   measurementId: "G-EB6110CP3H"
 };
 
-  const IS_CONFIGURED = !FIREBASE_CONFIG.apiKey.startsWith('YOUR_');
+  const IS_CONFIGURED = !firebaseConfig.apiKey.startsWith('YOUR_');
 
   if (IS_CONFIGURED) {
-    const app = initializeApp(FIREBASE_CONFIG);
-    const db  = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
     // ── セッション固有のIDを生成 ──
     const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -1039,7 +1092,7 @@ const firebaseConfig = {
     font-family:var(--mono);font-size:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
 </div>
 
-<canvas id="bgC"></canvas><canvas id="ptC"></canvas>
+<canvas id="bgC"></canvas><canvas id="ptC"></canvas><canvas id="sakuraC"></canvas>
 <div class="snap" id="sT"></div><div class="snap" id="sB"></div>
 <div class="snap" id="sL"></div><div class="snap" id="sR"></div>
 
@@ -1066,7 +1119,7 @@ const firebaseConfig = {
         <span id="lvlName" style="font-size:8px">Lv.1</span>
         <div class="lvl-bar-wrap"><div class="lvl-bar" id="lvlBar" style="width:0%"></div></div>
       </div>
-      <div id="streakBadge" onclick="openStreak()" data-i18n-title="streakTitle2" data-i18n-aria="streakAriaLabel" title="ストリーク" aria-label="ストリーク情報を表示" data-tier="0">
+      <div id="streakBadge" onclick="openStreak()" data-i18n-title="streakTitle" data-i18n-aria="streakAriaLabel" title="ストリーク" aria-label="ストリーク情報を表示" data-tier="0">
         <span class="streak-icon">🔥</span><span id="streakNum">0</span><span style="font-size:7px;letter-spacing:1px">日</span>
       </div>
       <button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)">♪</button>
@@ -1309,16 +1362,16 @@ const firebaseConfig = {
 <!-- THEME -->
 <div id="thOv" onclick="thOvCk(event)">
   <div id="thPanel">
-    <div class="thTitle" id="thPanelTitle">テーマ設定</div>
+    <div class="thTitle" id="thPanelTitle" data-i18n="themeTitle">テーマ設定</div>
 
     <div class="thSection">
       <button class="thSectionHead open" onclick="thToggle('thSecColor')">
-        <span>🎨 カラー</span><span class="thArrow">▾</span>
+        <span data-i18n="thSecColorLabel">🎨 カラー</span><span class="thArrow">▾</span>
       </button>
       <div class="thSectionBody open" id="thSecColor">
         <div class="swGrid" id="swGrid"></div>
         <div style="margin-top:10px">
-          <div class="sLbl">カラーコード</div>
+          <div class="sLbl" data-i18n="thColorCode">カラーコード</div>
           <div class="hexRow">
             <input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)">
             <input type="text" id="hexInput" value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false">
@@ -1336,26 +1389,27 @@ const firebaseConfig = {
 
     <div class="thSection">
       <button class="thSectionHead" onclick="thToggle('thSecBg')">
-        <span>🌑 背景</span><span class="thArrow">▸</span>
+        <span data-i18n="thSecBgLabel">🌑 背景</span><span class="thArrow">▸</span>
       </button>
       <div class="thSectionBody" id="thSecBg">
-        <div class="bgOpts">
-          <button class="bgOpt on" data-bg="dark"   onclick="setBg('dark')">ダーク</button>
-          <button class="bgOpt"    data-bg="amoled" onclick="setBg('amoled')">AMOLED</button>
-          <button class="bgOpt"    data-bg="dim"    onclick="setBg('dim')">ディム</button>
-          <button class="bgOpt"    data-bg="light"  onclick="setBg('light')">ライト</button>
-          <button class="bgOpt"    data-bg="white"  onclick="setBg('white')">ホワイト</button>
+        <div class="bgOpts" style="flex-wrap:wrap">
+          <button class="bgOpt on" data-bg="dark"   onclick="setBg('dark')"   data-i18n="bgDark">ダーク</button>
+          <button class="bgOpt"    data-bg="amoled" onclick="setBg('amoled')" data-i18n="bgAmoled">AMOLED</button>
+          <button class="bgOpt"    data-bg="dim"    onclick="setBg('dim')"    data-i18n="bgDim">ディム</button>
+          <button class="bgOpt"    data-bg="light"  onclick="setBg('light')"  data-i18n="bgLight">ライト</button>
+          <button class="bgOpt"    data-bg="white"  onclick="setBg('white')"  data-i18n="bgWhite">ホワイト</button>
+          <button class="bgOpt"    data-bg="sakura" onclick="setBg('sakura')" data-i18n="bgSakura" style="color:#ff9ec4;border-color:rgba(255,140,180,.4)">🌸 桜</button>
         </div>
       </div>
     </div>
 
     <div class="thSection">
       <button class="thSectionHead" onclick="thToggle('thSecFont')">
-        <span>🔤 フォント</span><span class="thArrow">▸</span>
+        <span data-i18n="thSecFontLabel">🔤 フォント</span><span class="thArrow">▸</span>
       </button>
       <div class="thSectionBody" id="thSecFont">
         <div class="fpBtns" id="fpBtns"></div>
-        <div class="fCust"><input type="text" id="fIn" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()">適用</button></div>
+        <div class="fCust"><input type="text" id="fIn" data-i18n-ph="thFontPh" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()" data-i18n="thFontApply">適用</button></div>
         <div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div>
         <div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a></div>
       </div>
@@ -1363,7 +1417,7 @@ const firebaseConfig = {
 
     <div class="thSection">
       <button class="thSectionHead" onclick="thToggle('thSecLang')">
-        <span>🌐 言語</span><span class="thArrow">▸</span>
+        <span data-i18n="thSecLangLabel">🌐 言語</span><span class="thArrow">▸</span>
       </button>
       <div class="thSectionBody" id="thSecLang">
         <div class="langBtns">
@@ -1377,19 +1431,44 @@ const firebaseConfig = {
 
     <div class="thSection">
       <button class="thSectionHead" onclick="thToggle('thSecTimer')">
-        <span>⏱ タイマー表示</span><span class="thArrow">▸</span>
+        <span data-i18n="timerStyleLabel">⏱ タイマー表示</span><span class="thArrow">▸</span>
       </button>
       <div class="thSectionBody" id="thSecTimer">
         <div class="timerStyleBtns">
-          <button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')">○ Ring</button>
-          <button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')">◡ Arc</button>
-          <button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')">▬ Minimal</button>
-          <button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')">▦ Blocks</button>
+          <button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')" data-i18n="timerStyleRing">○ リング</button>
+          <button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')" data-i18n="timerStyleArc">◡ アーク</button>
+          <button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')" data-i18n="timerStyleMinimal">▬ ミニマル</button>
+          <button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')" data-i18n="timerStyleBlocks">▦ ブロック</button>
         </div>
       </div>
     </div>
 
-    <button class="thClose" onclick="openTheme()">閉じる</button>
+    <div class="thSection">
+      <button class="thSectionHead" onclick="thToggle('thSecScale')">
+        <span data-i18n="thSecScaleLabel">🔍 UIスケール &amp; 文字サイズ</span><span class="thArrow">▸</span>
+      </button>
+      <div class="thSectionBody" id="thSecScale">
+        <div class="sLbl" data-i18n="thScaleLabel" style="margin-bottom:6px">UIスケール</div>
+        <div class="scaleBtns" id="scaleBtns">
+          <button class="scaleBtn" data-scale="0.8"  onclick="setUIScale(0.8)">80%</button>
+          <button class="scaleBtn" data-scale="0.9"  onclick="setUIScale(0.9)">90%</button>
+          <button class="scaleBtn on" data-scale="1" onclick="setUIScale(1.0)">100%</button>
+          <button class="scaleBtn" data-scale="1.1"  onclick="setUIScale(1.1)">110%</button>
+          <button class="scaleBtn" data-scale="1.2"  onclick="setUIScale(1.2)">120%</button>
+          <button class="scaleBtn" data-scale="1.4"  onclick="setUIScale(1.4)">140%</button>
+        </div>
+        <div class="sLbl" data-i18n="thFontSizeLabel" style="margin:10px 0 6px">文字サイズ</div>
+        <div class="fszBtns" id="fszBtns">
+          <button class="fszBtn" data-fsz="xs"  onclick="setFontSize('xs')" data-i18n="fszXs">極小</button>
+          <button class="fszBtn" data-fsz="sm"  onclick="setFontSize('sm')" data-i18n="fszSm">小</button>
+          <button class="fszBtn on" data-fsz="md" onclick="setFontSize('md')" data-i18n="fszMd">中</button>
+          <button class="fszBtn" data-fsz="lg"  onclick="setFontSize('lg')" data-i18n="fszLg">大</button>
+          <button class="fszBtn" data-fsz="xl"  onclick="setFontSize('xl')" data-i18n="fszXl">特大</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="thClose" onclick="openTheme()" data-i18n="thClose">閉じる</button>
   </div>
 </div>
 
@@ -1403,7 +1482,7 @@ const firebaseConfig = {
       <div class="strLvlInfo">
         <div class="strLvlName" id="spLvlName">Seedling</div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div class="strLvlNum" id="spLvlNum">Level 1 / 18</div>
+          <div class="strLvlNum" id="spLvlNum">Level 1 / 60</div>
           <div id="spLvlTitle" style="font-family:var(--mono);font-size:8px;color:var(--ac);letter-spacing:2px;opacity:.8">始まりの一歩</div>
         </div>
         <div class="strLvlBarWrap"><div class="strLvlBarFill" id="spLvlFill" style="width:0%"></div></div>
@@ -1456,8 +1535,8 @@ const firebaseConfig = {
 
 <!-- DONATE -->
 <div id="donBanner" class="hidden">
-  <div class="donTxt"><p>☕ SCHEDを応援する</p><span>開発継続のため支援をお願いします</span></div>
-  <a class="bDon" href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener">サポート</a>
+  <div class="donTxt"><p data-i18n="donTitle">☕ SCHEDを応援する</p><span data-i18n="donSub">開発継続のため支援をお願いします</span></div>
+  <a class="bDon" href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener" data-i18n="donBtn">サポート</a>
   <div class="donX" onclick="closeDonate()">×</div>
 </div>
 <div id="toast"></div>
@@ -1593,10 +1672,6 @@ const firebaseConfig = {
 </div>
 
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js")
-    .then(() => console.log("Service Worker Registered"));
-}
 /* ═══ UTILS ═══ */
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 const $=id=>document.getElementById(id);
@@ -1676,7 +1751,7 @@ const I18N={
     streakSubs:['毎日続けて目標を達成しよう','この調子で頑張ろう！','継続は力なり 💪','素晴らしい習慣です！','あなたは最高です 🌟'],
     xpNextLvl:(cur,next)=>`${cur} / ${next} min → 次のレベル`,xpMaxLvl:'✨ MAX LEVEL 達成！',
     streakLabel:(n)=>`${n}日連続`,
-    tierFire:'🔥 7日+ 炎継続中！',tierThunder:'⚡ 30日+ 雷帯電中！',
+    tierFire:'🔥 7日+ 炎継続中！',tierThunder:'⚡ 30日+ 雷帯電中！',tierCosmic:'🌌 100日+ 宇宙覚醒！',
     heatTip:(m,d,min,login)=>`${m}/${d} — ${min}分${login?'（ログイン）':''}`,
     // Lap/time
     lapLabel:(n)=>`Lap ${n}`,
@@ -1693,8 +1768,8 @@ const I18N={
     dockFWTask:'タスクをドックへ',dockFWTimer:'タイマーをドックへ',dockFWClose:'閉じました',
     dockFWCal:'カレンダーを閉じました',
     // YouTube/BGM エラー
-    ytApiError:T('ytApiError'),ytInvalidId:T('ytInvalidId'),
-    ytNotFound:T('ytNotFound'),ytNoEmbed:T('ytNoEmbed'),ytError:T('ytError'),
+    ytApiError:'⚠ YouTube API読込失敗',ytInvalidId:'動画IDが無効です',
+    ytNotFound:'動画が見つかりません',ytNoEmbed:'埋め込みが許可されていません',ytError:'YouTube読込エラー',
     // onlineBadge title
     onlineBadgeTitle:'現在オンラインの人数',
     // levelBadge / streakBadge aria
@@ -1702,6 +1777,19 @@ const I18N={
     // dockShowBtn
     dockShowTitle:'ドック表示 (D)',onlineUnit:'人',onlineTip:(n)=>`現在 ${n} 人が使用中`,onlineAlone:'今あなただけが使用中',
     streakTitle:'⚡ 実績 & ストリーク',noTask:'タスクを追加してください',allDone:'✓ すべて完了！',waiting:'次の予定を待機中…',
+    bgmLoading:'BGM 読み込み中…',bgmPlaying:'BGM 再生中 ♪',bgmUrlEmpty:'URLを入力してください',bgmUrlInvalid:'有効なYouTube URLを入力してください',bgmYtPlaying:'YouTube 再生中 ♪',
+    loopOn:'ループ ON',loopOff:'ループ OFF',timeRequired:'時間を入力してください',timePastError:'過去の時間には設定できません',
+    clockDateFmt:null,
+    thSecColorLabel:'🎨 カラー',thColorCode:'カラーコード',
+    thSecBgLabel:'🌑 背景',bgDark:'ダーク',bgAmoled:'AMOLED',bgDim:'ディム',bgLight:'ライト',bgWhite:'ホワイト',bgSakura:'🌸 桜',
+    thSecFontLabel:'🔤 フォント',thFontPh:'Google Fontsのフォント名',thFontApply:'適用',
+    thSecLangLabel:'🌐 言語',
+    timerStyleLabel:'⏱ タイマー表示',
+    timerStyleRing:'○ リング',timerStyleArc:'◡ アーク',timerStyleMinimal:'▬ ミニマル',timerStyleBlocks:'▦ ブロック',
+    thSecScaleLabel:'🔍 UIスケール & 文字サイズ',thScaleLabel:'UIスケール',thFontSizeLabel:'文字サイズ',
+    fszXs:'極小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
+    thClose:'閉じる',
+    donTitle:'☕ SCHEDを応援する',donSub:'開発継続のため支援をお願いします',donBtn:'サポート',
   },
   en:{work:'Work',brk:'Break',longBrk:'Long Break',start:'▶ Start',pause:'⏸ Pause',
     reset:'↺',skip:'⏭',lap:'◎ Lap',taskPh:'Enter task name…',nowBtn:'Now',timeBtn:'Timed',
@@ -1737,7 +1825,7 @@ const I18N={
     streakSubs:['Keep going every day!','Great momentum!','Consistency is power 💪','Amazing habit!','You are the best 🌟'],
     xpNextLvl:(cur,next)=>`${cur} / ${next} min → Next level`,xpMaxLvl:'✨ MAX LEVEL!',
     streakLabel:(n)=>`${n} day streak`,
-    tierFire:'🔥 7d+ On Fire!',tierThunder:'⚡ 30d+ Electrified!',
+    tierFire:'🔥 7d+ On Fire!',tierThunder:'⚡ 30d+ Electrified!',tierCosmic:'🌌 100d+ Cosmic Awakening!',
     heatTip:(m,d,min,login)=>`${m}/${d} — ${min}min${login?' (login)':''}`,
     lapLabel:(n)=>`Lap ${n}`,
     endUnknown:'(end unknown)',
@@ -1753,6 +1841,19 @@ const I18N={
     levelAriaLabel:'View level & achievements',streakAriaLabel:'View streak info',
     dockShowTitle:'Show Dock (D)',onlineUnit:'online',onlineTip:(n)=>`${n} people using SCHED`,onlineAlone:'Just you right now',
     streakTitle:'⚡ Stats & Streak',noTask:'Add a task to get started',allDone:'✓ All done!',waiting:'Waiting for next task…',
+    bgmLoading:'Loading BGM…',bgmPlaying:'BGM Playing ♪',bgmUrlEmpty:'Please enter a URL',bgmUrlInvalid:'Please enter a valid YouTube URL',bgmYtPlaying:'YouTube Playing ♪',
+    loopOn:'Loop ON',loopOff:'Loop OFF',timeRequired:'Please enter a time',timePastError:'Cannot set a past time',
+    clockDateFmt:null,
+    thSecColorLabel:'🎨 Color',thColorCode:'Color Code',
+    thSecBgLabel:'🌑 Background',bgDark:'Dark',bgAmoled:'AMOLED',bgDim:'Dim',bgLight:'Light',bgWhite:'White',bgSakura:'🌸 Sakura',
+    thSecFontLabel:'🔤 Font',thFontPh:'Google Fonts font name',thFontApply:'Apply',
+    thSecLangLabel:'🌐 Language',
+    timerStyleLabel:'⏱ Timer Style',
+    timerStyleRing:'○ Ring',timerStyleArc:'◡ Arc',timerStyleMinimal:'▬ Minimal',timerStyleBlocks:'▦ Blocks',
+    thSecScaleLabel:'🔍 UI Scale & Font Size',thScaleLabel:'UI Scale',thFontSizeLabel:'Font Size',
+    fszXs:'XS',fszSm:'S',fszMd:'M',fszLg:'L',fszXl:'XL',
+    thClose:'Close',
+    donTitle:'☕ Support SCHED',donSub:'Help keep development going',donBtn:'Support',
   },
   zh:{work:'专注',brk:'休息',longBrk:'长休息',start:'▶ 开始',pause:'⏸ 暂停',
     reset:'↺',skip:'⏭',lap:'◎ 计圈',taskPh:'输入任务名称…',nowBtn:'现在',timeBtn:'定时',
@@ -1804,6 +1905,19 @@ const I18N={
     levelAriaLabel:'查看等级和成就',streakAriaLabel:'查看连续信息',
     dockShowTitle:'显示工具栏 (D)',onlineUnit:'人',onlineTip:(n)=>`当前 ${n} 人在线`,onlineAlone:'目前只有你',
     streakTitle:'⚡ 成就 & 连续',noTask:'添加任务以开始',allDone:'✓ 全部完成！',waiting:'等待下一任务…',
+    bgmLoading:'加载BGM中…',bgmPlaying:'BGM播放中 ♪',bgmUrlEmpty:'请输入URL',bgmUrlInvalid:'请输入有效的YouTube URL',bgmYtPlaying:'YouTube播放中 ♪',
+    loopOn:'循环 ON',loopOff:'循环 OFF',timeRequired:'请输入时间',timePastError:'不能设置过去的时间',
+    clockDateFmt:null,
+    thSecColorLabel:'🎨 颜色',thColorCode:'颜色代码',
+    thSecBgLabel:'🌑 背景',bgDark:'深色',bgAmoled:'AMOLED',bgDim:'暗淡',bgLight:'浅色',bgWhite:'白色',bgSakura:'🌸 樱花',
+    thSecFontLabel:'🔤 字体',thFontPh:'Google字体名称',thFontApply:'应用',
+    thSecLangLabel:'🌐 语言',
+    timerStyleLabel:'⏱ 样式',
+    timerStyleRing:'○ 圆环',timerStyleArc:'◡ 弧形',timerStyleMinimal:'▬ 简约',timerStyleBlocks:'▦ 方块',
+    thSecScaleLabel:'🔍 UI缩放 & 字体大小',thScaleLabel:'UI缩放',thFontSizeLabel:'字体大小',
+    fszXs:'极小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
+    thClose:'关闭',
+    donTitle:'☕ 支持SCHED',donSub:'帮助维持开发',donBtn:'支持',
   },
   ko:{work:'작업',brk:'휴식',longBrk:'긴 휴식',start:'▶ 시작',pause:'⏸ 일시정지',
     reset:'↺',skip:'⏭',lap:'◎ 랩',taskPh:'작업 이름 입력…',nowBtn:'바로',timeBtn:'시간 지정',
@@ -1855,9 +1969,22 @@ const I18N={
     levelAriaLabel:'레벨·실적 보기',streakAriaLabel:'스트릭 정보 보기',
     dockShowTitle:'도크 표시 (D)',onlineUnit:'명',onlineTip:(n)=>`현재 ${n}명 사용 중`,onlineAlone:'지금은 혼자 사용 중',
     streakTitle:'⚡ 실적 & 스트릭',noTask:'작업을 추가하세요',allDone:'✓ 모두 완료！',waiting:'다음 일정 대기 중…',
+    bgmLoading:'BGM 로딩 중…',bgmPlaying:'BGM 재생 중 ♪',bgmUrlEmpty:'URL을 입력하세요',bgmUrlInvalid:'올바른 YouTube URL을 입력하세요',bgmYtPlaying:'YouTube 재생 중 ♪',
+    loopOn:'루프 ON',loopOff:'루프 OFF',timeRequired:'시간을 입력하세요',timePastError:'과거 시간은 설정할 수 없습니다',
+    clockDateFmt:null,
+    thSecColorLabel:'🎨 컬러',thColorCode:'색상 코드',
+    thSecBgLabel:'🌑 배경',bgDark:'다크',bgAmoled:'AMOLED',bgDim:'딤',bgLight:'라이트',bgWhite:'화이트',bgSakura:'🌸 사쿠라',
+    thSecFontLabel:'🔤 폰트',thFontPh:'Google Fonts 폰트 이름',thFontApply:'적용',
+    thSecLangLabel:'🌐 언어',
+    timerStyleLabel:'⏱ 타이머 스타일',
+    timerStyleRing:'○ 링',timerStyleArc:'◡ 호형',timerStyleMinimal:'▬ 미니멀',timerStyleBlocks:'▦ 블록',
+    thSecScaleLabel:'🔍 UI 크기 & 글자 크기',thScaleLabel:'UI 크기',thFontSizeLabel:'글자 크기',
+    fszXs:'극소',fszSm:'소',fszMd:'중',fszLg:'대',fszXl:'특대',
+    thClose:'닫기',
+    donTitle:'☕ SCHED 응원하기',donSub:'개발 지속을 위해 지원해 주세요',donBtn:'지원하기',
   },
 };
-const T=k=>(I18N[S.lang]||I18N.ja)[k]||(I18N.ja[k]||k);
+const T=k=>{const v=(I18N[S.lang]||I18N.ja)[k];if(v!==undefined)return v;const j=I18N.ja[k];return j!==undefined?j:k;};
 function setLang(l){S.lang=l;savUI();applyLang();toast((I18N[l]||I18N.ja).langLabel+': '+(l==='ja'?'日本語':l==='en'?'English':l==='zh'?'中文':'한국어'));}
 function applyLang(){
   const l=S.lang||'ja';
@@ -1893,7 +2020,7 @@ function applyLang(){
   const swRunning=S.sw.running;
   ['swBtn','swBtnW','swBtnM'].forEach(id=>{
     const e=$(id);if(!e)return;
-    e.textContent=swRunning?T('pause'):T('start');
+    e.textContent=swRunning?T('swStop'):T('swStart2');
   });
 
   // ── Pomo settings labels ──────────────────────────────────
@@ -1963,57 +2090,146 @@ function applyLang(){
 
   // ── Theme panel title ─────────────────────────────────────
   const tt=$('thPanelTitle');if(tt)tt.textContent=T('themeTitle');
+  // ── Timer style buttons (data-i18n handles it via querySelectorAll above) ──
+  // ── Font input placeholder ────────────────────────────────
+  const fIn=$('fIn');if(fIn)fIn.placeholder=T('thFontPh');
+  // ── showDonate button text ────────────────────────────────
+  const donTitleEl=$('donBanner')?.querySelector('.donTxt p');
+  const donSubEl=$('donBanner')?.querySelector('.donTxt span');
+  const donBtnEl=$('donBanner')?.querySelector('.bDon');
+  if(donTitleEl)donTitleEl.textContent=T('donTitle');
+  if(donSubEl)donSubEl.textContent=T('donSub');
+  if(donBtnEl)donBtnEl.textContent=T('donBtn');
+  _refreshTCache();
 }
 
 /* ═══ LEVEL SYSTEM ═══ */
 const LEVELS=[
-  {min:0,    name:'Seedling',   icon:'🌱', title:'始まりの一歩'},
-  {min:30,   name:'Sprout',     icon:'🌿', title:'芽吹き'},
-  {min:60,   name:'Learner',    icon:'📖', title:'学習者'},
-  {min:120,  name:'Student',    icon:'✏️', title:'努力家'},
-  {min:200,  name:'Curious',    icon:'🔍', title:'探求者'},
-  {min:300,  name:'Focused',    icon:'🎯', title:'集中力'},
-  {min:450,  name:'Driven',     icon:'🚀', title:'推進力'},
-  {min:600,  name:'Dedicated',  icon:'⚡', title:'献身者'},
-  {min:800,  name:'Achiever',   icon:'🏅', title:'達成者'},
-  {min:1000, name:'Expert',     icon:'🔥', title:'エキスパート'},
-  {min:1300, name:'Veteran',    icon:'🗡️', title:'ベテラン'},
-  {min:1700, name:'Elite',      icon:'💠', title:'エリート'},
-  {min:2200, name:'Master',     icon:'💎', title:'マスター'},
-  {min:2800, name:'Grandmaster',icon:'🌟', title:'グランドマスター'},
-  {min:3500, name:'Legend',     icon:'🌙', title:'レジェンド'},
-  {min:4500, name:'Mythic',     icon:'👑', title:'ミシック'},
-  {min:6000, name:'Transcendent',icon:'🌌',title:'超越者'},
-  {min:8000, name:'Eternal',    icon:'♾️', title:'永遠'},
+  /* Tier 1: Beginner (0–9) */
+  {min:0,     name:'Seedling',      icon:'🌱', title:'始まりの一歩'},
+  {min:20,    name:'Sprout',        icon:'🌿', title:'芽吹き'},
+  {min:50,    name:'Learner',       icon:'📖', title:'学習者'},
+  {min:90,    name:'Student',       icon:'✏️', title:'努力家'},
+  {min:140,   name:'Curious',       icon:'🔍', title:'探求者'},
+  {min:200,   name:'Thinker',       icon:'💭', title:'思考者'},
+  {min:270,   name:'Planner',       icon:'📝', title:'計画者'},
+  {min:350,   name:'Doer',          icon:'🎯', title:'実行者'},
+  {min:440,   name:'Builder',       icon:'🔨', title:'建設者'},
+  {min:540,   name:'Focused',       icon:'🧩', title:'集中力'},
+  /* Tier 2: Intermediate (10–19) */
+  {min:650,   name:'Driven',        icon:'🚀', title:'推進力'},
+  {min:780,   name:'Dedicated',     icon:'⚡', title:'献身者'},
+  {min:920,   name:'Achiever',      icon:'🏅', title:'達成者'},
+  {min:1080,  name:'Specialist',    icon:'🔬', title:'専門家'},
+  {min:1260,  name:'Expert',        icon:'🔥', title:'エキスパート'},
+  {min:1460,  name:'Veteran',       icon:'🗡️', title:'ベテラン'},
+  {min:1680,  name:'Commander',     icon:'🎖️', title:'指揮者'},
+  {min:1920,  name:'Strategist',    icon:'♟️', title:'戦略家'},
+  {min:2180,  name:'Elite',         icon:'💠', title:'エリート'},
+  {min:2460,  name:'Pioneer',       icon:'🧭', title:'先駆者'},
+  /* Tier 3: Advanced (20–29) */
+  {min:2760,  name:'Master',        icon:'💎', title:'マスター'},
+  {min:3100,  name:'Champion',      icon:'🏆', title:'チャンピオン'},
+  {min:3480,  name:'Grandmaster',   icon:'🌟', title:'グランドマスター'},
+  {min:3900,  name:'Sage',          icon:'📿', title:'賢者'},
+  {min:4360,  name:'Legend',        icon:'🌙', title:'レジェンド'},
+  {min:4860,  name:'Phantom',       icon:'👻', title:'幻影'},
+  {min:5400,  name:'Oracle',        icon:'🔮', title:'神託'},
+  {min:5990,  name:'Mythic',        icon:'👑', title:'ミシック'},
+  {min:6630,  name:'Warlord',       icon:'⚔️', title:'覇者'},
+  {min:7320,  name:'Paragon',       icon:'🌈', title:'至高'},
+  /* Tier 4: Elite (30–39) */
+  {min:8070,  name:'Ascended',      icon:'🕊️', title:'昇華者'},
+  {min:8890,  name:'Immortal',      icon:'♾️', title:'不死者'},
+  {min:9780,  name:'Transcendent',  icon:'🌌', title:'超越者'},
+  {min:10740, name:'Celestial',     icon:'☄️', title:'天上の者'},
+  {min:11780, name:'Radiant',       icon:'✨', title:'輝光者'},
+  {min:12900, name:'Eternal',       icon:'🌀', title:'永遠'},
+  {min:14100, name:'Sovereign',     icon:'🔱', title:'至尊'},
+  {min:15400, name:'Titan',         icon:'🗿', title:'巨神'},
+  {min:16800, name:'Deity',         icon:'⚜️', title:'神格'},
+  {min:18300, name:'Primordial',    icon:'🌊', title:'原初の力'},
+  /* Tier 5: Legendary (40–49) */
+  {min:19900, name:'Architect',     icon:'🏛️', title:'世界の設計者'},
+  {min:21600, name:'Singularity',   icon:'🔵', title:'特異点'},
+  {min:23400, name:'Nova',          icon:'💥', title:'超新星'},
+  {min:25300, name:'Void Walker',   icon:'🕳️', title:'虚無の歩者'},
+  {min:27400, name:'Star Forger',   icon:'⭐', title:'星鍛冶'},
+  {min:29700, name:'Cosmos',        icon:'🪐', title:'宇宙の体現'},
+  {min:32200, name:'Infinity',      icon:'∞',  title:'無限大'},
+  {min:34900, name:'Absolute',      icon:'🎆', title:'絶対'},
+  {min:37800, name:'Genesis',       icon:'🌏', title:'創世'},
+  {min:41000, name:'Omega',         icon:'Ω',  title:'万物の終点'},
+  /* Tier 6: Mythical (50–59) */
+  {min:44500, name:'Seraph',        icon:'😇', title:'熾天使'},
+  {min:48500, name:'Nexus',         icon:'🕸️', title:'万象の結節'},
+  {min:53000, name:'Harbinger',     icon:'🌑', title:'終末の予言者'},
+  {min:58000, name:'Aeon',          icon:'🌠', title:'永劫の存在'},
+  {min:63500, name:'Akasha',        icon:'📡', title:'宇宙の記憶'},
+  {min:69500, name:'Ouroboros',     icon:'🐉', title:'始まりと終わりの蛇'},
+  {min:76000, name:'Yggdrasil',     icon:'🌳', title:'世界樹'},
+  {min:83000, name:'Pantheon',      icon:'⛩️', title:'万神殿'},
+  {min:91000, name:'Eschaton',      icon:'🌋', title:'終末'},
+  {min:100000,name:'SCHED GOD',     icon:'🔆', title:'神をも超えた存在'},
 ];
-function getLevelInfo(totalMin){
-  let lv=LEVELS[0];let ni=1;
-  for(let i=LEVELS.length-1;i>=0;i--){if(totalMin>=LEVELS[i].min){lv=LEVELS[i];ni=i+1;break;}}
-  const nextLv=LEVELS[ni]||null;
-  const pct=nextLv?Math.min(100,(totalMin-lv.min)/(nextLv.min-lv.min)*100):100;
-  const xpCur=totalMin-lv.min;const xpNext=nextLv?nextLv.min-lv.min:null;
-  return{lv,idx:LEVELS.indexOf(lv),pct,xpCur,xpNext};
+/* Procedural data for levels beyond named LEVELS */
+const _BEYOND_ICONS=['⚡','🌟','💎','🔮','☄️','🌌','✨','🔆','♾️','🌀','🎇','🎆','⭐','🌠','🌈','🎯','🏆','👑','🔱','⚜️','🧬','🔭','🛸','🌐','🎭','🎪','🎨','🎸','🎺','🥁'];
+const _BEYOND_TITLES=['∞ {n}次元の彼方','宇宙法則{n}番','時の果て第{n}層','始原の記憶{n}','無限の彼方{n}'];
+function _genLevelMin(idx){// idx 0-based
+  if(idx<LEVELS.length)return LEVELS[idx].min;
+  return Math.round(100000*Math.pow(1.08,idx-LEVELS.length+1));
 }
-/* ストリーク段階: 0=通常, 1=炎(7日+), 2=雷(30日+) */
+function _genLevel(idx){// for idx >= LEVELS.length
+  const extra=idx-LEVELS.length+1;
+  return{
+    min:_genLevelMin(idx),
+    name:`Beyond ${extra}`,
+    icon:_BEYOND_ICONS[extra%_BEYOND_ICONS.length],
+    title:_BEYOND_TITLES[extra%_BEYOND_TITLES.length].replace(/\{n\}/g,String(extra))
+  };
+}
+function getLevelData(idx){return idx<LEVELS.length?LEVELS[idx]:_genLevel(idx);}
+function getLevelInfo(totalMin){
+  // Find current level index using linear scan (fast enough, capped at 560 levels)
+  let found=0;
+  const cap=LEVELS.length+500;
+  for(let i=0;i<cap;i++){if(totalMin<_genLevelMin(i)){found=Math.max(0,i-1);break;}else if(i===cap-1)found=cap-1;}
+  const lv=getLevelData(found);
+  const nextLv=getLevelData(found+1);
+  const pct=Math.min(100,(totalMin-lv.min)/(nextLv.min-lv.min)*100);
+  const xpCur=totalMin-lv.min;const xpNext=nextLv.min-lv.min;
+  return{lv,idx:found,pct,xpCur,xpNext};
+}
+/* ストリーク段階: 9段階 (週単位マイルストーン) */
 function _streakTier(streak){
-  if(streak>=30)return 2;
-  if(streak>=7)return 1;
+  if(streak>=365)return 9; // ♾️ 永遠
+  if(streak>=100)return 8; // ✨ 超越
+  if(streak>=60)return 7;  // 🌌 コズミック
+  if(streak>=42)return 6;  // ☄️ 彗星
+  if(streak>=28)return 5;  // 🌈 レインボー
+  if(streak>=21)return 4;  // 💎 クリスタル
+  if(streak>=14)return 3;  // ⚡ 雷
+  if(streak>=7)return 2;   // 🔥 炎
+  if(streak>=3)return 1;   // 🌿 芽
   return 0;
 }
+const _TIER_ICONS=['','🌿','🔥','⚡','💎','🌈','☄️','🌌','✨','♾️'];
+const _TIER_CLASS=['','tier-sprout','tier-fire','tier-thunder','tier-crystal','tier-rainbow','tier-comet','tier-cosmic','tier-transcendent','tier-eternal'];
+let _lastLvlIdx=-1;
 function updateLevelUI(){
   const tm=S.streak.totalMinutes||0;
-  const{lv,pct}=getLevelInfo(tm);
+  const info=getLevelInfo(tm);
   const streak=_calcStreak();
   const tier=_streakTier(streak);
   const iconEl=$('lvlIcon');
-  iconEl.textContent=lv.icon;
-  // ストリークtierに応じてクラスを付与
-  iconEl.className='lvl-icon'+(tier===2?' tier-thunder':tier===1?' tier-fire':'');
-  $('lvlName').textContent=`Lv.${LEVELS.indexOf(lv)+1}`;
-  $('lvlBar').style.width=pct+'%';
-  // streakBadge tier styling
+  if(iconEl){iconEl.textContent=info.lv.icon;iconEl.className='lvl-icon '+(_TIER_CLASS[tier]||'');}
+  const lvlIdx=info.idx;
+  if($('lvlName'))$('lvlName').textContent=`Lv.${lvlIdx+1}`;
+  if($('lvlBar'))$('lvlBar').style.width=info.pct+'%';
+  if(_lastLvlIdx>=0&&lvlIdx>_lastLvlIdx){snd('lvlup');toast(`🎉 レベルアップ！ Lv.${lvlIdx+1} ${info.lv.icon} ${info.lv.name}`);}
+  _lastLvlIdx=lvlIdx;
   const sb=$('streakBadge');
-  sb.dataset.tier=tier;
+  if(sb)sb.dataset.tier=String(tier);
 }
 
 /* ═══ STATE ═══ */
@@ -2023,7 +2239,7 @@ const S={
   pomo:{running:false,mode:'work',sec:0,total:0,sets:0,iv:null},
   sw:{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null},
   timerTab:'pomo',pomoStyle:'ring',lang:'ja',
-  theme:{r:220,g:175,b:70,bg:'dark',font:'Noto Sans JP'},
+  theme:{r:220,g:175,b:70,bg:'dark',font:'Noto Sans JP',uiScale:1,fontSize:'md'},
   bgm:{cur:null},ytP:null,
   fw:{task:false,timer:false,cal:false},
   dock:{pos:'bottom',size:220,collapsed:false},
@@ -2068,7 +2284,15 @@ function tickTimeTracking(){
 }
 // タブ非表示→表示復帰時に基準リセット（バックグラウンドでの不正加算防止）
 document.addEventListener('visibilitychange',()=>{
-  _lastMinuteTick=document.visibilityState==='visible'?Date.now():null;
+  if(document.visibilityState==='visible'){
+    _lastMinuteTick=Date.now();
+    // Restart clock if it was stopped
+    if(!_clockIv&&typeof _startClock==='function')_startClock();
+  }else{
+    _lastMinuteTick=null;
+    // Stop clock interval while hidden (saves battery/CPU)
+    if(_clockIv){clearInterval(_clockIv);_clockIv=null;}
+  }
 });
 // Also track pomodoro completions as bonus XP
 function addPomoXP(mins){
@@ -2176,7 +2400,7 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
   const ps=[];
   for(let i=0;i<cnt;i++)ps.push({x:Math.random()*1200,y:Math.random()*800,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
   function dr(){
-    cx.clearRect(0,0,W,H);const t=Date.now()*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
+    cx.clearRect(0,0,W,H);const t=performance.now()*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
     ps.forEach(p=>{p.x+=p.vx*mul;p.y+=p.vy*mul;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
       const a=p.op*(light?.9:(.5+.5*Math.sin(t+p.ph)))*(1+_waveEnergy*.8)*(light?3.5:1);
       cx.beginPath();cx.arc(p.x,p.y,p.r*(1+_waveEnergy*.5),0,Math.PI*2);
@@ -2193,18 +2417,37 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
 /* ═══ CLOCK ═══ */
 const DAYS=null;// replaced by T('weekDays')
 let _lastClockStr='',_lastDateStr='',_lastTickSec=-1;
+/* キャッシュ済みT()値 — tickごとに再計算しない */
+let _cachedTActive='',_cachedTDone='',_cachedTEnded='',_cachedTNowImm='',_cachedTWaiting='',_cachedTAllDone='',_cachedTNoTask='';
+function _refreshTCache(){
+  _cachedTActive=T('active');_cachedTDone=T('done');_cachedTEnded=T('ended');
+  _cachedTNowImm=T('nowImm');_cachedTWaiting=T('waiting');_cachedTAllDone=T('allDone');_cachedTNoTask=T('noTask');
+}
 function tick(){
   const n=new Date();
   const ts=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
-  const _wdA=T('weekDays');const _cdfFmt=T('clockDateFmt');const ds=typeof _cdfFmt==='function'?_cdfFmt(n.getFullYear(),n.getMonth()+1,n.getDate(),n.getDay()):`${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`;
-  if(ts!==_lastClockStr){$('clockTime').textContent=ts;_lastClockStr=ts;}
-  if(ds!==_lastDateStr){$('clockDate').textContent=ds;_lastDateStr=ds;}
+  const clockEl=$('clockTime');
+  if(ts!==_lastClockStr){
+    if(clockEl){
+      clockEl.textContent=ts;
+    }
+    _lastClockStr=ts;
+  }
+  const _wdArr=T('weekDays');const _wd=Array.isArray(_wdArr)?_wdArr:['日','月','火','水','木','金','土'];
+  const dsf=`${_wd[n.getDay()]} ${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`;
+  if(dsf!==_lastDateStr){const e=$('clockDate');if(e)e.textContent=dsf;_lastDateStr=dsf;}
   const sec=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
   if(sec!==_lastTickSec){_lastTickSec=sec;refreshCur(n);refreshCDs(n);}
   tickTimeTracking();
 }
-// rAF-based tick loop — no duplicate setInterval
-function _rafTick(){tick();setTimeout(()=>requestAnimationFrame(_rafTick),500);}
+// Clock tick: setInterval every 1 second (rAF was draining CPU and caused clock to lag)
+function _rafTick(){} // kept for compat, no-op
+let _clockIv=null;
+function _startClock(){
+  if(_clockIv)clearInterval(_clockIv);
+  tick(); // immediate first tick
+  _clockIv=setInterval(tick,1000);
+}
 
 /* ═══ ADD MODE ═══ */
 function setMode(m){S.addMode=m;$('mNow').classList.toggle('on',m==='now');$('mTime').classList.toggle('on',m==='time');$('addTime').classList.toggle('hide',m==='now')}
@@ -2259,7 +2502,7 @@ function togDone(id){
 function renderT(){
   const all=_allTodayTasks();
   const html=_tHtml(all);
-  ['tScroll','tScrollW'].forEach(id=>{const e=$(id);if(e)e.innerHTML=html});
+  ['tScroll','tScrollW','tScrollM'].forEach(id=>{const e=$(id);if(e)e.innerHTML=html});
   const cntFn=T('taskCount');const cnt=typeof cntFn==='function'?cntFn(all.length):all.length+'';
   ['tCnt','tCntW'].forEach(id=>{const e=$(id);if(e)e.textContent=cnt});
 }
@@ -2297,23 +2540,23 @@ function refreshCDs(now){
     const t=taskMap.get(id);
     if(!t||t.done)return;const im=!t.time;
     const cd=row.querySelector('.tCd');if(!cd)return;
-    if(im){cd.textContent=T('active');cd.className='tCd act';return;}
+    if(im){cd.textContent=_cachedTActive||T('active');cd.className='tCd act';return;}
     const df=Math.floor(t2s(t.time)/60)-nm;
     if(df>0){cd.textContent=fmtCD(df);cd.className='tCd up';}
-    else if(df>-120){cd.textContent=T('active');cd.className='tCd act';}
-    else{cd.textContent=T('ended');cd.className='tCd past';}
+    else if(df>-120){cd.textContent=_cachedTActive||T('active');cd.className='tCd act';}
+    else{cd.textContent=_cachedTEnded||T('ended');cd.className='tCd past';}
   });
 }
 function refreshCur(now){
   const sec=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
   const nEl=$('curTask'),mEl=$('curMeta'),bEl=$('curTBadge');
   const tasks=_allTodayTasks();
-  if(!tasks.length){nEl.textContent=T('noTask');nEl.className='empty';mEl.classList.remove('show');$('main').classList.remove('allDone');return;}
+  if(!tasks.length){nEl.textContent=_cachedTNoTask||T('noTask');nEl.className='empty';mEl.classList.remove('show');$('main').classList.remove('allDone');return;}
   let cur=null;
   const imm=tasks.find(t=>!t.time&&!t.done);if(imm)cur={task:imm,im:true};
   if(!cur){for(const t of tasks){if(t.time&&!t.done&&t2s(t.time)<=sec)cur={task:t,im:false};}}
   let next=null;for(const t of tasks){if(t.time&&!t.done&&t2s(t.time)>sec){next=t;break;}}
-  if(!cur){const hasFut=tasks.some(t=>t.time&&!t.done&&t2s(t.time)>sec);const allDone=tasks.every(t=>t.done);nEl.textContent=allDone?T('allDone'):hasFut?T('waiting'):'—';nEl.className='empty';mEl.classList.remove('show');$('main').classList.toggle('allDone',allDone&&tasks.length>0);return;}
+  if(!cur){const hasFut=tasks.some(t=>t.time&&!t.done&&t2s(t.time)>sec);const allDone=tasks.every(t=>t.done);nEl.textContent=allDone?(_cachedTAllDone||T('allDone')):hasFut?(_cachedTWaiting||T('waiting')):'—';nEl.className='empty';mEl.classList.remove('show');$('main').classList.toggle('allDone',allDone&&tasks.length>0);return;}
   nEl.textContent=cur.task.name;nEl.className='';mEl.classList.add('show');$('main').classList.remove('allDone');
   if(cur.im){bEl.textContent=next?`${T('nowImm')} → ${next.time}`:T('nowNext');return;}
   if(!next){bEl.textContent=`${cur.task.time} → ${T('endUnknown')}`;return;}
@@ -2420,7 +2663,7 @@ function renderDayDetail(){
     timeBadge.style.cssText='font-family:var(--mono);font-size:8px;color:var(--ac);white-space:nowrap;flex-shrink:0';
     timeBadge.textContent=t.time||T('timeNow');
     const del=document.createElement('button');del.className='cddTDel';del.textContent='×';
-    del.onclick=e=>{e.stopPropagation();S.calTasks[_cddDate].splice(i,1);savCT();renderDayDetail();renderCal();renderT();};
+    del.onclick=e=>{e.stopPropagation();S.calTasks[_cddDate]=S.calTasks[_cddDate].filter(x=>x.id!==t.id);savCT();renderDayDetail();renderCal();renderT();};
     row.appendChild(cb);row.appendChild(timeBadge);row.appendChild(nm);row.appendChild(del);list.appendChild(row);
   });
 }
@@ -2497,23 +2740,25 @@ function showStreakPop(){
 function closeStreakPop(){
   $('streakPop').classList.remove('show');
 }
+let _streakCache={key:'',val:0};
 function _calcStreak(){
-  const dates=(S.streak.dates||[]).slice().sort();if(!dates.length)return 0;
-  const today=new Date();today.setHours(0,0,0,0);
-  let streak=0;let check=new Date(today);
+  const today=todayKey();
+  if(_streakCache.key===today)return _streakCache.val;
+  const dates=(S.streak.dates||[]).slice().sort();if(!dates.length){_streakCache={key:today,val:0};return 0;}
+  const todayD=new Date();todayD.setHours(0,0,0,0);
+  let streak=0;let check=new Date(todayD);
   for(let i=dates.length-1;i>=0;i--){const d=new Date(dates[i]);d.setHours(0,0,0,0);const diff=(check-d)/86400000;if(diff===0){streak++;check.setDate(check.getDate()-1);}else if(diff>1)break;}
-  return streak;
+  _streakCache={key:today,val:streak};return streak;
 }
 function updateStreakBadge(){
   const s=_calcStreak();
-  $('streakNum').textContent=s;
+  const numEl=$('streakNum');if(numEl)numEl.textContent=s;
   const tier=_streakTier(s);
-  const sb=$('streakBadge');
+  const sb=$('streakBadge');if(!sb)return;
   sb.classList.toggle('active',s>0);
-  sb.dataset.tier=tier;
-  // アイコン変更: 通常→炎→雷
+  sb.dataset.tier=String(tier);
   const iconSpan=sb.querySelector('.streak-icon');
-  if(iconSpan)iconSpan.textContent=tier===2?'⚡':tier===1?'🔥':'🔥';
+  if(iconSpan)iconSpan.textContent=tier>0?(_TIER_ICONS[tier]||'🔥'):'🔥';
   updateLevelUI();
 }
 
@@ -2565,21 +2810,36 @@ function buildHeatmap(){
 
 function openStreak(){
   const s=_calcStreak();
+  const tier=_streakTier(s);
   $('strDays').textContent=s;$('spStreak').textContent=s;
   $('spMax').textContent=S.streak.max||0;$('spTotal').textContent=S.streak.total||0;
   $('spMinutes').textContent=S.streak.totalMinutes||0;
   // Level info
   const tm=S.streak.totalMinutes||0;const info=getLevelInfo(tm);
-  const lvlIdx=LEVELS.indexOf(info.lv)+1;
+  const lvlIdx=info.idx;
   const iconEl=$('spLvlIcon');
-  iconEl.textContent=info.lv.icon;
-  const tier=_streakTier(s);
-  iconEl.className='strLvlIcon'+(tier===2?' tier-thunder':tier===1?' tier-fire':'');
-  $('spLvlName').textContent=info.lv.name;
-  $('spLvlTitle').textContent=info.lv.title||'';
-  $('spLvlNum').textContent=`Level ${lvlIdx} / ${LEVELS.length}`;
-  $('spLvlFill').style.width=info.pct+'%';
-  const _xpf=T('xpNextLvl'),_xpm=T('xpMaxLvl');$('spLvlXP').textContent=info.xpNext?(typeof _xpf==='function'?_xpf(info.xpCur,info.xpNext):`${info.xpCur}/${info.xpNext}`):(_xpm||'MAX');
+  if(iconEl){iconEl.textContent=info.lv.icon;iconEl.className='strLvlIcon '+(_TIER_CLASS[tier]||'');}
+  if($('spLvlName'))$('spLvlName').textContent=info.lv.name;
+  if($('spLvlTitle'))$('spLvlTitle').textContent=info.lv.title||'';
+  if($('spLvlNum'))$('spLvlNum').textContent=`Level ${lvlIdx+1}${lvlIdx<LEVELS.length?'':'+'} / ∞`;
+  const fillEl=$('spLvlFill');
+  if(fillEl){
+    fillEl.style.width=info.pct+'%';
+    const tierBars=['',
+      'linear-gradient(90deg,#40c060,#80f090)',
+      'linear-gradient(90deg,#ff6020,#ffb030)',
+      'linear-gradient(90deg,#4080ff,#80c0ff)',
+      'linear-gradient(90deg,#60e0e0,#a0ffff)',
+      'linear-gradient(90deg,#ff60a0,#80c0ff,#a0ff80)',
+      'linear-gradient(90deg,#ffb030,#ff6020,#ff2060)',
+      'linear-gradient(90deg,#a060ff,#60d0ff,#ff80c0)',
+      'linear-gradient(90deg,#ffe040,#ffc080,#ff8040)',
+      'linear-gradient(90deg,#ffffff,#c0b0ff,#80d0ff)',
+    ];
+    fillEl.style.backgroundImage=tier>0?tierBars[tier]:'';
+  }
+  const _xpf=T('xpNextLvl');
+  if($('spLvlXP'))$('spLvlXP').textContent=typeof _xpf==='function'?_xpf(info.xpCur,info.xpNext):`${info.xpCur}/${info.xpNext}`;
   buildHeatmap();
   $('streakOv').classList.add('open');
 }
@@ -2603,8 +2863,6 @@ function renderPomo(){
   [$('pRM'),$('pRMW')].forEach(e=>{if(e)e.textContent=ml});
   const ps=$('pSub');if(ps)ps.textContent=T(mode==='work'?'work':mode==='break'?'brk':'longBrk');
   const rem=sec/(total||1);
-  $('pArc').setAttribute('stroke-dashoffset',(175.9*(1-rem)).toFixed(3));
-  $('pArcW').setAttribute('stroke-dashoffset',(150.8*(1-rem)).toFixed(3));
   const isB=mode!=='work';
   [$('pRing'),$('pRingW')].forEach(e=>{if(e)e.classList.toggle('brk',isB)});
   [$('bPomo'),$('bPomoW')].forEach(e=>{if(e)e.classList.toggle('brk',isB)});
@@ -2614,11 +2872,19 @@ function renderPomo(){
   // pomodoro style on float window
   _renderPomoStyleW();
 }
+let _lastPomoRenderKey='';
 function _renderPomoStyleW(){
   const style=S.pomoStyle||'ring';
-  const{mode,sec,total,sets}=S.pomo;
-  const rem=sec/(total||1);const n=pSets();
+  const{mode,sec,total}=S.pomo;
+  const rem=+(sec/(total||1)).toFixed(4);
   const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+  // ミリ秒単位ではなく1秒単位なのでmsが変わらなければスキップ
+  const key=`${style}|${ms}|${mode}`;
+  if(key===_lastPomoRenderKey)return;
+  _lastPomoRenderKey=key;
+
+  const{sets}=S.pomo;
+  const n=pSets();
   const isB=mode!=='work';
   const modeKey={work:'work',break:'brk',long:'longBrk'}[mode];
   // Render to both float window and dock
@@ -2671,7 +2937,7 @@ function _renderPomoStyleW(){
     }
   });
 }
-function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running)S.pomo.iv=setInterval(pomoTick,1000);else clearInterval(S.pomo.iv);renderPomo();}
+function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running){clearInterval(S.pomo.iv);S.pomo.iv=setInterval(pomoTick,1000);}else{clearInterval(S.pomo.iv);S.pomo.iv=null;}renderPomo();}
 /* 作業完了共通処理。earnedSec=実際に経過した秒数 */
 function _pomoFinishWork(earnedSec){
   const earnedMins=Math.max(0,Math.floor(earnedSec/60));
@@ -2718,7 +2984,7 @@ function pomoSkip(){
 }
 
 /* ═══ STOPWATCH ═══ */
-function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,100);}else clearInterval(S.sw.iv);const t=S.sw.running?T('swStop'):T('swResume');[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=t});}
+function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,100);}else clearInterval(S.sw.iv);const t=S.sw.running?T('swStop'):T('swResume');[$('swBtn'),$('swBtnW'),$('swBtnM')].forEach(e=>{if(e)e.textContent=t});}
 function swTick(){const n=performance.now();S.sw.ms+=n-S.sw.tick;S.sw.tick=n;const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});}
 function swLap(){if(!S.sw.running&&S.sw.ms===0)return;S.sw.laps.push({lap:S.sw.ms-S.sw.lapBase,total:S.sw.ms});S.sw.lapBase=S.sw.ms;renderLaps();snd('lap');}
 function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
@@ -2785,9 +3051,10 @@ function _updateCollapseBtn(){const b=$('dCollapseBtn');if(b)b.textContent=S.doc
 /* ═══ THEME ═══ */
 const PRESETS=[{l:'アンバー',r:220,g:175,b:70},{l:'オレンジ',r:255,g:140,b:50},{l:'レッド',r:255,g:92,b:92},{l:'ローズ',r:255,g:92,b:160},{l:'バイオレット',r:170,g:92,b:255},{l:'ブルー',r:92,g:173,b:255},{l:'シアン',r:92,g:220,b:255},{l:'エメラルド',r:92,g:255,b:160},{l:'ライム',r:160,g:255,b:92},{l:'ゴールド',r:255,g:210,b:80},{l:'ティール',r:92,g:210,b:195},{l:'スレート',r:140,g:160,b:200}];
 const FONTS=[{l:'Noto Sans JP',v:'Noto Sans JP',gf:'Noto+Sans+JP:wght@300;400;500;700'},{l:'M PLUS 1p',v:'M PLUS 1p',gf:'M+PLUS+1p:wght@300;400;700'},{l:'Zen Kaku',v:'Zen Kaku Gothic New',gf:'Zen+Kaku+Gothic+New:wght@300;400;700'},{l:'BIZ UDP',v:'BIZ UDPGothic',gf:'BIZ+UDPGothic:wght@400;700'},{l:'Kosugi Maru',v:'Kosugi Maru',gf:'Kosugi+Maru'},{l:'Zen Antique',v:'Zen Antique',gf:'Zen+Antique'}];
-const BGS={dark:{bg:'#030308',sf:'#0a0a14',ra:'#10101e',gl:'rgba(6,6,16,.9)'},amoled:{bg:'#000',sf:'#070707',ra:'#0f0f0f',gl:'rgba(0,0,0,.95)'},dim:{bg:'#0d0d1a',sf:'#121220',ra:'#181828',gl:'rgba(13,13,26,.9)'},light:{bg:'#eef0f8',sf:'#f8f9ff',ra:'#e8eaf5',gl:'rgba(238,240,248,.94)'},white:{bg:'#ffffff',sf:'#f4f5ff',ra:'#eceeff',gl:'rgba(255,255,255,.95)'}};
+const BGS={dark:{bg:'#030308',sf:'#0a0a14',ra:'#10101e',gl:'rgba(6,6,16,.9)'},amoled:{bg:'#000',sf:'#070707',ra:'#0f0f0f',gl:'rgba(0,0,0,.95)'},dim:{bg:'#0d0d1a',sf:'#121220',ra:'#181828',gl:'rgba(13,13,26,.9)'},light:{bg:'#eef0f8',sf:'#f8f9ff',ra:'#e8eaf5',gl:'rgba(238,240,248,.94)'},white:{bg:'#ffffff',sf:'#f4f5ff',ra:'#eceeff',gl:'rgba(255,255,255,.95)'},sakura:{bg:'#1a0a10',sf:'#25101a',ra:'#2e1420',gl:'rgba(26,10,16,.92)'}};
 function hex3(r,g,b){return'#'+[r,g,b].map(v=>cl(Math.round(v),0,255).toString(16).padStart(2,'0')).join('').toUpperCase()}
 function hsl2rgb(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return{r:Math.round(f(0)*255),g:Math.round(f(8)*255),b:Math.round(f(4)*255)}}
+// isLight is defined earlier in code
 function applyAc(r,g,b){
   S.theme.r=cl(Math.round(r),0,255);S.theme.g=cl(Math.round(g),0,255);S.theme.b=cl(Math.round(b),0,255);
   const rt=document.documentElement;
@@ -2797,17 +3064,20 @@ function applyAc(r,g,b){
   rt.style.setProperty('--ac2',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.22)`);
   rt.style.setProperty('--ac4',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.40)`);
   rt.style.setProperty('--acb',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.30)`);
-  $('rgbR').value=S.theme.r;$('rgbG').value=S.theme.g;$('rgbB').value=S.theme.b;
-  const h=hex3(S.theme.r,S.theme.g,S.theme.b);const hi=$('hexInput');if(document.activeElement!==hi)hi.value=h;$('hexPicker').value=h;$('rgbPrev').style.background=h;
+  if($('rgbR'))$('rgbR').value=S.theme.r;
+  if($('rgbG'))$('rgbG').value=S.theme.g;
+  if($('rgbB'))$('rgbB').value=S.theme.b;
+  const h=hex3(S.theme.r,S.theme.g,S.theme.b);const hi=$('hexInput');if(hi&&document.activeElement!==hi)hi.value=h;if($('hexPicker'))$('hexPicker').value=h;if($('rgbPrev'))$('rgbPrev').style.background=h;
   document.querySelectorAll('.swatch').forEach((sw,i)=>{const p=PRESETS[i];if(p)sw.classList.toggle('on',p.r===S.theme.r&&p.g===S.theme.g&&p.b===S.theme.b)});
 }
 function onRgb(){applyAc(parseInt($('rgbR').value)||0,parseInt($('rgbG').value)||0,parseInt($('rgbB').value)||0);savTh()}
 function onHexPicker(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);applyAc(r,g,b);savTh();}
 function onHexInput(raw){let v=raw.trim().replace(/^#+/,'');if(/^[0-9a-fA-F]{3}$/.test(v))v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];if(!/^[0-9a-fA-F]{6}$/.test(v))return;applyAc(parseInt(v.slice(0,2),16),parseInt(v.slice(2,4),16),parseInt(v.slice(4,6),16));savTh();}
-function normalizeHexInput(){const hi=$('hexInput');let v=hi.value.trim().replace(/^#+/,'');if(/^[0-9a-fA-F]{3}$/.test(v))v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];if(/^[0-9a-fA-F]{6}$/.test(v))hi.value='#'+v.toUpperCase();else hi.value=hex3(S.theme.r,S.theme.g,S.theme.b);}
+function normalizeHexInput(){const hi=$('hexInput');if(!hi)return;let v=hi.value.trim().replace(/^#+/,'');if(/^[0-9a-fA-F]{3}$/.test(v))v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];if(/^[0-9a-fA-F]{6}$/.test(v))hi.value='#'+v.toUpperCase();else hi.value=hex3(S.theme.r,S.theme.g,S.theme.b);}
 function onHue(v){const{r,g,b}=hsl2rgb(parseInt(v,10),85,55);applyAc(r,g,b);savTh()}
 function applyTheme(){
   const{r,g,b,bg,font}=S.theme;applyAc(r,g,b);
+  const isSakura=bg==='sakura';
   const t=BGS[bg]||BGS.dark;const light=isLight();
   const rt=document.documentElement;
   rt.style.setProperty('--bg',t.bg);rt.style.setProperty('--sf',t.sf);rt.style.setProperty('--ra',t.ra);
@@ -2819,12 +3089,104 @@ function applyTheme(){
   rt.style.setProperty('--ts',light?'#4c4c70':'#5a5a8a');
   rt.style.setProperty('--tt',light?'#8080a0':'#222238');
   document.querySelectorAll('.bgOpt').forEach(b=>b.classList.toggle('on',b.dataset.bg===bg));
+  // sakura canvas
+  document.body.classList.toggle('sakura-bg',isSakura);
+  if(isSakura)_startSakura();else _stopSakura();
   applyFont(font,false);
 }
 function setBg(name){S.theme.bg=name;applyTheme();savTh()}
-function applyFont(name,save=true){if(!name)return;S.theme.font=name;const f=FONTS.find(f=>f.v===name);if(f?.gf){const id='gf-'+f.v.replace(/\s/g,'_');if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`;l.setAttribute('fetchpriority','low');document.head.appendChild(l);}}document.documentElement.style.setProperty('--jp',`'${name}','Noto Sans JP',sans-serif`);$('fPrev').style.fontFamily=`'${name}','Noto Sans JP',sans-serif`;$('fPrev').textContent=`あいうえお ABCDEFG 12:34（${name}）`;document.querySelectorAll('.fpB').forEach(b=>b.classList.toggle('on',b.dataset.f===name));if(save)savTh();}
+function applyFont(name,save=true){
+  if(!name)return;S.theme.font=name;
+  const f=FONTS.find(f=>f.v===name);
+  if(f?.gf){const id='gf-'+f.v.replace(/\s/g,'_');if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`;l.setAttribute('fetchpriority','low');document.head.appendChild(l);}}
+  document.documentElement.style.setProperty('--jp',`'${name}','Noto Sans JP',sans-serif`);
+  const fPrev=$('fPrev');if(fPrev){fPrev.style.fontFamily=`'${name}','Noto Sans JP',sans-serif`;fPrev.textContent=`あいうえお ABCDEFG 12:34（${name}）`;}
+  document.querySelectorAll('.fpB').forEach(b=>b.classList.toggle('on',b.dataset.f===name));
+  if(save)savTh();
+}
 function custFont(){const v=$('fIn').value.trim();if(!v)return;const enc=v.replace(/\s+/g,'+');const id='gf-c-'+enc;if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${enc}:wght@300;400;700&display=swap`;document.head.appendChild(l);}applyFont(v);$('fIn').value='';toast(`フォント「${v}」を読み込み中…`);}
-function buildUI(){$('swGrid').innerHTML=PRESETS.map(p=>`<div class="swatch" style="background:rgb(${p.r},${p.g},${p.b})" title="${p.l}" onclick="applyAc(${p.r},${p.g},${p.b});savTh()"></div>`).join('');$('fpBtns').innerHTML=FONTS.map(f=>`<button class="fpB" data-f="${f.v}" onclick="applyFont('${f.v}')">${f.l}</button>`).join('');}
+function buildUI(){
+  if($('swGrid'))$('swGrid').innerHTML=PRESETS.map(p=>`<div class="swatch" style="background:rgb(${p.r},${p.g},${p.b})" title="${p.l}" onclick="applyAc(${p.r},${p.g},${p.b});savTh()"></div>`).join('');
+  if($('fpBtns'))$('fpBtns').innerHTML=FONTS.map(f=>`<button class="fpB" data-f="${f.v}" onclick="applyFont('${f.v}')">${f.l}</button>`).join('');
+}
+
+/* ─── UI Scale & Font Size ─── */
+function setUIScale(v){
+  S.theme.uiScale=v;
+  document.documentElement.style.setProperty('--ui-scale',String(v));
+  document.querySelectorAll('.scaleBtn').forEach(b=>b.classList.toggle('on',parseFloat(b.dataset.scale)===v));
+  savTh();
+}
+const _FSZ_MAP={xs:'10px',sm:'11px',md:'13px',lg:'15px',xl:'17px'};
+function setFontSize(key){
+  S.theme.fontSize=key;
+  document.documentElement.style.setProperty('--fs-base',_FSZ_MAP[key]||'13px');
+  document.querySelectorAll('.fszBtn').forEach(b=>b.classList.toggle('on',b.dataset.fsz===key));
+  savTh();
+}
+
+/* ─── Sakura Petal System ─── */
+let _sakuraRaf=null;
+const _PETAL_COLORS=['rgba(255,182,193,','rgba(255,160,180,','rgba(255,200,210,','rgba(240,160,180,','rgba(255,220,230,'];
+function _initSakuraPetals(count){
+  return Array.from({length:count},()=>({
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight-window.innerHeight,
+    r:Math.random()*4+2,
+    sp:Math.random()*1.2+0.4,
+    sw:Math.random()*2.5-1.25, // sideways drift
+    rot:Math.random()*Math.PI*2,
+    rotSp:(Math.random()-0.5)*0.06,
+    col:_PETAL_COLORS[Math.floor(Math.random()*_PETAL_COLORS.length)],
+    alpha:Math.random()*0.4+0.4,
+    t:Math.random()*Math.PI*2 // sway phase
+  }));
+}
+let _sakuraPetals=[];
+function _startSakura(){
+  if(_sakuraRaf)return;
+  const c=$('sakuraC');if(!c)return;
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  if(_sakuraPetals.length===0)_sakuraPetals=_initSakuraPetals(80);
+  function frame(){
+    if(!document.body.classList.contains('sakura-bg')){_sakuraRaf=null;return;}
+    _sakuraRaf=requestAnimationFrame(frame);
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const p of _sakuraPetals){
+      p.t+=0.02;
+      p.x+=p.sw+Math.sin(p.t)*0.7;
+      p.y+=p.sp;
+      p.rot+=p.rotSp;
+      if(p.y>c.height+10){p.y=-10;p.x=Math.random()*c.width;}
+      if(p.x>c.width+10)p.x=-10;
+      if(p.x<-10)p.x=c.width+10;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha=p.alpha;
+      // Draw 5-petal flower
+      ctx.fillStyle=p.col+'0.9)';
+      for(let i=0;i<5;i++){
+        ctx.save();ctx.rotate(i*Math.PI*2/5);
+        ctx.beginPath();ctx.ellipse(0,-p.r,p.r*.6,p.r,0,0,Math.PI*2);
+        ctx.fill();ctx.restore();
+      }
+      // Center dot
+      ctx.fillStyle=p.col+'0.6)';ctx.beginPath();ctx.arc(0,0,p.r*.3,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+  }
+  _sakuraRaf=requestAnimationFrame(frame);
+}
+function _stopSakura(){
+  if(_sakuraRaf){cancelAnimationFrame(_sakuraRaf);_sakuraRaf=null;}
+  const c=$('sakuraC');if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+}
+window.addEventListener('resize',()=>{
+  const c=$('sakuraC');
+  if(c&&document.body.classList.contains('sakura-bg')){c.width=window.innerWidth;c.height=window.innerHeight;}
+});
 
 /* ═══ THEME ACCORDION ═══ */
 function thToggle(id){
@@ -2907,12 +3269,12 @@ function mNav(tab){
     const tm=S.streak.totalMinutes||0;const info=getLevelInfo(tm);
     const s=_calcStreak();const tier=_streakTier(s);
     const iconEl=$('mLvlIcon');
-    iconEl.textContent=info.lv.icon;
-    iconEl.className=tier===2?'tier-thunder':tier===1?'tier-fire':'';
-    $('mLvlName').textContent=`Lv.${LEVELS.indexOf(info.lv)+1} ${info.lv.name}`;
-    const tierLabel=tier===2?T('tierThunder'):tier===1?T('tierFire'):'';
+    if(iconEl){iconEl.textContent=info.lv.icon;iconEl.className=_TIER_CLASS[tier]||'';}
+    if($('mLvlName'))$('mLvlName').textContent=`Lv.${info.idx+1} ${info.lv.name}`;
+    const tierLabels=['',' 🌿',' 🔥',' ⚡',' 💎',' 🌈',' ☄️',' 🌌',' ✨',' ♾️'];
+    const tierLabel=tierLabels[tier]||'';
     const _slFn=T('streakLabel');const _sl=typeof _slFn==='function'?_slFn(s):`${s}`;
-    $('mStreak').textContent=(tierLabel?tierLabel+' — ':'')+_sl;
+    if($('mStreak'))$('mStreak').textContent=(tierLabel?tierLabel+' — ':'')+_sl;
   }
   if(tab==='timer'){syncPomoInputsM();}
 }
@@ -2934,10 +3296,8 @@ function addTaskM(){
   let time=null;if(_addModeM==='time'){time=$('addTimeM').value;if(!time){toast(T('timeRequired'));return;}}
   _push({id:Date.now(),time,name,done:false});$('addNameM').value='';if(_addModeM==='time')$('addTimeM').value='';renderTM();
 }
-function renderTM(){
-  const all=_allTodayTasks();
-  const el=$('tScrollM');if(el)el.innerHTML=_tHtml(all);
-}
+// renderTM: renderT already writes to tScrollM — this is just a safe alias for clarity
+function renderTM(){renderT();}
 $('addNameM')?.addEventListener('keydown',e=>{if(e.key==='Enter')addTaskM()});
 
 /* Mobile timer sync */
@@ -2964,9 +3324,12 @@ function switchTimerAll(tab){
   if($('bSwM'))  $('bSwM').style.display=p?'none':'flex';
 }
 
-/* ─ Mobile sync: consolidate all patches cleanly ─ */
+/* ─ Mobile sync: renderPomo, swTick, renderLaps patches ─
+   NOTE: renderT is NOT overridden here — it already writes to tScrollM.
+   renderTM() was causing infinite recursion: renderT→renderTM→renderT …
+   Fixed: renderTM is now a direct alias (not via IIFE override). ─ */
 (()=>{
-  const _p=renderPomo,_s=swTick,_l=renderLaps,_t=renderT;
+  const _p=renderPomo,_s=swTick,_l=renderLaps;
   renderPomo=function(){
     _p();
     const{mode,sec,sets,running,total}=S.pomo;const n=pSets();
@@ -2989,7 +3352,7 @@ function switchTimerAll(tab){
     const _lpFn=T('lapLabel');const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>${typeof _lpFn==='function'?_lpFn(i+1):'Lap '+(i+1)}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');
     if($('swLapsM')){$('swLapsM').innerHTML=h;$('swLapsM').scrollTop=$('swLapsM').scrollHeight;}
   };
-  renderT=function(){_t();renderTM();};
+  // renderT is NOT patched here — it already handles tScrollM internally
 })();
 /* Mobile calendar (mirrors desktop state) */
 function setCalViewM(v){setCalView(v);renderCalM();}
@@ -3069,6 +3432,9 @@ if('serviceWorker' in navigator){
 
 function init(){
   loadS();buildUI();applyTheme();applyLang();
+  // Restore UI scale and font size
+  setUIScale(S.theme.uiScale||1);
+  setFontSize(S.theme.fontSize||'md');
   S.fw={...{task:false,timer:false,cal:false},...S.fw};
   const t=pW();if(S.pomo.total===0){S.pomo.sec=t;S.pomo.total=t;}
   renderPomo();renderT();
@@ -3078,14 +3444,15 @@ function init(){
   const anyFw=Object.values(S.fw).some(v=>v);
   Object.keys(S.fw).forEach(n=>{if(S.fw[n])_applyFW(n)});
   if(anyFw&&!S.dock.collapsed){S.dock.collapsed=true;$('dock').classList.add('dHidden');updateMainInset();_updateCollapseBtn();}
-  // Sync dockShowBtn on load
   const sb=$('dockShowBtn');if(sb)sb.classList.toggle('visible',!!S.dock.collapsed);
   switchTimer(S.timerTab||'pomo');
-  $('ytLoopBtn').classList.toggle('on',_ytLoop);
+  if($('ytLoopBtn'))$('ytLoopBtn').classList.toggle('on',_ytLoop);
+  // Sync pomoStyle buttons
+  document.querySelectorAll('.pomoStyleBtn').forEach(b=>b.classList.toggle('on',b.dataset.style===(S.pomoStyle||'ring')));
   initStreak();renderCal();
-  tick();requestAnimationFrame(_rafTick);
+  _startClock();
   setTimeout(showDonate,20000);
-  setTimeout(_reqNotif, 3000); // Ask for notification permission after a brief delay
+  setTimeout(_reqNotif, 3000);
 }
 init();
 </script>
