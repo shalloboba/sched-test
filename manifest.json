@@ -5,8 +5,8 @@
   "start_url": "/sched-test/",
   "scope": "/sched-test/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#eebbcd",
+  "theme_color": "#eebbcd",
   "icons": [
     {
       "src": "/sched-test/favicon192.png",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
