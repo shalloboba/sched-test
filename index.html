@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SCHED — シンプルで美しい日程管理・ポモドーロタイマーアプリ">
+<meta name="theme-color" content="#050509">
+<meta property="og:title" content="SCHED">
+<meta property="og:description" content="シンプルで美しい日程管理・ポモドーロタイマー">
+<meta property="og:type" content="website">
+<title>SCHED</title>
+<!-- Google Fonts プリコネクト（表示速度改善） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- 必須フォントのみ先行ロード（UI用 Space Mono + Outfit、本文用 Noto Sans JP） -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   VARIABLES
+═══════════════════════════════════ */
+:root {
+  --ar:220;--ag:175;--ab:70;
+  --ac: rgb(var(--ar),var(--ag),var(--ab));
+  --ac0:rgba(var(--ar),var(--ag),var(--ab),.10);
+  --ac2:rgba(var(--ar),var(--ag),var(--ab),.22);
+  --ac4:rgba(var(--ar),var(--ag),var(--ab),.40);
+  --acb:rgba(var(--ar),var(--ag),var(--ab),.30);
+  --bg:#050509; --sf:#0c0c18; --ra:#12121f;
+  --gl:rgba(8,8,20,.88);
+  --b1:rgba(255,255,255,.055); --b2:rgba(255,255,255,.10);
+  --tp:#eeeef8; --ts:#65659a; --tt:#2c2c48;
+  --red:#ff4757; --blue:#3fa9f5; --green:#3fffa0;
+  --r:11px; --r2:6px;
+  --mono:'Space Mono',monospace;
+  --ui:'Outfit','Noto Sans JP',sans-serif;
+  --jp:'Noto Sans JP',sans-serif;
+  --tr:.28s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--jp);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;user-select:none}
+button{font-family:var(--ui);cursor:pointer;border:none;outline:none;background:none;color:inherit}
+input{font-family:var(--mono);outline:none;color:var(--tp)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* ═══════════════════════════════════ CANVAS */
+#bgC,#ptC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#bgC{opacity:.5}#ptC{opacity:.32;z-index:1}
+
+/* ═══════════════════════════════════ MAIN */
+#main{position:fixed;z-index:2;inset:0;display:flex;flex-direction:column;transition:inset var(--tr)}
+
+/* ═══════════════════════════════════ TOPBAR */
+#topbar{
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  padding:11px 20px 9px;gap:20px;position:relative;
+  background:var(--gl);border-bottom:1px solid var(--b1);
+  backdrop-filter:blur(22px);z-index:5;
+}
+.hL{position:absolute;left:12px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center}
+.hR{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center}
+
+#clockTime{font-family:var(--mono);font-size:clamp(28px,4.2vw,56px);font-weight:700;
+  letter-spacing:-2px;line-height:1;color:var(--ac);
+  text-shadow:0 0 55px var(--ac4),0 0 16px var(--ac2);transition:color .4s}
+#clockDate{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--tt);text-transform:uppercase;margin-top:3px}
+.clock-wrap{display:flex;flex-direction:column;align-items:center;gap:1px}
+.ib{width:27px;height:27px;border-radius:50%;border:1px solid var(--b2);background:var(--sf);
+  display:flex;align-items:center;justify-content:center;color:var(--ts);font-size:11px;transition:all .18s}
+.ib:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.ib.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.wt{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;
+  border:1px solid var(--b2);background:var(--sf);
+  font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--ts);transition:all .18s;white-space:nowrap}
+.wt:hover,.wt.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.wt .d{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ═══════════════════════════════════ MID */
+#mid{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px 32px;position:relative;overflow:hidden;
+}
+#midGlow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 60% at 50% 52%,var(--ac0),transparent);
+  animation:glow 5s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes celebGlow{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+#main.allDone #midGlow{animation:celebGlow 2s ease-in-out infinite;background:radial-gradient(ellipse 70% 70% at 50% 52%,var(--ac2),transparent)}
+.nowBadge{display:flex;align-items:center;gap:6px;margin-bottom:9px;
+  font-family:var(--mono);font-size:8px;letter-spacing:4px;color:var(--ac);text-transform:uppercase;opacity:.85}
+.nowDot{width:5px;height:5px;border-radius:50%;background:var(--ac);box-shadow:0 0 7px var(--ac);
+  animation:dp 2s ease-in-out infinite}
+@keyframes dp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.3}}
+#curTask{font-family:var(--ui);font-size:clamp(20px,3.8vw,50px);font-weight:900;
+  text-align:center;line-height:1.05;letter-spacing:-.3px;color:var(--tp);
+  max-width:860px;word-break:break-word;transition:color .4s}
+#curTask.empty{color:var(--tt);font-weight:300;font-size:clamp(13px,2.3vw,22px);letter-spacing:.5px}
+.allDone #curTask.empty{color:var(--ac);font-weight:600}
+.curMeta{margin-top:12px;display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .3s}
+.curMeta.show{opacity:1;pointer-events:auto}
+.timeBadge{font-family:var(--mono);font-size:10px;color:var(--ts);
+  background:var(--ra);border:1px solid var(--b1);padding:3px 11px;border-radius:99px}
+
+
+/* ═══════════════════════════════════
+   DOCK — always shows task(left) + pomo(right) side by side
+   Tabs removed — replaced by a pomo/stopwatch toggle inside timer pane
+═══════════════════════════════════ */
+#dock{
+  position:fixed;z-index:20;
+  background:var(--gl);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  overflow:hidden;
+  left:0;right:0;bottom:0;height:220px;
+  border-top:1px solid var(--b1);
+  border-radius:10px 10px 0 0;
+  display:flex;flex-direction:column;
+  transition:transform var(--tr);
+}
+#dock.dHidden{transform:translateY(100%);pointer-events:none}
+
+
+/* dock bar */
+#dockBar{
+  flex-shrink:0;height:26px;display:flex;align-items:center;
+  padding:0 10px;gap:7px;border-bottom:1px solid var(--b1);position:relative;
+}
+.dGrip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:28px;height:3px;border-radius:2px;background:var(--b2);transition:background .18s;pointer-events:none}
+#dockBar:hover .dGrip{background:var(--ac)}
+.dBarLabel{font-family:var(--mono);font-size:7px;letter-spacing:3px;color:var(--tt);text-transform:uppercase}
+.dRight{margin-left:auto;display:flex;gap:4px;align-items:center}
+.dActB{width:19px;height:19px;border-radius:50%;border:1px solid var(--b2);background:var(--ra);
+  display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tt);transition:all .18s}
+.dActB:hover{border-color:var(--ac);color:var(--ac)}
+
+/* dock body: always row (task left | timer right) */
+#dockBody{flex:1;min-height:0;display:flex;overflow:hidden}
+
+/* dock panes */
+.dpane{display:flex;flex-direction:column;overflow:hidden;flex:1;min-width:0}
+#dpTimer{flex:0 0 300px;border-left:1px solid var(--b1)}
+
+/* dock resize handle */
+#dockResize{position:absolute;z-index:2;background:transparent;left:0;right:0;top:0;height:5px;cursor:ns-resize}
+#dock.pos-bottom #dockResize{top:0;bottom:auto;left:0;right:0;height:5px;width:auto;cursor:ns-resize}
+
+/* ═══════════════════════════════════ TASK PANEL */
+.ph{padding:6px 11px 5px;border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.phLbl{font-family:var(--mono);font-size:7px;letter-spacing:4px;color:var(--tt);text-transform:uppercase}
+.addRow{display:flex;gap:4px;padding:5px 8px;border-bottom:1px solid var(--b1);flex-shrink:0;align-items:center}
+.mToggle{display:flex;border:1px solid var(--b2);border-radius:var(--r2);overflow:hidden;flex-shrink:0}
+.mb{padding:3px 7px;font-family:var(--mono);font-size:7px;font-weight:700;color:var(--tt);background:var(--ra);
+  letter-spacing:.5px;transition:all .13s;white-space:nowrap}
+.mb.on{background:var(--ac);color:var(--bg)}
+.mb:hover:not(.on){color:var(--tp)}
+input.tIn{background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-size:10px;padding:3px 5px;color:var(--ac);flex-shrink:0;width:82px;transition:border-color .18s}
+input.tIn.hide{display:none}
+input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-family:var(--jp);font-size:11px;padding:3px 7px;color:var(--tp);transition:border-color .18s}
+.addRow input:focus{border-color:var(--ac)}
+.addRow input::placeholder{color:var(--tt)}
+.bAdd{background:var(--ac);color:var(--bg);border-radius:var(--r2);
+  font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 9px;flex-shrink:0;transition:all .15s}
+.bAdd:hover{filter:brightness(1.15)}
+.tScroll{overflow-y:auto;flex:1}
+.tRow{display:grid;grid-template-columns:48px 1fr auto auto 17px;
+  align-items:center;gap:5px;padding:5px 9px;border-bottom:1px solid var(--b1);
+  cursor:pointer;transition:background .13s}
+.tRow.noT{grid-template-columns:0 1fr auto auto 17px}.tRow.noT .tTime{display:none}
+.tRow:last-child{border-bottom:none}
+.tRow:hover{background:rgba(255,255,255,.017)}
+.tRow.isNow{background:var(--ac0);border-left:2px solid var(--ac);padding-left:7px}
+.tRow.isDone{opacity:.22}.tRow.isDone .tName{text-decoration:line-through}
+.tTime{font-family:var(--mono);font-size:9px;color:var(--ac);font-weight:700}
+.tRow.isDone .tTime{color:var(--tt)}
+.tName{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bNow{font-family:var(--mono);font-size:7px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:2px 5px;border-radius:99px;background:var(--ac0);color:var(--ac);border:1px solid var(--acb);flex-shrink:0}
+.tCd{font-family:var(--mono);font-size:8px;color:var(--tt);text-align:right;white-space:nowrap}
+.tCd.up{color:var(--blue)}.tCd.act{color:var(--ac);font-weight:700}.tCd.past{color:var(--tt)}
+.bDel{opacity:0;font-size:11px;color:var(--tt);transition:opacity .13s,color .13s;
+  width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px}
+.tRow:hover .bDel{opacity:1}.bDel:hover{color:var(--red)}
+@keyframes rowOut{to{opacity:0;transform:translateX(20px);max-height:0;padding:0;margin:0}}
+.tRow.removing{animation:rowOut .25s ease forwards;overflow:hidden}
+/* completed celebration */
+@keyframes taskDone{0%{background:var(--ac0)}100%{background:transparent}}
+.tRow.justDone{animation:taskDone .6s ease}
+/* タスク空のアニメーション */
+@keyframes emptyPulse{0%,100%{opacity:.4}50%{opacity:.8}}
+.tEmpty{padding:16px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--tt);letter-spacing:2px;animation:emptyPulse 3s ease-in-out infinite}
+
+/* ═══════════════════════════════════ TIMER PANEL */
+/* Sub-tabs inside timer pane: Pomo / Stopwatch */
+.timerTabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--b1);flex-shrink:0}
+.ttab{padding:6px;font-family:var(--mono);font-size:7px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--tt);text-align:center;border-bottom:2px solid transparent;transition:all .18s;font-weight:700}
+.ttab.on{color:var(--ac);border-bottom-color:var(--ac);background:var(--ac0)}
+.ttab:hover:not(.on){color:var(--ts)}
+.tStack{flex:1;position:relative;overflow:hidden;min-height:0}
+.tbody{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:6px 10px;gap:5px;
+  opacity:0;pointer-events:none;transition:opacity .16s}
+.tbody.on{opacity:1;pointer-events:auto}
+.tDisp{font-family:var(--mono);font-size:34px;font-weight:700;letter-spacing:-2px;line-height:1;transition:color .4s}
+.tSubLbl{font-family:var(--mono);font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--tt)}
+.cr{display:flex;gap:4px;align-items:center}
+.pomoRing{position:relative;width:68px;height:68px;flex-shrink:0}
+.pomoRing svg{transform:rotate(-90deg)}
+.pr-bg{fill:none;stroke:var(--b2)}
+.pr-arc{fill:none;stroke:var(--red);stroke-linecap:round;
+  transition:stroke-dashoffset .5s linear,stroke .4s;
+  filter:drop-shadow(0 0 4px rgba(255,71,87,.5))}
+.pomoRing.brk .pr-arc{stroke:var(--blue);filter:drop-shadow(0 0 4px rgba(63,169,245,.5))}
+.pRingIn{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px}
+.pRT{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--red);transition:color .4s}
+.pomoRing.brk .pRT{color:var(--blue)}
+.pRM{font-family:var(--mono);font-size:6px;letter-spacing:2px;color:var(--tt);text-transform:uppercase}
+.pDots{display:flex;gap:3px;justify-content:center}
+.pd{width:4px;height:4px;border-radius:50%;background:var(--b2);transition:background .28s,transform .28s}
+.pd.done{background:var(--red)}.pd.cur{background:var(--ac);transform:scale(1.4)}
+.pSR{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:100%}
+.pF label{display:block;font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--tt);text-transform:uppercase;margin-bottom:2px}
+.pF input{width:100%;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-size:11px;padding:2px 4px;text-align:center;color:var(--tp)}
+.pF input:focus{border-color:var(--ac)}
+.pd-body .tDisp{color:var(--red);text-shadow:0 0 36px rgba(255,71,87,.35)}
+.pd-body.brk .tDisp{color:var(--blue);text-shadow:0 0 36px rgba(63,169,245,.35)}
+.sw-body .tDisp{color:var(--blue);text-shadow:0 0 36px rgba(63,169,245,.35)}
+.swLaps{width:100%;max-height:48px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.swLR{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;
+  color:var(--tt);padding:2px 5px;border-radius:2px}
+.swLR:last-child{color:var(--blue);background:rgba(63,169,245,.07)}
+.bc{display:flex;align-items:center;gap:3px;padding:4px 8px;border-radius:var(--r2);
+  font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.5px;transition:all .13s;white-space:nowrap}
+.bc.p{background:var(--ac);color:var(--bg)}.bc.p:hover{filter:brightness(1.13)}
+.bc.g{border:1px solid var(--b2);color:var(--ts);background:var(--ra)}.bc.g:hover{border-color:var(--ac);color:var(--ac)}
+.bc:active{transform:scale(.96)}
+
+/* ═══════════════════════════════════
+   FLOATING WINDOWS
+   フローウィンドウとドックは排他使用
+   (FWが開いているときドックは折りたたまれる)
+═══════════════════════════════════ */
+.fw{
+  position:fixed;z-index:50;
+  background:var(--gl);border:1px solid var(--b2);
+  border-radius:var(--r);
+  backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+  box-shadow:0 20px 55px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:opacity .2s,transform .2s;
+}
+.fw.hidden{opacity:0;pointer-events:none;transform:scale(.92) translateY(8px)}
+.fw .rn{position:absolute;top:0;left:8px;right:8px;height:4px;cursor:n-resize;z-index:5}
+.fw .rs{position:absolute;bottom:0;left:8px;right:8px;height:4px;cursor:s-resize;z-index:5}
+.fw .rw{position:absolute;top:8px;bottom:8px;left:0;width:4px;cursor:w-resize;z-index:5}
+.fw .re{position:absolute;top:8px;bottom:8px;right:0;width:4px;cursor:e-resize;z-index:5}
+.fw .rnw{position:absolute;top:0;left:0;width:8px;height:8px;cursor:nw-resize;z-index:6}
+.fw .rne{position:absolute;top:0;right:0;width:8px;height:8px;cursor:ne-resize;z-index:6}
+.fw .rsw{position:absolute;bottom:0;left:0;width:8px;height:8px;cursor:sw-resize;z-index:6}
+.fw .rse{position:absolute;bottom:0;right:0;width:8px;height:8px;cursor:se-resize;z-index:6}
+.fwTb{height:28px;flex-shrink:0;display:flex;align-items:center;gap:6px;
+  padding:0 9px;border-bottom:1px solid var(--b1);cursor:grab;background:rgba(255,255,255,.02)}
+.fwTb:active{cursor:grabbing}
+.fwDots{display:flex;gap:4px;flex-shrink:0}
+.fwDot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(0,0,0,.2);cursor:pointer;transition:filter .13s}
+.fwDot.c{background:#ff5f57}.fwDot.m{background:#febc2e}.fwDot.x{background:#28c840}
+.fwDot:hover{filter:brightness(1.2)}
+.fwTitle{flex:1;text-align:center;font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--tt)}
+
+/* Float timer: also has pomo/sw sub-tabs */
+.fwTimerInner{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:160px}
+
+/* ═══════════════════════════════════
+   BGM PANEL
+═══════════════════════════════════ */
+#bgmPanel{
+  position:fixed;z-index:60;
+  bottom:70px;left:50%;transform:translateX(-50%);
+  background:rgba(5,5,9,.96);
+  border:1px solid var(--b2);border-radius:var(--r);
+  backdrop-filter:blur(26px);
+  box-shadow:0 16px 44px rgba(0,0,0,.6);
+  padding:10px 12px;display:flex;flex-direction:column;gap:8px;
+  min-width:340px;max-width:520px;
+  transition:opacity .2s,transform .2s;
+}
+#bgmPanel.hidden{opacity:0;pointer-events:none;transform:translateX(-50%) scale(.94)}
+.bgmDragBar{height:14px;cursor:grab;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bgmDragBar:active{cursor:grabbing}
+.bgmGrip{width:26px;height:3px;border-radius:2px;background:var(--b2)}
+.bgmRow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bgmLbl{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--tt);text-transform:uppercase;white-space:nowrap;min-width:24px}
+.bgmBtns{display:flex;gap:3px;flex-wrap:wrap;flex:1}
+.bgmB{padding:2px 7px;border-radius:99px;border:1px solid var(--b2);
+  font-family:var(--mono);font-size:8px;color:var(--ts);transition:all .13s;white-space:nowrap}
+.bgmB.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.bgmB:hover:not(.on){border-color:var(--ts);color:var(--tp)}
+
+/* YT URL row */
+.ytRow{display:flex;gap:4px;align-items:center;flex:1}
+.ytRow input{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-family:var(--mono);font-size:9px;padding:3px 6px;color:var(--tp);transition:border-color .18s}
+.ytRow input:focus{border-color:var(--ac)}
+.ytRow input::placeholder{color:var(--tt)}
+.ytBtn{padding:3px 7px;border-radius:var(--r2);background:var(--ac);color:var(--bg);
+  font-family:var(--mono);font-size:8px;font-weight:700;white-space:nowrap;transition:filter .15s}
+.ytBtn:hover{filter:brightness(1.13)}
+.ytStop{padding:3px 7px;border-radius:var(--r2);border:1px solid var(--b2);
+  color:var(--ts);font-family:var(--mono);font-size:8px;background:var(--ra);white-space:nowrap}
+.ytStop:hover{border-color:var(--red);color:var(--red)}
+
+/* YT info panel */
+#ytInfo{
+  background:var(--ra);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:7px 9px;display:none;flex-direction:column;gap:4px;
+}
+#ytInfo.show{display:flex}
+.ytInfoTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#ytTitle{font-family:var(--jp);font-size:10px;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+#ytStatusBadge{font-family:var(--mono);font-size:7px;padding:2px 6px;border-radius:99px;
+  border:1px solid var(--b2);color:var(--ts);white-space:nowrap;flex-shrink:0}
+#ytStatusBadge.playing{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+#ytStatusBadge.paused{border-color:var(--ts);color:var(--ts)}
+.ytInfoBottom{display:flex;align-items:center;gap:7px}
+#ytProgBar{flex:1;height:2px;background:var(--b2);border-radius:2px;overflow:hidden;cursor:pointer}
+#ytProgFill{height:100%;background:var(--ac);width:0%;transition:width .5s linear}
+#ytTime{font-family:var(--mono);font-size:8px;color:var(--ts);white-space:nowrap;flex-shrink:0}
+.ytCtrl{display:flex;gap:3px}
+.ytMiniBtn{padding:2px 6px;border-radius:var(--r2);border:1px solid var(--b2);
+  font-family:var(--mono);font-size:8px;color:var(--ts);background:var(--ra);transition:all .13s}
+.ytMiniBtn:hover{border-color:var(--ac);color:var(--ac)}
+.ytMiniBtn.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+
+/* volume row */
+.volRow{display:flex;align-items:center;gap:5px}
+.volLbl{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--tt);text-transform:uppercase;white-space:nowrap}
+#bgmVol{width:60px;height:3px;-webkit-appearance:none;appearance:none;
+  border-radius:2px;cursor:pointer;outline:none;background:var(--b2)}
+#bgmVol::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:var(--ac);cursor:pointer}
+.bgmClose{width:18px;height:18px;border-radius:50%;border:1px solid var(--b2);background:var(--ra);
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tt);
+  transition:all .18s;flex-shrink:0;cursor:pointer}
+.bgmClose:hover{border-color:var(--red);color:var(--red)}
+
+#ytFrame{position:fixed;bottom:-9999px;left:0;width:1px;height:1px;pointer-events:none;z-index:-1}
+
+/* ═══════════════════════════════════ THEME */
+@keyframes scIn{from{transform:scale(.88);opacity:0}}
+#thOv{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:400;
+  align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+#thOv.open{display:flex}
+#thPanel{background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);
+  padding:20px;width:400px;max-height:88vh;overflow-y:auto;
+  display:flex;flex-direction:column;gap:15px;
+  box-shadow:0 36px 80px rgba(0,0,0,.8);
+  animation:scIn .2s cubic-bezier(.34,1.56,.64,1)}
+.thTitle{font-family:var(--ui);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.sLbl{font-family:var(--mono);font-size:7px;letter-spacing:3px;color:var(--tt);text-transform:uppercase;margin-bottom:6px}
+.swGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.swatch{width:100%;aspect-ratio:1;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .13s,border-color .13s}
+.swatch:hover{transform:scale(1.15)}.swatch.on{border-color:var(--tp)}
+.rgbGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.rgbF label{display:block;font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--tt);text-transform:uppercase;margin-bottom:3px}
+.rgbF input{width:100%;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-size:12px;padding:4px 6px;text-align:center;color:var(--tp)}
+.rgbF input:focus{border-color:var(--ac)}
+/* HEXカラー入力行 */
+.hexRow{display:flex;align-items:center;gap:7px}
+#hexPicker{width:36px;height:36px;border:none;background:none;cursor:pointer;padding:0;border-radius:var(--r2);overflow:hidden;flex-shrink:0}
+#hexPicker::-webkit-color-swatch-wrapper{padding:0}
+#hexPicker::-webkit-color-swatch{border:1px solid var(--b2);border-radius:var(--r2)}
+#hexInput{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-family:var(--mono);font-size:13px;font-weight:700;padding:5px 9px;color:var(--tp);
+  letter-spacing:2px;transition:border-color .18s;text-transform:uppercase}
+#hexInput:focus{border-color:var(--ac)}
+#hexInput::placeholder{color:var(--tt);font-weight:400;letter-spacing:1px}
+#hueSlider{width:100%;height:6px;-webkit-appearance:none;appearance:none;border-radius:3px;cursor:pointer;outline:none;
+  background:linear-gradient(to right,hsl(0,85%,55%),hsl(60,85%,55%),hsl(120,85%,55%),hsl(180,85%,55%),hsl(240,85%,55%),hsl(300,85%,55%),hsl(360,85%,55%))}
+#hueSlider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.5);border:2px solid var(--bg);cursor:pointer}
+.bgOpts{display:flex;gap:6px}
+.bgOpt{flex:1;padding:6px;border-radius:var(--r2);border:1px solid var(--b2);font-family:var(--mono);
+  font-size:7px;font-weight:700;text-align:center;cursor:pointer;transition:all .13s;letter-spacing:1px}
+.bgOpt.on{border-color:var(--ac);color:var(--ac)}.bgOpt:hover:not(.on){border-color:var(--ts)}
+.fpBtns{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.fpB{padding:3px 8px;border-radius:99px;border:1px solid var(--b2);font-size:11px;color:var(--ts);cursor:pointer;transition:all .13s}
+.fpB.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}.fpB:hover:not(.on){border-color:var(--ts);color:var(--tp)}
+.fCust{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.fCust input{background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+  font-family:var(--jp);font-size:11px;padding:5px 7px;color:var(--tp);transition:border-color .18s}
+.fCust input:focus{border-color:var(--ac)}.fCust input::placeholder{color:var(--tt)}
+.bAp{background:var(--ac);color:var(--bg);border-radius:var(--r2);font-family:var(--mono);
+  font-size:9px;font-weight:700;padding:5px 9px;white-space:nowrap;transition:all .13s}
+.bAp:hover{filter:brightness(1.13)}
+.fPrev{margin-top:4px;padding:6px 9px;background:var(--ra);border-radius:var(--r2);
+  border:1px solid var(--b1);font-size:12px;color:var(--ts);text-align:center}
+.fNote{font-family:var(--mono);font-size:8px;color:var(--tt);margin-top:2px}
+.thClose{width:100%;padding:7px;border-radius:var(--r2);border:1px solid var(--b2);
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--ts);
+  text-transform:uppercase;background:var(--ra);transition:all .13s}
+.thClose:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ═══════════════════════════════════ DONATE */
+#donBanner{
+  position:fixed;bottom:14px;right:14px;z-index:200;
+  background:var(--gl);border:1px solid var(--acb);border-radius:var(--r);
+  padding:9px 12px;display:flex;align-items:center;gap:9px;
+  backdrop-filter:blur(18px);box-shadow:0 10px 30px rgba(0,0,0,.5);
+  animation:scIn .3s cubic-bezier(.34,1.56,.64,1);
+  transition:opacity .6s ease, transform .6s ease;
+}
+#donBanner.hidden{display:none}
+#donBanner.fadeout{opacity:0;transform:translateY(12px);pointer-events:none}
+.donTxt p{font-family:var(--ui);font-size:11px;font-weight:600;color:var(--tp)}
+.donTxt span{font-family:var(--mono);font-size:7px;color:var(--ts)}
+.bDon{padding:4px 11px;border-radius:99px;background:var(--ac);color:var(--bg);
+  font-family:var(--mono);font-size:8px;font-weight:700;transition:all .13s;white-space:nowrap;text-decoration:none;display:inline-block}
+.bDon:hover{filter:brightness(1.13)}
+.donX{width:16px;height:16px;border-radius:50%;border:1px solid var(--b2);background:var(--ra);
+  display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tt);cursor:pointer}
+.donX:hover{border-color:var(--red);color:var(--red)}
+
+/* snap lines */
+.snap{position:fixed;z-index:99;background:var(--ac);opacity:0;pointer-events:none;transition:opacity .15s;border-radius:2px}
+#sT{top:0;left:0;right:0;height:3px}#sB{bottom:0;left:0;right:0;height:3px}
+#sL{top:0;bottom:0;left:0;width:3px}#sR{top:0;bottom:0;right:0;width:3px}
+.snap.show{opacity:.7}
+
+/* toast */
+#toast{position:fixed;bottom:55px;left:50%;transform:translateX(-50%) translateY(36px);
+  background:var(--sf);border:1px solid var(--b2);color:var(--tp);
+  font-family:var(--mono);font-size:10px;font-weight:700;padding:6px 14px;border-radius:99px;
+  z-index:900;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .28s;
+  letter-spacing:1px;box-shadow:0 7px 24px rgba(0,0,0,.5);pointer-events:none;opacity:0}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<canvas id="bgC"></canvas><canvas id="ptC"></canvas>
+<div class="snap" id="sT"></div><div class="snap" id="sB"></div>
+<div class="snap" id="sL"></div><div class="snap" id="sR"></div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+  <header id="topbar">
+    <div class="hL">
+      <button class="wt" id="wtTask"  onclick="toggleFW('task')"><span class="d"></span>タスク</button>
+      <button class="wt" id="wtTimer" onclick="toggleFW('timer')"><span class="d"></span>タイマー</button>
+    </div>
+
+    <div class="clock-wrap">
+      <div id="clockTime">00:00:00</div>
+      <div id="clockDate">—</div>
+    </div>
+    <div class="hR">
+      <button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM">♪</button>
+      <button class="ib" onclick="openTheme()" title="テーマ">◐</button>
+      <button class="ib" onclick="showDonate()" title="サポート">♥</button>
+    </div>
+  </header>
+  <section id="mid">
+    <div id="midGlow"></div>
+    <div class="nowBadge"><span class="nowDot"></span><span>NOW</span></div>
+    <div id="curTask" class="empty">タスクを追加してください</div>
+    <div class="curMeta" id="curMeta">
+      <div class="timeBadge" id="curTBadge">--:-- → --:--</div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══ DOCK: 左=タスク / 右=ポモ+ストップウォッチ (タブ切替) ═══ -->
+<div id="dock" class="pos-bottom">
+  <div id="dockResize"></div>
+  <div id="dockBar">
+    <span class="dBarLabel">SCHED</span>
+    <div class="dGrip"></div>
+    <div class="dRight">
+      <button class="dActB" id="dCollapseBtn" onclick="toggleDock()" title="折りたたむ">▼</button>
+    </div>
+  </div>
+  <div id="dockBody">
+    <!-- ── 左: タスク ── -->
+    <div class="dpane" id="dpTask">
+      <div class="ph"><span class="phLbl">📋 予定リスト</span><span class="phLbl" id="tCnt">0件</span></div>
+      <div class="addRow">
+        <div class="mToggle">
+          <button class="mb on" id="mNow"  onclick="setMode('now')">今すぐ</button>
+          <button class="mb"    id="mTime" onclick="setMode('time')">時間指定</button>
+        </div>
+        <input type="time" id="addTime" class="tIn hide">
+        <input type="text" id="addName" class="nIn" placeholder="タスク名を入力…">
+        <button class="bAdd" onclick="addTask()">+</button>
+      </div>
+      <div id="tScroll" class="tScroll"></div>
+    </div>
+    <!-- ── 右: ポモドーロ + ストップウォッチ (タブ切替) ── -->
+    <div class="dpane" id="dpTimer">
+      <div class="timerTabs">
+        <button class="ttab on" id="tPomo" onclick="switchTimer('pomo')">🍅 ポモドーロ</button>
+        <button class="ttab"    id="tSw"   onclick="switchTimer('sw')">⏱ ストップ</button>
+      </div>
+      <div class="tStack">
+        <div class="tbody on pd-body" id="bPomo">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div class="pomoRing" id="pRing">
+              <svg width="68" height="68" viewBox="0 0 68 68">
+                <circle class="pr-bg" cx="34" cy="34" r="28" stroke-width="4"/>
+                <circle class="pr-arc" id="pArc" cx="34" cy="34" r="28" stroke-width="4"
+                  stroke-dasharray="175.9" stroke-dashoffset="0"/>
+              </svg>
+              <div class="pRingIn"><div class="pRT" id="pRT">25:00</div><div class="pRM" id="pRM">作業</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="pDots" id="pDots"></div>
+              <div class="cr">
+                <button class="bc p" id="pBtn" onclick="pomoToggle()">▶ 開始</button>
+                <button class="bc g" onclick="pomoReset()">↺</button>
+                <button class="bc g" onclick="pomoSkip()">⏭</button>
+              </div>
+              <div class="tSubLbl" id="pSub">作業時間</div>
+            </div>
+          </div>
+          <div class="pSR">
+            <div class="pF"><label>作業(分)</label><input type="number" id="pWork" value="25" min="1" max="99" onchange="pomoChg()"></div>
+            <div class="pF"><label>休憩(分)</label><input type="number" id="pBreak" value="5"  min="1" max="99" onchange="pomoChg()"></div>
+            <div class="pF"><label>長休憩(分)</label><input type="number" id="pLong"  value="15" min="1" max="99" onchange="pomoChg()"></div>
+            <div class="pF"><label>セット数</label><input type="number" id="pSets"  value="4"  min="1" max="8"  onchange="pomoChg()"></div>
+          </div>
+        </div>
+        <div class="tbody sw-body" id="bSw">
+          <div class="tDisp" id="swDisp">00:00:00</div>
+          <div class="cr">
+            <button class="bc p" id="swBtn" onclick="swToggle()">▶ 開始</button>
+            <button class="bc g" onclick="swLap()">◎ ラップ</button>
+            <button class="bc g" onclick="swReset()">↺</button>
+          </div>
+          <div class="swLaps" id="swLaps"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FLOAT WINDOW: タスク ═══ -->
+<div class="fw hidden" id="fwTask" style="width:350px;min-height:200px;top:80px;left:28px">
+  <div class="rn" data-d="n"></div><div class="rs" data-d="s"></div>
+  <div class="rw" data-d="w"></div><div class="re" data-d="e"></div>
+  <div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div>
+  <div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div>
+  <div class="fwTb">
+    <div class="fwDots">
+      <div class="fwDot c" onclick="closeFW('task')"></div>
+      <div class="fwDot m" onclick="dockFW('task')"></div>
+    </div>
+    <div class="fwTitle">TASK LIST</div>
+  </div>
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:120px">
+    <div class="ph"><span class="phLbl">予定リスト</span><span class="phLbl" id="tCntW">0件</span></div>
+    <div class="addRow">
+      <div class="mToggle">
+        <button class="mb on" id="mNowW"  onclick="setModeW('now')">今すぐ</button>
+        <button class="mb"    id="mTimeW" onclick="setModeW('time')">時間指定</button>
+      </div>
+      <input type="time" id="addTimeW" class="tIn hide">
+      <input type="text" id="addNameW" class="nIn" placeholder="タスク名を入力…">
+      <button class="bAdd" onclick="addTaskW()">+</button>
+    </div>
+    <div id="tScrollW" class="tScroll" style="overflow-y:auto;flex:1"></div>
+  </div>
+</div>
+
+<!-- ═══ FLOAT WINDOW: タイマー (ポモ+SW 共有State) ═══ -->
+<div class="fw hidden" id="fwTimer" style="width:280px;min-height:200px;top:80px;right:28px">
+  <div class="rn" data-d="n"></div><div class="rs" data-d="s"></div>
+  <div class="rw" data-d="w"></div><div class="re" data-d="e"></div>
+  <div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div>
+  <div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div>
+  <div class="fwTb">
+    <div class="fwDots">
+      <div class="fwDot c" onclick="closeFW('timer')"></div>
+      <div class="fwDot m" onclick="dockFW('timer')"></div>
+    </div>
+    <div class="fwTitle">TIMER</div>
+  </div>
+  <!-- fwTimerInner: mirrors dock timer pane, shares same state -->
+  <div class="fwTimerInner">
+    <div class="timerTabs">
+      <button class="ttab on" id="tPomoW" onclick="switchTimerBoth('pomo')">🍅 ポモドーロ</button>
+      <button class="ttab"    id="tSwW"   onclick="switchTimerBoth('sw')">⏱ ストップ</button>
+    </div>
+    <div class="tStack">
+      <!-- ポモドーロ表示 (読み取り専用ミラー — 操作もshared) -->
+      <div class="tbody on pd-body" id="bPomoW">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="pomoRing" id="pRingW">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+              <circle class="pr-bg" cx="30" cy="30" r="24" stroke-width="3.5"/>
+              <circle class="pr-arc" id="pArcW" cx="30" cy="30" r="24" stroke-width="3.5"
+                stroke-dasharray="150.8" stroke-dashoffset="0"/>
+            </svg>
+            <div class="pRingIn">
+              <div class="pRT" id="pRTW" style="font-size:10px">25:00</div>
+              <div class="pRM" id="pRMW" style="font-size:6px">作業</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div class="pDots" id="pDotsW"></div>
+            <div class="cr">
+              <button class="bc p" id="pBtnW" onclick="pomoToggle()">▶ 開始</button>
+              <button class="bc g" onclick="pomoReset()">↺</button>
+              <button class="bc g" onclick="pomoSkip()">⏭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ストップウォッチ表示 (同shared state) -->
+      <div class="tbody sw-body" id="bSwW">
+        <div class="tDisp" id="swDispW" style="font-size:28px">00:00:00</div>
+        <div class="cr">
+          <button class="bc p" id="swBtnW" onclick="swToggle()">▶ 開始</button>
+          <button class="bc g" onclick="swLap()">◎ ラップ</button>
+          <button class="bc g" onclick="swReset()">↺</button>
+        </div>
+        <div class="swLaps" id="swLapsW"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BGM PANEL ═══ -->
+<div id="bgmPanel" class="hidden">
+  <div class="bgmDragBar" id="bgmDragBar"><div class="bgmGrip"></div></div>
+  <div class="bgmRow">
+    <span class="bgmLbl">BGM</span>
+    <div class="bgmBtns">
+      <button class="bgmB" data-bgm="white"   onclick="setBgm('white')">⬜ White</button>
+      <button class="bgmB" data-bgm="pink"    onclick="setBgm('pink')">🌸 Pink</button>
+      <button class="bgmB" data-bgm="rain"    onclick="setBgm('rain')">🌧 Rain</button>
+      <button class="bgmB" data-bgm="thunder" onclick="setBgm('thunder')">⛈ Storm</button>
+      <button class="bgmB" data-bgm="lofi"    onclick="setBgm('lofi')">🎵 Lo-Fi</button>
+      <button class="bgmB" data-bgm="jazz"    onclick="setBgm('jazz')">🎷 Jazz</button>
+      <button class="bgmB" data-bgm="forest"  onclick="setBgm('forest')">🌿 Forest</button>
+      <button class="bgmB" data-bgm="ocean"   onclick="setBgm('ocean')">🌊 Ocean</button>
+      <button class="bgmB" data-bgm="cafe"    onclick="setBgm('cafe')">☕ Café</button>
+      <button class="bgmB" data-bgm="space"   onclick="setBgm('space')">🌌 Space</button>
+      <button class="bgmB" data-bgm="fire"    onclick="setBgm('fire')">🔥 Fire</button>
+    </div>
+    <button class="bgmClose" onclick="toggleBgmPanel()">×</button>
+  </div>
+  <div class="bgmRow">
+    <span class="bgmLbl">YT</span>
+    <div class="ytRow">
+      <input type="text" id="ytUrl" placeholder="YouTube URL…">
+      <button class="ytBtn" onclick="playYt()">▶</button>
+      <button class="ytStop" onclick="stopYt()">■</button>
+    </div>
+    <div class="volRow">
+      <span class="volLbl">VOL</span>
+      <input type="range" id="bgmVol" min="0" max="1" step="0.02" value="0.35" oninput="setBgmVol(this.value)">
+    </div>
+  </div>
+  <!-- YouTube 再生情報 -->
+  <div id="ytInfo">
+    <div class="ytInfoTop">
+      <span id="ytTitle">—</span>
+      <span id="ytStatusBadge">停止中</span>
+    </div>
+    <div class="ytInfoBottom">
+      <div id="ytProgBar" onclick="ytSeek(event)"><div id="ytProgFill"></div></div>
+      <span id="ytTime">0:00 / 0:00</span>
+      <div class="ytCtrl">
+        <button class="ytMiniBtn" id="ytPlayPauseBtn" onclick="ytPlayPause()">⏸</button>
+        <button class="ytMiniBtn" id="ytLoopBtn" onclick="ytToggleLoop()" title="ループ">↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="ytFrame" style="position:fixed;bottom:-9999px;left:0;width:1px;height:1px;pointer-events:none;z-index:-1;overflow:hidden"></div>
+
+
+
+<!-- ═══ THEME ═══ -->
+<div id="thOv" onclick="thOvCk(event)">
+  <div id="thPanel">
+    <div class="thTitle">テーマ設定</div>
+    <div><div class="sLbl">カラー</div><div class="swGrid" id="swGrid"></div></div>
+    <div>
+      <div class="sLbl">カラーコード</div>
+      <!-- HEXピッカー + テキスト入力 -->
+      <div class="hexRow">
+        <input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)" title="カラーピッカー">
+        <input type="text"  id="hexInput"  value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false">
+        <div id="rgbPrev" style="flex:0 0 28px;height:28px;border-radius:var(--r2);border:1px solid var(--b2)"></div>
+      </div>
+      <!-- RGB 数値微調整 -->
+      <div class="rgbGrid" style="margin-top:7px">
+        <div class="rgbF"><label>R</label><input type="number" id="rgbR" min="0" max="255" value="220" oninput="onRgb()"></div>
+        <div class="rgbF"><label>G</label><input type="number" id="rgbG" min="0" max="255" value="175" oninput="onRgb()"></div>
+        <div class="rgbF"><label>B</label><input type="number" id="rgbB" min="0" max="255" value="70"  oninput="onRgb()"></div>
+      </div>
+    </div>
+    <div><div class="sLbl">色相</div><input type="range" id="hueSlider" min="0" max="360" value="38" oninput="onHue(this.value)"></div>
+    <div>
+      <div class="sLbl">背景</div>
+      <div class="bgOpts">
+        <button class="bgOpt on" data-bg="dark"   onclick="setBg('dark')">ダーク</button>
+        <button class="bgOpt"    data-bg="amoled" onclick="setBg('amoled')">AMOLED</button>
+        <button class="bgOpt"    data-bg="dim"    onclick="setBg('dim')">ディム</button>
+        <button class="bgOpt"    data-bg="light"  onclick="setBg('light')">ライト</button>
+      </div>
+    </div>
+    <div>
+      <div class="sLbl">フォント</div>
+      <div class="fpBtns" id="fpBtns"></div>
+      <div class="fCust">
+        <input type="text" id="fIn" placeholder="Google Fontsのフォント名 (例: Kosugi)">
+        <button class="bAp" onclick="custFont()">適用</button>
+      </div>
+      <div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div>
+      <div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a> で日本語対応のフォント名を入力してください</div>
+    </div>
+    <button class="thClose" onclick="openTheme()">閉じる</button>
+  </div>
+</div>
+
+<!-- ═══ DONATE ═══ -->
+<div id="donBanner" class="hidden">
+  <div class="donTxt"><p>☕ SCHEDを応援する</p><span>開発継続のため支援をお願いします</span></div>
+  <a class="bDon" href="https://ko-fi.com" target="_blank" rel="noopener">サポート</a>
+  <div class="donX" onclick="closeDonate()">×</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+
+/* safety: escape HTML */
+function esc(s){
+  return String(s)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+
+'use strict';
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const S={
+  tasks:[],
+  addMode:'now', addModeW:'now',
+  pomo:{running:false,mode:'work',sec:0,total:0,sets:0,iv:null},
+  sw:{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null},
+  timerTab:'pomo', // shared between dock and float
+  theme:{r:220,g:175,b:70,bg:'dark',font:'Noto Sans JP'},
+  bgm:{cur:null},
+  ytP:null,
+  fw:{task:false,timer:false},
+  dock:{pos:'bottom',size:220,collapsed:false},
+};
+
+/* ════ STORAGE ════ */
+const SK={t:'sc8_t',th:'sc8_th',ui:'sc8_ui'};
+function loadS(){
+  try{const v=localStorage.getItem(SK.t);if(v)S.tasks=JSON.parse(v)}catch{}
+  try{const v=localStorage.getItem(SK.th);if(v)Object.assign(S.theme,JSON.parse(v))}catch{}
+  try{const v=localStorage.getItem(SK.ui);if(v){const u=JSON.parse(v);
+    if(u.fw)S.fw=u.fw;if(u.dock)Object.assign(S.dock,u.dock);
+    if(u.timerTab)S.timerTab=u.timerTab;}}catch{}
+}
+function savT(){try{localStorage.setItem(SK.t,JSON.stringify(S.tasks))}catch{}}
+function savTh(){try{localStorage.setItem(SK.th,JSON.stringify(S.theme))}catch{}}
+function savUI(){try{localStorage.setItem(SK.ui,JSON.stringify({fw:S.fw,dock:S.dock,timerTab:S.timerTab}))}catch{}}
+
+/* ════ UTILS ════ */
+const $=id=>document.getElementById(id);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pad=n=>String(n).padStart(2,'0');
+function nowS(){const n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds()}
+function t2s(str){if(!str)return null;const[h,m]=str.split(':').map(Number);return h*3600+m*60}
+function fmtCD(dm){
+  if(dm<=0)return'進行中';if(dm<60)return`${dm}分後`;
+  const h=Math.floor(dm/60),m=dm%60;return m?`${h}h${m}m後`:`${h}時間後`;
+}
+function fmtMs(ms){const s=Math.floor(ms/1000);return`${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`}
+function fmtSec(s){s=Math.round(s);const m=Math.floor(s/60),ss=s%60;return`${m}:${pad(ss)}`}
+
+/* ════ UI SOUNDS ════ */
+let aC=null;
+function gAC(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();if(aC.state==='suspended')aC.resume();return aC}
+function snd(t){
+  try{const c=gAC(),g=c.createGain();g.connect(c.destination);
+    if(t==='add'){const o=c.createOscillator();o.type='triangle';o.frequency.value=700;
+      g.gain.setValueAtTime(.07,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.14);
+      o.connect(g);o.start();o.stop(c.currentTime+.14);}
+    else if(t==='done'){[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator();o.frequency.value=f;
+      const gg=c.createGain();gg.gain.setValueAtTime(0,c.currentTime+i*.05);
+      gg.gain.linearRampToValueAtTime(.13,c.currentTime+i*.05+.04);
+      gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.05+.9);
+      o.connect(gg);gg.connect(c.destination);o.start(c.currentTime+i*.05);o.stop(c.currentTime+1.2);});}
+    else if(t==='brk'){[784,659,523].forEach((f,i)=>{const o=c.createOscillator();o.frequency.value=f;
+      const gg=c.createGain();gg.gain.setValueAtTime(0,c.currentTime+i*.18);
+      gg.gain.linearRampToValueAtTime(.15,c.currentTime+i*.18+.04);
+      gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.18+.7);
+      o.connect(gg);gg.connect(c.destination);o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.8);});}
+    else if(t==='lap'){const o=c.createOscillator();o.type='square';o.frequency.value=440;
+      g.gain.setValueAtTime(.04,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.07);
+      o.connect(g);o.start();o.stop(c.currentTime+.07);}
+  }catch{}
+}
+
+/* ════════════════════════════════════════════
+   BGM — YouTube IFrame API
+   BGMプリセットもカスタムURLも同一プレイヤーを使う
+════════════════════════════════════════════ */
+const BGM_YT={
+  "white": [
+    "nMfPqeZjc2c",
+    "BqI6H3Yq1fQ",
+    "DWcJFNfaw9c"
+  ],
+  "pink": [
+    "ZXtimhajVh4",
+    "8SHf6wmX5MU"
+  ],
+  "rain": [
+  "eKFTSSKCzWA",
+  "mPZkdNFkNps",
+  "q76bMs-NwRk"
+],
+"thunder": [
+  "zNAVAb7NFKY",
+  "c0_eJqRzHq0"
+],
+"lofi": [
+  "DWcJFNfaw9c",
+  "7NOSDKb0HlU",
+  "kgx4WGK0oNU"
+],
+"jazz": [
+  "Dx5qFachd3A",
+  "DSGyEsJ17cI",
+  "HMnrl0tmd3k"
+],
+"forest": [
+  "xNN7iTA57jM",
+  "sELpU8lE3Wk"
+],
+"ocean": [
+  "WHPEKQmMQFM",
+  "V-_O7nl0Ii0"
+],
+"cafe": [
+  "gaGrAZPuHR4",
+  "6K0Gg1pXb7w"
+],
+"space": [
+  "bGikFCOPPGI",
+  "F64YxXDGLOk"
+],
+"fire": [
+  "L_LUpnjgPso",
+  "eyU3bRy2x44"
+]
+};
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   YouTube IFrame API — 完全修正版
+   主な修正:
+   1. origin = window.location.origin (file://の場合は省略)
+   2. enablejsapi=1 を明示
+   3. ループ時のみ playlist パラメータをセット
+   4. _ytApiLoading のリセット漏れ修正
+   5. API スクリプトの二重挿入防止
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let _ytApiReady   = false;
+let _ytApiLoading = false;
+let _ytApiCbs     = [];
+let _ytLoop       = true;
+
+function _checkVideoDuration(){
+  try{
+    if(window.player && player.getDuration){
+      const d = player.getDuration();
+      if(d && d > 10800){ // >3h
+        console.warn("Video too long, switching...");
+        if(window._curBgm && BGM_LIST[window._curBgm]){
+          const arr=BGM_LIST[window._curBgm];
+          const id=arr[Math.floor(Math.random()*arr.length)];
+          player.loadVideoById(id);
+        }
+      }
+    }
+  }catch(e){}
+}
+setInterval(_checkVideoDuration,5000);
+
+let _ytInfoIv     = null;
+
+// onYouTubeIframeAPIReady はスクリプト挿入前にグローバル設定 (必須)
+window.onYouTubeIframeAPIReady = function(){
+  _ytApiReady   = true;
+  _ytApiLoading = false;
+  const pending = _ytApiCbs.slice();
+  _ytApiCbs = [];
+  pending.forEach(f=>{ try{f();}catch(e){console.error('YT cb error',e);} });
+};
+
+function _ensureYtApi(cb){
+  if(_ytApiReady){ cb(); return; }
+  _ytApiCbs.push(cb);
+  if(_ytApiLoading) return;
+  // 既にscriptタグが存在する場合はスキップ
+  if(document.querySelector('script[src*="youtube.com/iframe_api"]')){
+    _ytApiLoading=true; return;
+  }
+  _ytApiLoading = true;
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.onerror = ()=>{
+    _ytApiLoading=false;
+    _ytApiCbs=[];
+    toast('⚠ YouTube API読み込み失敗 (ネット接続を確認)');
+  };
+  document.head.appendChild(s);
+}
+
+/* プレイヤーを安全に破棄 */
+function _destroyPlayer(){
+  _stopInfoPolling();
+  if(S.ytP){
+    try{S.ytP.stopVideo();}catch{}
+    try{S.ytP.destroy();}catch{}
+    S.ytP=null;
+  }
+}
+
+/* プレイヤーを生成 */
+function _spawnPlayer(videoId, onReadyCb){
+  const frame = $('ytFrame');
+  frame.innerHTML = '';
+  const div = document.createElement('div');
+  div.id = 'ytDiv';
+  frame.appendChild(div);
+
+  // file:// プロトコルでは origin が使えないため省略
+  const originParam = (location.protocol==='file:') ? {} : {origin: location.origin};
+
+  S.ytP = new YT.Player('ytDiv',{
+    height:'1', width:'1',
+    videoId: videoId,
+    playerVars: Object.assign({
+      autoplay: 1,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      rel: 0,
+      playsinline: 1,
+      enablejsapi: 1,
+      // ループ時のみ playlist を設定（設定しないとループが効かない）
+      loop: _ytLoop ? 1 : 0,
+      ...(  _ytLoop ? {playlist: videoId} : {} )
+    }, originParam),
+    events:{
+      onReady: function(e){
+        try{e.target.setVolume(Math.round(parseFloat($('bgmVol').value)*100));}catch{}
+        e.target.playVideo();
+        _startInfoPolling();
+        if(onReadyCb) onReadyCb(e.target);
+      },
+      onStateChange: function(e){
+        _updateInfoBadge(e.data);
+        if(e.data===YT.PlayerState.ENDED && !_ytLoop){
+          _stopInfoPolling();
+        }
+      },
+      onError: function(e){
+        const errMsg={2:'動画IDが無効',5:'HTML5エラー',100:'動画が見つかりません',101:'埋め込み不可',150:'埋め込み不可'};
+        toast('⚠ 埋め込み不可の可能性。別の音源に切替…');
+        if(S.bgm.cur && BGM_YT[S.bgm.cur]){
+          const arr=BGM_YT[S.bgm.cur];
+          const vid=arr[Math.floor(Math.random()*arr.length)];
+          _destroyPlayer();
+          _spawnPlayer(vid);
+        }else{
+          _destroyPlayer();
+          _resetYtUI();
+        }
+      }
+    }
+  });
+}
+
+/* UIのみリセット（プレイヤーは触らない） */
+function _resetYtUI(){
+  S.bgm.cur = null;
+  document.querySelectorAll('.bgmB').forEach(b=>b.classList.remove('on'));
+  $('ytInfo').classList.remove('show');
+  $('ytTitle').textContent = '—';
+  $('ytProgFill').style.width = '0%';
+  $('ytTime').textContent = '0:00 / 0:00';
+  $('ytStatusBadge').textContent = '停止中';
+  $('ytStatusBadge').className = '';
+  $('ytPlayPauseBtn').textContent = '▶';
+}
+
+/* BGMプリセット再生 */
+function setBgm(type){
+  if(S.bgm.cur===type){ _destroyPlayer(); _resetYtUI(); return; }
+  const list=BGM_YT[type]; if(!list){toast('BGMが見つかりません');return;} const vid=list[Math.floor(Math.random()*list.length)];
+  if(!vid){ toast('BGMが見つかりません'); return; }
+  _destroyPlayer();
+  _resetYtUI();
+  toast('🎵 読み込み中…');
+  _ensureYtApi(()=>{
+    _spawnPlayer(vid, ()=>{
+      S.bgm.cur = type;
+      document.querySelector(`.bgmB[data-bgm="${type}"]`)?.classList.add('on');
+      $('ytTitle').textContent = type.charAt(0).toUpperCase()+type.slice(1)+' Ambience';
+      toast('🎵 BGM 再生中');
+    });
+  });
+}
+
+/* カスタムURL再生 */
+function ytId(url){
+  // youtu.be/ID, youtube.com/watch?v=ID, /embed/ID, /shorts/ID, /live/ID, v= in query
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_\-]{11})/);
+  return m?m[1]:null;
+}
+function playYt(){
+  const url=$('ytUrl').value.trim();
+  if(!url){ toast('URLを入力してください'); return; }
+  const id=ytId(url);
+  if(!id){ toast('URLが正しくありません'); return; }
+  _destroyPlayer();
+  _resetYtUI();
+  toast('▶ 読み込み中…');
+  _ensureYtApi(()=>{
+    _spawnPlayer(id, player=>{
+      S.bgm.cur = 'yt';
+      try{
+        const t=player.getVideoData&&player.getVideoData().title;
+        if(t) $('ytTitle').textContent=t;
+      }catch{}
+      toast('🎵 YouTube BGM 再生中');
+    });
+  });
+}
+function stopYt(){ _destroyPlayer(); _resetYtUI(); }
+
+/* 音量 */
+function setBgmVol(v){if(S.ytP)try{S.ytP.setVolume(Math.round(parseFloat(v)*100))}catch{}}
+
+/* 再生/一時停止 */
+function ytPlayPause(){
+  if(!S.ytP)return;
+  try{
+    const st=S.ytP.getPlayerState();
+    if(st===YT.PlayerState.PLAYING){S.ytP.pauseVideo();$('ytPlayPauseBtn').textContent='▶';}
+    else{S.ytP.playVideo();$('ytPlayPauseBtn').textContent='⏸';}
+  }catch{}
+}
+
+/* ループ切り替え */
+function ytToggleLoop(){
+  _ytLoop=!_ytLoop;
+  $('ytLoopBtn').classList.toggle('on',_ytLoop);
+  // ループ設定はPlayerVarsで制御するため、現在再生中なら再起動が必要
+  if(S.ytP){
+    try{
+      const vid=S.ytP.getVideoData().video_id;
+      const curTime=S.ytP.getCurrentTime()||0;
+      const wasPlaying=(S.ytP.getPlayerState()===YT.PlayerState.PLAYING);
+      if(vid){
+        _destroyPlayer();
+        _ensureYtApi(()=>{
+          _spawnPlayer(vid, player=>{
+            if(curTime>0)try{player.seekTo(curTime,true);}catch{}
+            if(!wasPlaying)try{player.pauseVideo();}catch{}
+          });
+        });
+      }
+    }catch{}
+  }
+  toast(_ytLoop?'ループ ON':'ループ OFF');
+}
+
+/* シーク */
+function ytSeek(e){
+  if(!S.ytP)return;
+  try{
+    const bar=$('ytProgBar');const r=bar.getBoundingClientRect();
+    const pct=(e.clientX-r.left)/r.width;
+    const dur=S.ytP.getDuration();
+    S.ytP.seekTo(pct*dur,true);
+  }catch{}
+}
+
+/* 再生情報ポーリング */
+function _startInfoPolling(){
+  _stopInfoPolling();
+  $('ytInfo').classList.add('show');
+  _ytInfoIv=setInterval(_pollYtInfo,500);
+}
+function _stopInfoPolling(){
+  if(_ytInfoIv){clearInterval(_ytInfoIv);_ytInfoIv=null;}
+}
+function _pollYtInfo(){
+  if(!S.ytP)return;
+  try{
+    const cur=S.ytP.getCurrentTime()||0;
+    const dur=S.ytP.getDuration()||0;
+    const pct=dur>0?cur/dur*100:0;
+    $('ytProgFill').style.width=pct.toFixed(2)+'%';
+    $('ytTime').textContent=`${fmtSec(cur)} / ${fmtSec(dur)}`;
+    // タイトル更新（遅延取得）
+    try{const t=S.ytP.getVideoData().title;if(t&&t.length>0)$('ytTitle').textContent=t;}catch{}
+  }catch{}
+}
+function _updateInfoBadge(state){
+  const b=$('ytStatusBadge');
+  if(state===1){b.textContent='再生中';b.className='playing';$('ytPlayPauseBtn').textContent='⏸';}
+  else if(state===2){b.textContent='一時停止';b.className='paused';$('ytPlayPauseBtn').textContent='▶';}
+  else if(state===0){b.textContent='終了';b.className='';$('ytPlayPauseBtn').textContent='▶';}
+  else if(state===3){b.textContent='バッファ中…';b.className='';}
+  else{b.textContent='停止中';b.className='';}
+}
+
+/* BGMパネル draggable */
+(()=>{
+  let drag=false,ox=0,oy=0;
+  $('bgmDragBar').addEventListener('mousedown',e=>{
+    drag=true;
+    const r=$('bgmPanel').getBoundingClientRect();
+    ox=e.clientX-r.left;oy=e.clientY-r.top;
+    $('bgmPanel').style.transition='none';
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
+  function mv(e){if(!drag)return;
+    const p=$('bgmPanel');
+    let x=cl(e.clientX-ox,0,window.innerWidth-p.offsetWidth);
+    let y=cl(e.clientY-oy,0,window.innerHeight-p.offsetHeight);
+    p.style.left=x+'px';p.style.top=y+'px';p.style.bottom='auto';p.style.transform='none';}
+  function up(){drag=false;$('bgmPanel').style.transition='';
+    document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+})();
+
+function toggleBgmPanel(){
+  const p=$('bgmPanel');
+  const willShow=p.classList.contains('hidden');
+  if(willShow&&!p.style.left){p.style.transform='';}
+  p.classList.toggle('hidden');
+  $('ibBgm').classList.toggle('on',willShow);
+}
+
+/* ════ CANVAS ════ */
+(()=>{
+  const c=$('bgC'),cx=c.getContext('2d');let W,H,t=0;
+  const r=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight};
+  r();window.addEventListener('resize',r);
+  const dr=()=>{cx.clearRect(0,0,W,H);
+    for(let i=0;i<3;i++){
+      const y=H*(.17+i*.28)+Math.sin(t*.35+i*2.1)*H*.04;
+      const g=cx.createLinearGradient(0,y-75,0,y+75);
+      const[ar,ag,ab]=[S.theme.r,S.theme.g,S.theme.b];
+      g.addColorStop(0,`rgba(${ar},${ag},${ab},0)`);
+      g.addColorStop(.5,`rgba(${ar},${ag},${ab},${.035+i*.011})`);
+      g.addColorStop(1,`rgba(${ar},${ag},${ab},0)`);
+      cx.fillStyle=g;cx.beginPath();cx.moveTo(0,y);
+      for(let x=0;x<=W;x+=6){const w=Math.sin(x*.006+t*(.26+i*.09))*20+Math.sin(x*.011+t*(.42-i*.08))*9;cx.lineTo(x,y+w);}
+      cx.lineTo(W,y+90);cx.lineTo(0,y+90);cx.closePath();cx.fill();}
+    t+=.009;requestAnimationFrame(dr);};dr();
+})();
+(()=>{
+  const c=$('ptC'),cx=c.getContext('2d');let W,H;
+  const ps=[];const r=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight};
+  r();window.addEventListener('resize',r);
+  for(let i=0;i<28;i++)ps.push({x:Math.random()*1200,y:Math.random()*800,
+    r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,
+    op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
+  const dr=()=>{cx.clearRect(0,0,W,H);const t=Date.now()*.001;
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      const a=p.op*(.5+.5*Math.sin(t+p.ph));
+      cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(${S.theme.r},${S.theme.g},${S.theme.b},${a})`;cx.fill();});
+    requestAnimationFrame(dr);};dr();
+})();
+
+/* ════ CLOCK ════ */
+const DAYS=['日','月','火','水','木','金','土'];
+function tick(){
+  const n=new Date();
+  $('clockTime').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  $('clockDate').textContent=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日（${DAYS[n.getDay()]}）`;
+  const s=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
+  refreshCur(n);refreshCDs(n);
+}
+
+/* ════ ADD MODE ════ */
+function setMode(m){S.addMode=m;$('mNow').classList.toggle('on',m==='now');$('mTime').classList.toggle('on',m==='time');$('addTime').classList.toggle('hide',m==='now')}
+function setModeW(m){S.addModeW=m;$('mNowW').classList.toggle('on',m==='now');$('mTimeW').classList.toggle('on',m==='time');$('addTimeW').classList.toggle('hide',m==='now')}
+
+/* ════ TASKS ════ */
+function _mkT(nId,tId,mode){
+  const name=$(nId).value.trim();if(!name){toast('タスク名を入力してください');return null}
+  let time=null;
+  if(mode==='time'){time=$(tId).value;if(!time){toast('時間を入力してください');return null}}
+  return{id:Date.now(),time,name,done:false};
+}
+function addTask(){const t=_mkT('addName','addTime',S.addMode);if(!t)return;_push(t);$('addName').value=''}
+function addTaskW(){const t=_mkT('addNameW','addTimeW',S.addModeW);if(!t)return;_push(t);$('addNameW').value=''}
+function _push(task){
+  S.tasks.push(task);
+  S.tasks.sort((a,b)=>{
+    if(!a.time&&!b.time)return 0;
+    if(!a.time)return -1;if(!b.time)return 1;
+    return a.time.localeCompare(b.time);
+  });
+  savT();renderT();snd('add');toast('タスクを追加しました ✓');
+}
+function delT(id){
+  // 削除アニメーション付き
+  const row=document.querySelector(`.tRow[data-id="${id}"]`);
+  if(row){
+    row.classList.add('removing');
+    setTimeout(()=>{S.tasks=S.tasks.filter(t=>t.id!==id);savT();renderT();},240);
+  }else{
+    S.tasks=S.tasks.filter(t=>t.id!==id);savT();renderT();
+  }
+}
+function togDone(id){
+  const t=S.tasks.find(t=>t.id===id);
+  if(!t)return;
+  t.done=!t.done;
+  if(t.done)snd('done');
+  savT();renderT();
+}
+
+function renderT(){
+  const html=_tHtml();
+  ['tScroll','tScrollW'].forEach(id=>{const e=$(id);if(e)e.innerHTML=html});
+  const cnt=`${S.tasks.length}件`;
+  ['tCnt','tCntW'].forEach(id=>{const e=$(id);if(e)e.textContent=cnt});
+}
+function _tHtml(){
+  if(!S.tasks.length)return'<div class="tEmpty">まだ予定がありません</div>';
+  const ns=nowS(),nm=Math.floor(ns/60);
+  return S.tasks.map(t=>{
+    const im=!t.time,ts=im?null:t2s(t.time),tm=ts!==null?Math.floor(ts/60):null;
+    const df=tm!==null?tm-nm:0;
+    const isN=!t.done&&(im||(df<=0&&df>-120)),isPast=!t.done&&ts!==null&&df<=-120;
+    let cc='up',ct='';
+    if(t.done){cc='past';ct='完了';}
+    else if(isN){cc='act';ct='進行中';}
+    else if(isPast){cc='past';ct='終了';}
+    else if(tm!==null)ct=fmtCD(df);
+    const badge=im&&!t.done?'<span class="bNow">今すぐ</span>':'<span></span>';
+    const rc=['tRow',im?'noT':'',t.done?'isDone':'',isN&&!t.done?'isNow':''].filter(Boolean).join(' ');
+    return`<div class="${rc}" data-id="${t.id}" onclick="togDone(${t.id})">
+      <span class="tTime">${im?'——':t.time}</span>
+      <span class="tName">${esc(t.name)}</span>
+      ${badge}<span class="tCd ${cc}">${ct}</span>
+      <button class="bDel" onclick="event.stopPropagation();delT(${t.id})">×</button>
+    </div>`;
+  }).join('');
+}
+function refreshCDs(now){
+  const nm=now.getHours()*60+now.getMinutes();
+  document.querySelectorAll('.tRow').forEach(row=>{
+    const id=parseInt(row.dataset.id,10);const t=S.tasks.find(t=>t.id===id);
+    if(!t||t.done)return;const im=!t.time;
+    const cd=row.querySelector('.tCd');if(!cd)return;
+    if(im){cd.textContent='進行中';cd.className='tCd act';return;}
+    const df=Math.floor(t2s(t.time)/60)-nm;
+    if(df>0){cd.textContent=fmtCD(df);cd.className='tCd up';}
+    else if(df>-120){cd.textContent='進行中';cd.className='tCd act';}
+    else{cd.textContent='終了';cd.className='tCd past';}
+  });
+}
+
+function refreshCur(now){
+  const sec=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
+  const nEl=$('curTask'),mEl=$('curMeta'),bEl=$('curTBadge');
+
+  if(S.tasks.length===0){
+    nEl.textContent='タスクを追加してください';nEl.className='empty';
+    mEl.classList.remove('show');
+    $('main').classList.remove('allDone');
+    return;
+  }
+
+  let cur=null;
+  const imm=S.tasks.find(t=>!t.time&&!t.done);
+  if(imm)cur={task:imm,im:true};
+  if(!cur){for(const t of S.tasks){if(t.time&&!t.done&&t2s(t.time)<=sec)cur={task:t,im:false};}}
+
+  let next=null;
+  for(const t of S.tasks){if(t.time&&!t.done&&t2s(t.time)>sec){next=t;break;}}
+
+  if(!cur){
+    const hasFut=S.tasks.some(t=>t.time&&!t.done&&t2s(t.time)>sec);
+    const allDone=S.tasks.every(t=>t.done);
+    nEl.textContent=allDone?'✓ すべて完了！':hasFut?'次の予定を待機中…':'—';
+    nEl.className='empty';mEl.classList.remove('show');
+    $('main').classList.toggle('allDone',allDone&&S.tasks.length>0);
+    return;
+  }
+
+  nEl.textContent=cur.task.name;nEl.className='';mEl.classList.add('show');
+  $('main').classList.remove('allDone');
+
+  if(cur.im){
+    bEl.textContent=next?`今すぐ → ${next.time}`:'今すぐ実行中';
+    return;
+  }
+
+  const st=t2s(cur.task.time);
+  if(!next){bEl.textContent=`${cur.task.time} → (終了未定)`;return;}
+
+  const en=t2s(next.time);
+  const rem=Math.ceil((en-sec)/60);
+  bEl.textContent=`${cur.task.time} → ${next.time}　残り${rem>0?rem+'分':'間もなく'}`;
+}
+
+/* ════ POMODORO ════ */
+const pW=()=>Math.max(1,parseInt($('pWork').value)||25)*60;
+const pB=()=>Math.max(1,parseInt($('pBreak').value)||5)*60;
+const pL=()=>Math.max(1,parseInt($('pLong').value)||15)*60;
+const pSets=()=>Math.max(1,parseInt($('pSets').value)||4);
+function pomoChg(){if(!S.pomo.running){const t=pW();Object.assign(S.pomo,{mode:'work',sec:t,total:t,sets:0});renderPomo()}}
+function renderPomo(){
+  const{mode,sec,sets,running,total}=S.pomo;const n=pSets();
+  const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+  const ml={work:'作業',break:'休憩',long:'長休憩'}[mode];
+  const sb={work:'作業時間',break:'休憩時間',long:'長休憩'}[mode];
+  [$('pRT'),$('pRTW')].forEach(e=>{if(e)e.textContent=ms});
+  [$('pRM'),$('pRMW')].forEach(e=>{if(e)e.textContent=ml});
+  const ps=$('pSub');if(ps)ps.textContent=sb;
+  const rem=sec/(total||1);
+  $('pArc').setAttribute('stroke-dashoffset',(175.9*(1-rem)).toFixed(3));
+  $('pArcW').setAttribute('stroke-dashoffset',(150.8*(1-rem)).toFixed(3));
+  const isB=mode!=='work';
+  [$('pRing'),$('pRingW')].forEach(e=>{if(e)e.classList.toggle('brk',isB)});
+  [$('bPomo'),$('bPomoW')].forEach(e=>{if(e)e.classList.toggle('brk',isB)});
+  const dh=Array.from({length:n},(_,i)=>`<span class="pd${i<sets?' done':i===sets?' cur':''}"></span>`).join('');
+  [$('pDots'),$('pDotsW')].forEach(e=>{if(e)e.innerHTML=dh});
+  const bt=running?'⏸ 一時停止':'▶ 開始';
+  [$('pBtn'),$('pBtnW')].forEach(e=>{if(e)e.textContent=bt});
+}
+function pomoToggle(){
+  S.pomo.running=!S.pomo.running;
+  if(S.pomo.running)S.pomo.iv=setInterval(pomoTick,1000);else clearInterval(S.pomo.iv);
+  renderPomo();
+}
+function pomoTick(){
+  if(S.pomo.sec>0){S.pomo.sec--;renderPomo();return;}
+  const n=pSets();
+  if(S.pomo.mode==='work'){
+    snd('brk');S.pomo.sets++;
+    if(S.pomo.sets%n===0){Object.assign(S.pomo,{mode:'long',sec:pL(),total:pL()});toast('🎉 長休憩！よく頑張りました');}
+    else{Object.assign(S.pomo,{mode:'break',sec:pB(),total:pB()});toast('☕ 休憩時間です');}
+  }else{snd('done');Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});toast('💪 作業開始！');}
+  renderPomo();
+}
+function pomoReset(){clearInterval(S.pomo.iv);Object.assign(S.pomo,{running:false,mode:'work',sec:pW(),total:pW(),sets:0,iv:null});renderPomo()}
+function pomoSkip(){
+  if(S.pomo.running){S.pomo.sec=0;pomoTick();}
+  else{
+    const n=pSets();
+    if(S.pomo.mode==='work'){
+      S.pomo.sets++;
+      if(S.pomo.sets%n===0){Object.assign(S.pomo,{mode:'long',sec:pL(),total:pL()});}
+      else{Object.assign(S.pomo,{mode:'break',sec:pB(),total:pB()});}
+    }else{Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});}
+    renderPomo();
+  }
+}
+
+/* ════ STOPWATCH ════ */
+function swToggle(){
+  S.sw.running=!S.sw.running;
+  if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,50);}else clearInterval(S.sw.iv);
+  const t=S.sw.running?'⏸ 停止':'▶ 再開';
+  [$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=t});
+}
+function swTick(){const n=performance.now();S.sw.ms+=n-S.sw.tick;S.sw.tick=n;
+  const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});}
+function swLap(){if(!S.sw.running&&S.sw.ms===0)return;
+  S.sw.laps.push({lap:S.sw.ms-S.sw.lapBase,total:S.sw.ms});S.sw.lapBase=S.sw.ms;
+  renderLaps();snd('lap');}
+function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});
+  [$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});
+  [$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent='▶ 開始'});
+  [$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
+function renderLaps(){const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');
+  [$('swLaps'),$('swLapsW')].forEach(e=>{if(e){e.innerHTML=h;e.scrollTop=e.scrollHeight;}});}
+
+/* タイマータブ切替 — ドック＋フローウィンドウ両方を同時に更新 */
+function switchTimer(tab){
+  S.timerTab=tab;savUI();
+  const p=tab==='pomo';
+  // dock
+  $('tPomo').classList.toggle('on',p);$('tSw').classList.toggle('on',!p);
+  $('bPomo').classList.toggle('on',p);$('bSw').classList.toggle('on',!p);
+  // float window
+  $('tPomoW').classList.toggle('on',p);$('tSwW').classList.toggle('on',!p);
+  $('bPomoW').classList.toggle('on',p);$('bSwW').classList.toggle('on',!p);
+}
+// float window tab — same action
+function switchTimerBoth(tab){switchTimer(tab);}
+
+/* ════════════════════════════════════════════
+   FLOAT WINDOWS ↔ DOCK 排他制御
+   ・FW を開く → ドックを折りたたむ
+   ・FW をすべて閉じる → ドックを展開する
+════════════════════════════════════════════ */
+function toggleFW(name){
+  const willOpen=!S.fw[name];
+  S.fw[name]=willOpen;
+  _applyFW(name);
+  if(willOpen){
+    // FWを開いたらドックを畳む
+    if(!S.dock.collapsed){
+      S.dock.collapsed=true;
+      $('dock').classList.add('dHidden');
+      updateMainInset();
+      _updateCollapseBtn();
+    }
+  } else {
+    // FWを閉じたとき、他のFWも全部閉じていたらドックを開く
+    const anyOpen=Object.values(S.fw).some(v=>v);
+    if(!anyOpen&&S.dock.collapsed){
+      S.dock.collapsed=false;
+      $('dock').classList.remove('dHidden');
+      updateMainInset();
+      _updateCollapseBtn();
+    }
+  }
+  savUI();
+}
+function closeFW(name){
+  S.fw[name]=false;_applyFW(name);
+  const anyOpen=Object.values(S.fw).some(v=>v);
+  if(!anyOpen&&S.dock.collapsed){
+    S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();
+  }
+  savUI();
+}
+function dockFW(name){
+  S.fw[name]=false;_applyFW(name);
+  const anyOpen=Object.values(S.fw).some(v=>v);
+  if(!anyOpen){
+    if(S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}
+  }
+  toast(name==='task'?'タスクをドックへ':'タイマーをドックへ');savUI();
+}
+function _applyFW(name){
+  const el=$(name==='task'?'fwTask':'fwTimer');
+  const btn=$(name==='task'?'wtTask':'wtTimer');
+  el.classList.toggle('hidden',!S.fw[name]);
+  if(btn)btn.classList.toggle('on',S.fw[name]);
+}
+
+/* FWドラッグ＋リサイズ */
+document.querySelectorAll('.fw').forEach(win=>{
+  const tb=win.querySelector('.fwTb');
+  if(tb){
+    tb.addEventListener('mousedown',e=>{
+      if(e.target.closest('.fwDots'))return;if(e.button!==0)return;
+      const r=win.getBoundingClientRect();
+      let ox=e.clientX-r.left,oy=e.clientY-r.top;
+      win.style.transition='none';
+      document.querySelectorAll('.fw').forEach(w=>w.style.zIndex=50);win.style.zIndex=51;
+      const mv=e2=>{
+        let x=cl(e2.clientX-ox,0,window.innerWidth-win.offsetWidth);
+        let y=cl(e2.clientY-oy,0,window.innerHeight-win.offsetHeight);
+        win.style.left=x+'px';win.style.top=y+'px';win.style.right='auto';win.style.bottom='auto';
+        $('sT').classList.toggle('show',e2.clientY<40);
+        $('sB').classList.toggle('show',e2.clientY>window.innerHeight-40);
+        $('sL').classList.toggle('show',e2.clientX<40);
+        $('sR').classList.toggle('show',e2.clientX>window.innerWidth-40);
+      };
+      const up=e2=>{
+        win.style.transition='';
+        ['sT','sB','sL','sR'].forEach(id=>$(id).classList.remove('show'));
+        const nm=win.id==='fwTask'?'task':'timer';
+        const edge=45;
+        if(e2.clientY>window.innerHeight-edge){dockFW(nm);}
+        else if(e2.clientY<edge){dockFW(nm);}
+        else if(e2.clientX<edge){dockFW(nm);}
+        else if(e2.clientX>window.innerWidth-edge){dockFW(nm);}
+        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
+      };
+      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    });
+  }
+  win.querySelectorAll('[data-d]').forEach(h=>{
+    h.addEventListener('mousedown',e=>{
+      e.stopPropagation();e.preventDefault();
+      const dir=h.dataset.d;
+      const r=win.getBoundingClientRect();
+      let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;
+      const mv=e2=>{
+        const dx=e2.clientX-sx,dy=e2.clientY-sy;
+        let nl=sl,nt=st,nw=sw,nh=sh;
+        if(dir.includes('e'))nw=Math.max(180,sw+dx);
+        if(dir.includes('s'))nh=Math.max(160,sh+dy);
+        if(dir.includes('w')){nw=Math.max(180,sw-dx);nl=sl+dx;}
+        if(dir.includes('n')){nh=Math.max(160,sh-dy);nt=st+dy;}
+        win.style.width=nw+'px';win.style.height=nh+'px';
+        win.style.left=nl+'px';win.style.top=nt+'px';
+        win.style.right='auto';win.style.bottom='auto';
+      };
+      const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    });
+  });
+});
+
+/* ════ DOCK POSITION ════ */
+function applyDockPos(pos){
+  pos = 'bottom'; // 常に下固定
+  const dock=$('dock');
+  const sz = S.dock.size || 220;
+
+  dock.classList.remove('pos-bottom','pos-top','pos-left','pos-right');
+  dock.classList.add('pos-bottom');
+
+  dock.style.removeProperty('top');dock.style.removeProperty('bottom');
+  dock.style.removeProperty('left');dock.style.removeProperty('right');
+  dock.style.height = sz + 'px';
+  dock.style.removeProperty('width');
+
+  const paneTimer=$('dpTimer');
+  paneTimer.style.cssText='flex:0 0 300px;border-left:1px solid var(--b1);border-top:none';
+
+  updateMainInset();
+  _updateCollapseBtn();
+  S.dock.pos = 'bottom'; savUI();
+}
+
+function updateMainInset(){
+  if(S.dock.collapsed){$('main').style.cssText='position:fixed;z-index:2;display:flex;flex-direction:column;inset:0';return;}
+  const sz=S.dock.size||220;
+  $('main').style.cssText=`position:fixed;z-index:2;display:flex;flex-direction:column;top:0;left:0;right:0;bottom:${sz}px`;
+}
+
+function toggleDock(){
+  // ドック手動操作のときはFWとの排他は解除（ユーザーの意志を尊重）
+  S.dock.collapsed=!S.dock.collapsed;
+  $('dock').classList.toggle('dHidden',S.dock.collapsed);
+  updateMainInset();_updateCollapseBtn();savUI();
+}
+function _updateCollapseBtn(){
+  const btn=$('dCollapseBtn');
+  if(btn)btn.textContent=S.dock.collapsed?'▲':'▼';
+}
+
+/* dock resize */
+(()=>{
+  let drag=false,s0=0,d0=0;
+  $('dockResize').addEventListener('mousedown',e=>{
+    drag=true;s0=S.dock.pos==='left'||S.dock.pos==='right'?e.clientX:e.clientY;
+    d0=S.dock.size;e.preventDefault();
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
+  function mv(e){
+    if(!drag)return;
+    const pos=S.dock.pos;let ns;
+    if(pos==='bottom')ns=cl(d0-(e.clientY-s0),80,window.innerHeight*.75);
+    else if(pos==='top')ns=cl(d0+(e.clientY-s0),80,window.innerHeight*.75);
+    else if(pos==='left')ns=cl(d0+(e.clientX-s0),160,window.innerWidth*.6);
+    else if(pos==='right')ns=cl(d0-(e.clientX-s0),160,window.innerWidth*.6);
+    else return;
+    S.dock.size=ns;
+    const dock=$('dock');
+    if(pos==='bottom'||pos==='top')dock.style.height=ns+'px';else dock.style.width=ns+'px';
+    updateMainInset();
+  }
+  function up(){drag=false;savUI();document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+})();
+
+/* ════ THEME ════ */
+const PRESETS=[{l:'アンバー',r:220,g:175,b:70},{l:'オレンジ',r:255,g:140,b:50},
+  {l:'レッド',r:255,g:92,b:92},{l:'ローズ',r:255,g:92,b:160},
+  {l:'バイオレット',r:170,g:92,b:255},{l:'ブルー',r:92,g:173,b:255},
+  {l:'シアン',r:92,g:220,b:255},{l:'エメラルド',r:92,g:255,b:160},
+  {l:'ライム',r:160,g:255,b:92},{l:'ゴールド',r:255,g:210,b:80},
+  {l:'ティール',r:92,g:210,b:195},{l:'スレート',r:140,g:160,b:200}];
+/* Web公開対応: Google Fontsで読み込み可能なフォントのみ */
+const FONTS=[
+  {l:'Noto Sans JP', v:'Noto Sans JP',   gf:'Noto+Sans+JP:wght@300;400;500;700'},
+  {l:'M PLUS 1p',   v:'M PLUS 1p',       gf:'M+PLUS+1p:wght@300;400;700'},
+  {l:'Zen Kaku',    v:'Zen Kaku Gothic New', gf:'Zen+Kaku+Gothic+New:wght@300;400;700'},
+  {l:'BIZ UDP',     v:'BIZ UDPGothic',   gf:'BIZ+UDPGothic:wght@400;700'},
+  {l:'Kosugi Maru', v:'Kosugi Maru',     gf:'Kosugi+Maru'},
+  {l:'Zen Antique', v:'Zen Antique',     gf:'Zen+Antique'},
+];
+const BGS={dark:{bg:'#050509',sf:'#0c0c18',ra:'#12121f'},amoled:{bg:'#000',sf:'#070707',ra:'#0f0f0f'},
+  dim:{bg:'#0e0e1c',sf:'#141425',ra:'#1a1a2e'},light:{bg:'#f0f0f8',sf:'#fff',ra:'#f4f4ff'}};
+function hex3(r,g,b){return'#'+[r,g,b].map(v=>cl(Math.round(v),0,255).toString(16).padStart(2,'0')).join('').toUpperCase()}
+function hsl2rgb(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return{r:Math.round(f(0)*255),g:Math.round(f(8)*255),b:Math.round(f(4)*255)}}
+function applyAc(r,g,b){
+  S.theme.r=cl(Math.round(r),0,255);S.theme.g=cl(Math.round(g),0,255);S.theme.b=cl(Math.round(b),0,255);
+  const rt=document.documentElement;
+  rt.style.setProperty('--ar',S.theme.r);rt.style.setProperty('--ag',S.theme.g);rt.style.setProperty('--ab',S.theme.b);
+  rt.style.setProperty('--ac',`rgb(${S.theme.r},${S.theme.g},${S.theme.b})`);
+  rt.style.setProperty('--ac0',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.10)`);
+  rt.style.setProperty('--ac2',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.22)`);
+  rt.style.setProperty('--ac4',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.40)`);
+  rt.style.setProperty('--acb',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.30)`);
+  // RGB 数値フィールド同期
+  $('rgbR').value=S.theme.r;$('rgbG').value=S.theme.g;$('rgbB').value=S.theme.b;
+  // HEX フィールド同期（フォーカス中は上書きしない）
+  const h=hex3(S.theme.r,S.theme.g,S.theme.b);
+  const hi=$('hexInput');
+  if(document.activeElement!==hi){hi.value=h;}
+  $('hexPicker').value=h;
+  $('rgbPrev').style.background=h;
+  document.querySelectorAll('.swatch').forEach((sw,i)=>{const p=PRESETS[i];if(p)sw.classList.toggle('on',p.r===S.theme.r&&p.g===S.theme.g&&p.b===S.theme.b)});
+}
+function onRgb(){applyAc(parseInt($('rgbR').value)||0,parseInt($('rgbG').value)||0,parseInt($('rgbB').value)||0);savTh()}
+
+/* HEXカラーピッカー（type=color）からの入力 */
+function onHexPicker(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  applyAc(r,g,b);savTh();
+}
+
+/* HEXテキスト入力 — #RRGGBB または RRGGBB を受け付ける */
+function onHexInput(raw){
+  let v=raw.trim().replace(/^#+/,'');
+  // 3桁 → 6桁に展開 (e.g. "f80" → "ff8800")
+  if(/^[0-9a-fA-F]{3}$/.test(v)){v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];}
+  if(!/^[0-9a-fA-F]{6}$/.test(v))return; // 不完全な入力は無視
+  const r=parseInt(v.slice(0,2),16),g=parseInt(v.slice(2,4),16),b=parseInt(v.slice(4,6),16);
+  applyAc(r,g,b);savTh();
+}
+
+/* HEXフィールドでEnter/blur時に正規化 */
+function normalizeHexInput(){
+  const hi=$('hexInput');
+  let v=hi.value.trim().replace(/^#+/,'');
+  if(/^[0-9a-fA-F]{3}$/.test(v)){v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];}
+  if(/^[0-9a-fA-F]{6}$/.test(v)){
+    hi.value='#'+v.toUpperCase();
+  }else{
+    // 不正な値はリセット
+    hi.value=hex3(S.theme.r,S.theme.g,S.theme.b);
+  }
+}
+function onHue(v){const{r,g,b}=hsl2rgb(parseInt(v,10),85,55);applyAc(r,g,b);savTh()}
+function applyTheme(){
+  const{r,g,b,bg,font}=S.theme;applyAc(r,g,b);
+  const t=BGS[bg]||BGS.dark,lt=bg==='light';
+  const rt=document.documentElement;
+  rt.style.setProperty('--bg',t.bg);rt.style.setProperty('--sf',t.sf);rt.style.setProperty('--ra',t.ra);
+  rt.style.setProperty('--b1',lt?'rgba(0,0,0,.07)':'rgba(255,255,255,.055)');
+  rt.style.setProperty('--b2',lt?'rgba(0,0,0,.12)':'rgba(255,255,255,.10)');
+  rt.style.setProperty('--tp',lt?'#0f0f1e':'#eeeef8');
+  rt.style.setProperty('--ts',lt?'#4c4c70':'#65659a');
+  rt.style.setProperty('--tt',lt?'#8080a0':'#2c2c48');
+  document.querySelectorAll('.bgOpt').forEach(b=>b.classList.toggle('on',b.dataset.bg===bg));
+  applyFont(font,false);
+}
+function setBg(name){S.theme.bg=name;applyTheme();savTh()}
+function applyFont(name,save=true){
+  if(!name)return;
+  S.theme.font=name;
+  // Google Fontsを動的にロード（まだ読み込まれていない場合）
+  const f=FONTS.find(f=>f.v===name);
+  if(f&&f.gf){
+    const id='gf-'+f.v.replace(/\s/g,'_');
+    if(!document.getElementById(id)){
+      const link=document.createElement('link');
+      link.id=id;link.rel='stylesheet';
+      link.href=`https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`;
+      document.head.appendChild(link);
+    }
+  }
+  document.documentElement.style.setProperty('--jp',`'${name}','Noto Sans JP',sans-serif`);
+  $('fPrev').style.fontFamily=`'${name}','Noto Sans JP',sans-serif`;
+  $('fPrev').textContent=`あいうえお ABCDEFG 12:34（${name}）`;
+  document.querySelectorAll('.fpB').forEach(b=>b.classList.toggle('on',b.dataset.f===name));
+  if(save)savTh();
+}
+function custFont(){
+  const v=$('fIn').value.trim();
+  if(!v)return;
+  // カスタムフォントをGoogle Fontsから動的ロード
+  const encoded=v.replace(/\s+/g,'+');
+  const id='gf-custom-'+encoded;
+  if(!document.getElementById(id)){
+    const link=document.createElement('link');
+    link.id=id;link.rel='stylesheet';
+    link.href=`https://fonts.googleapis.com/css2?family=${encoded}:wght@300;400;700&display=swap`;
+    document.head.appendChild(link);
+  }
+  applyFont(v);$('fIn').value='';toast(`フォント「${v}」を読み込み中…`);
+}
+function buildUI(){
+  $('swGrid').innerHTML=PRESETS.map(p=>`<div class="swatch" style="background:rgb(${p.r},${p.g},${p.b})" title="${p.l}" onclick="applyAc(${p.r},${p.g},${p.b});savTh()"></div>`).join('');
+  // フォントボタン — Web読み込み対応ラベル付き
+  $('fpBtns').innerHTML=FONTS.map(f=>`<button class="fpB" data-f="${f.v}" onclick="applyFont('${f.v}')">${f.l}</button>`).join('');
+}
+function openTheme(){$('thOv').classList.toggle('open')}
+function thOvCk(e){if(e.target===$('thOv'))openTheme()}
+
+/* ════ DONATE ════ */
+function showDonate(){
+  const b=$('donBanner');
+  b.classList.remove('hidden','fadeout');
+  // 8秒後にフェードアウト、その後display:noneに
+  clearTimeout(window._donTimer);
+  window._donTimer=setTimeout(()=>{
+    b.classList.add('fadeout');
+    setTimeout(()=>b.classList.add('hidden'),650);
+  },8000);
+}
+function closeDonate(){
+  clearTimeout(window._donTimer);
+  const b=$('donBanner');
+  b.classList.add('fadeout');
+  setTimeout(()=>b.classList.add('hidden'),650);
+}
+
+/* ════ TOAST ════ */
+let _tt;
+function toast(msg){const e=$('toast');e.textContent=msg;e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('show'),2600)}
+
+/* ════ KEYBOARD ════ */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key===' '){e.preventDefault();pomoToggle();}
+  if(e.key==='r'||e.key==='R')pomoReset();
+  if(e.key==='t'||e.key==='T')switchTimer(S.timerTab==='pomo'?'sw':'pomo');
+  if(e.key==='l'||e.key==='L')swLap();
+  if(e.key==='b'||e.key==='B')toggleBgmPanel();
+  if(e.key==='d'||e.key==='D')toggleDock();
+  if(e.key==='1')toggleFW('task');
+  if(e.key==='2')toggleFW('timer');
+});
+$('addName').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
+$('addNameW').addEventListener('keydown',e=>{if(e.key==='Enter')addTaskW()});
+$('ytUrl').addEventListener('keydown',e=>{if(e.key==='Enter')playYt()});
+$('hexInput').addEventListener('blur',normalizeHexInput);
+$('hexInput').addEventListener('keydown',e=>{if(e.key==='Enter'){normalizeHexInput();$('hexInput').blur();}});
+
+/* ════ INIT ════ */
+function init(){
+  loadS();buildUI();applyTheme();
+  // ポモドーロ初期化（total=0のバグを防ぐ）
+  const t=pW();
+  if(S.pomo.total===0){S.pomo.sec=t;S.pomo.total=t;}
+  renderPomo();renderT();
+  applyDockPos('bottom');
+  if(S.dock.collapsed){$('dock').classList.add('dHidden');updateMainInset();}
+  _updateCollapseBtn();
+  // FW を復元
+  const anyFw=Object.values(S.fw).some(v=>v);
+  Object.keys(S.fw).forEach(n=>{if(S.fw[n])_applyFW(n)});
+  if(anyFw&&!S.dock.collapsed){S.dock.collapsed=true;$('dock').classList.add('dHidden');updateMainInset();_updateCollapseBtn();}
+  switchTimer(S.timerTab||'pomo');
+  $('ytLoopBtn').classList.toggle('on',_ytLoop);
+  // 初回tick（正確な時刻を即反映）
+  tick();setInterval(tick,1000);
+  // ドネートは15秒後に表示、8秒後に消える
+  setTimeout(showDonate,15000);
+}
+init();
+</script>
+</body>
+</html>
