@@ -615,7 +615,7 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 
 /* DOCK SHOW BUTTON */
 #dockShowBtn{
-  position:fixed;z-index:25;bottom:18px;right:18px;
+  position:fixed;z-index:450;bottom:18px;right:18px;
   width:44px;height:44px;border-radius:50%;
   background:var(--gl);border:1px solid var(--acb);
   backdrop-filter:blur(20px);
@@ -626,6 +626,8 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
   opacity:0;pointer-events:none;transform:scale(.6) translateY(12px);
 }
 #dockShowBtn.visible{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+/* テーマ・ストリークオーバーレイが開いているとき隠す */
+body.overlay-open #dockShowBtn{opacity:0!important;pointer-events:none!important;transform:scale(.6) translateY(12px)!important}
 #dockShowBtn:hover{background:var(--ac0);border-color:var(--ac);transform:scale(1.1) translateY(0)}
 #dockShowBtn:active{transform:scale(.94) translateY(0)}
 #dockShowBtn .dsbTooltip{
@@ -1164,19 +1166,19 @@ const firebaseConfig = {
         <button class="ttab"    id="tSw"   onclick="switchTimer('sw')">⏱ ストップ</button>
       </div>
       <div class="tStack">
-        <div class="tbody on pd-body" id="bPomo">
-          <div style="display:flex;align-items:center;gap:9px">
-            <!-- DYNAMIC POMO DISPLAY — mirrors float window style -->
-            <div id="pomoStyleWrapD" style="flex-shrink:0"></div>
-            <div style="display:flex;flex-direction:column;gap:5px">
-              <div class="pDots" id="pDots"></div>
-              <div class="cr">
-                <button class="bc p" id="pBtn" data-pomo-toggle onclick="pomoToggle()">▶ 開始</button>
-                <button class="bc g" data-pomo-reset onclick="pomoReset()" data-i18n="reset">↺</button>
-                <button class="bc g" data-pomo-skip onclick="pomoSkip()" data-i18n="skip">⏭</button>
-              </div>
-              <div class="tSubLbl" id="pSub">作業時間</div>
+        <div class="tbody on pd-body" id="bPomo"
+             style="flex-direction:column;justify-content:center;gap:6px;padding:6px 10px">
+          <!-- タイマー表示: ドック高さに応じて自動スケール -->
+          <div id="pomoStyleWrapD" style="display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+          <!-- コントロール行 -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="pDots" id="pDots"></div>
+            <div class="cr">
+              <button class="bc p" id="pBtn" data-pomo-toggle onclick="pomoToggle()">▶ 開始</button>
+              <button class="bc g" data-pomo-reset onclick="pomoReset()" data-i18n="reset">↺</button>
+              <button class="bc g" data-pomo-skip onclick="pomoSkip()" data-i18n="skip">⏭</button>
             </div>
+            <div class="tSubLbl" id="pSub">作業時間</div>
           </div>
           <!-- hidden compat elements for renderPomo -->
           <span id="pRT" style="display:none">25:00</span>
@@ -1469,6 +1471,52 @@ const firebaseConfig = {
     </div>
 
     <button class="thClose" onclick="openTheme()" data-i18n="thClose">閉じる</button>
+
+    <!-- データリセット -->
+    <div style="border-top:1px solid var(--b1);padding-top:14px">
+      <div style="font-family:var(--mono);font-size:7px;letter-spacing:3px;color:rgba(255,71,87,.7);text-transform:uppercase;margin-bottom:8px">⚠ データ管理</div>
+      <button onclick="confirmReset()"
+        style="width:100%;padding:9px;border-radius:var(--r2);
+          border:1px solid rgba(255,71,87,.3);color:rgba(255,71,87,.75);
+          font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:1.5px;
+          background:rgba(255,71,87,.05);transition:all .15s;text-transform:uppercase;cursor:pointer"
+        onmouseover="this.style.background='rgba(255,71,87,.12)';this.style.borderColor='rgba(255,71,87,.6)'"
+        onmouseout="this.style.background='rgba(255,71,87,.05)';this.style.borderColor='rgba(255,71,87,.3)'">
+        🗑 全データをリセット
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET CONFIRM POPUP -->
+<div id="resetOv" style="display:none;position:fixed;inset:0;z-index:1200;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(18px);
+  align-items:center;justify-content:center">
+  <div onclick="event.stopPropagation()" style="background:var(--sf);border:1px solid rgba(255,71,87,.35);
+    border-radius:var(--r3);padding:32px 28px;width:320px;max-width:calc(100vw - 32px);
+    box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 40px rgba(255,71,87,.1);
+    animation:scIn .22s cubic-bezier(.34,1.56,.64,1)">
+    <div style="text-align:center;font-size:44px;margin-bottom:14px">⚠️</div>
+    <div style="font-family:var(--ui);font-size:16px;font-weight:900;color:var(--tp);text-align:center;margin-bottom:10px">全データをリセット</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--ts);text-align:center;line-height:1.7;margin-bottom:24px">
+      タスク・連続記録・レベル・カレンダーを含む<br>
+      すべてのデータが削除されます。<br>
+      <span style="color:rgba(255,71,87,.9);font-weight:700">この操作は元に戻せません。</span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeReset()"
+        style="flex:1;padding:11px;border-radius:var(--r2);border:1px solid var(--b2);
+          color:var(--ts);font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:1px;
+          background:var(--ra);transition:all .15s;text-transform:uppercase;cursor:pointer"
+        onmouseover="this.style.color='var(--tp)';this.style.borderColor='var(--b3)'"
+        onmouseout="this.style.color='var(--ts)';this.style.borderColor='var(--b2)'">キャンセル</button>
+      <button onclick="doReset()"
+        style="flex:1;padding:11px;border-radius:var(--r2);border:1px solid rgba(255,71,87,.5);
+          color:#fff;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;
+          background:rgba(255,71,87,.85);transition:all .15s;text-transform:uppercase;cursor:pointer"
+        onmouseover="this.style.background='rgba(255,71,87,1)';this.style.boxShadow='0 0 20px rgba(255,71,87,.4)'"
+        onmouseout="this.style.background='rgba(255,71,87,.85)';this.style.boxShadow='none'">🗑 実行</button>
+    </div>
   </div>
 </div>
 
@@ -1635,12 +1683,23 @@ const firebaseConfig = {
   <div class="mSheetPull"></div>
   <div class="mSheetHeader"><span class="mSheetTitle">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody" style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px">
-    <button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left">
+    <button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
       <span style="font-size:22px">⚡</span><div><div style="font-weight:600" data-i18n="streakTitle">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="streakDays">レベル・ヒートマップ</div></div>
     </button>
-    <button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left">
+    <button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
       <span style="font-size:22px">◐</span><div><div style="font-weight:600">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">カラー・フォント・背景</div></div>
     </button>
+    <a href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener"
+      onclick="mSheetClose()"
+      style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);
+        border:1px solid var(--acb);background:var(--ac0);color:var(--tp);
+        font-family:var(--jp);font-size:15px;text-align:left;text-decoration:none;width:100%">
+      <span style="font-size:22px">☕</span>
+      <div>
+        <div style="font-weight:600;color:var(--ac)">SCHEDを応援する</div>
+        <div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">開発継続のため支援をお願いします</div>
+      </div>
+    </a>
     <div style="padding:10px 0;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:10px">
         <div id="mLvlIcon" style="font-size:24px">🌱</div>
@@ -2842,8 +2901,12 @@ function openStreak(){
   if($('spLvlXP'))$('spLvlXP').textContent=typeof _xpf==='function'?_xpf(info.xpCur,info.xpNext):`${info.xpCur}/${info.xpNext}`;
   buildHeatmap();
   $('streakOv').classList.add('open');
+  _syncOverlayOpen();
 }
-function closeStreak(){$('streakOv').classList.remove('open')}
+function closeStreak(){
+  $('streakOv').classList.remove('open');
+  _syncOverlayOpen();
+}
 function strOvCk(e){if(e.target===$('streakOv'))closeStreak();}
 
 /* ═══ NOTIFICATIONS ═══ */
@@ -2873,69 +2936,104 @@ function renderPomo(){
   _renderPomoStyleW();
 }
 let _lastPomoRenderKey='';
-function _renderPomoStyleW(){
-  const style=S.pomoStyle||'ring';
-  const{mode,sec,total}=S.pomo;
-  const rem=+(sec/(total||1)).toFixed(4);
-  const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
-  // ミリ秒単位ではなく1秒単位なのでmsが変わらなければスキップ
-  const key=`${style}|${ms}|${mode}`;
-  if(key===_lastPomoRenderKey)return;
-  _lastPomoRenderKey=key;
 
-  const{sets}=S.pomo;
-  const n=pSets();
-  const isB=mode!=='work';
-  const modeKey={work:'work',break:'brk',long:'longBrk'}[mode];
-  // Render to both float window and dock
-  const targets=[
-    {el:$('pomoStyleWrap'), small:false},
-    {el:$('pomoStyleWrapD'), small:true},
-  ];
-  targets.forEach(({el,small})=>{
-    if(!el)return;
-    const ringSz=small?76:140;const ringR=small?32:52;
-    const ringDA=(2*Math.PI*ringR).toFixed(1);
-    const ringDO=(ringDA*(1-rem)).toFixed(2);
-    const arcW=small?100:160;
-    const arcR=small?40:52;
-    const arcLen=(Math.PI*arcR).toFixed(1);
-    const arcDO=(arcLen*(1-rem)).toFixed(2);
-    const timeFsz=small?'13px':'26px';
-    const blkTimeFsz=small?'18px':'30px';
-    const minTimeFsz=small?'32px':'44px';
-    if(style==='ring'){
-      el.innerHTML=`<div class="ps-ring ${isB?'brk':''}" style="width:${ringSz}px;height:${ringSz}px">
-        <svg class="ps-svg" viewBox="0 0 ${ringSz} ${ringSz}"><circle class="ps-bg" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}"/><circle class="ps-arc" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}" stroke-dasharray="${ringDA}" stroke-dashoffset="${ringDO}"/></svg>
-        <div class="ps-inner"><div class="ps-time" style="font-size:${timeFsz}">${ms}</div><div class="ps-mode">${T(modeKey)}</div></div>
-      </div>`;
-    } else if(style==='arc'){
-      el.innerHTML=`<div class="ps-arc-wrap ${isB?'brk':''}" style="width:${arcW}px">
-        <svg class="ps-svg-arc" viewBox="0 0 ${arcW} ${Math.round(arcW*.67)}">
-          <path class="ps-arc-bg" d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}"/>
-          <path class="ps-arc-fill" d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}" stroke-dasharray="${arcLen}" stroke-dashoffset="${arcDO}"/>
-          <text class="ps-arc-time" x="${arcW/2}" y="${arcW*.52}" style="font-size:${timeFsz}">${ms}</text>
-          <text class="ps-arc-mode" x="${arcW/2}" y="${arcW*.63}">${T(modeKey)}</text>
-        </svg>
-      </div>`;
-    } else if(style==='minimal'){
-      const pct=Math.round(rem*100);
-      el.innerHTML=`<div class="ps-minimal ${isB?'brk':''}" style="min-width:${small?70:100}px">
-        <div class="ps-min-time" style="font-size:${minTimeFsz}">${ms}</div>
-        <div class="ps-min-bar"><div class="ps-min-fill" style="width:${pct}%"></div></div>
-        <div class="ps-min-mode">${T(modeKey)}</div>
-      </div>`;
-    } else if(style==='blocks'){
-      const total_segs=small?12:20;const filled=Math.round(rem*total_segs);
-      const cols=small?6:10;
-      const segs=Array.from({length:total_segs},(_,i)=>`<div class="ps-blk${i<filled?' on':''}"></div>`).join('');
-      el.innerHTML=`<div class="ps-blocks ${isB?'brk':''}" style="min-width:${small?70:100}px">
-        <div class="ps-blk-time" style="font-size:${blkTimeFsz}">${ms}</div>
-        <div class="ps-blk-grid" style="grid-template-columns:repeat(${cols},1fr)">${segs}</div>
-        <div class="ps-blk-mode">${T(modeKey)}</div>
-      </div>`;
-    }
-  });
+/* ── タイマーサイズをコンテナから動的計算 ── */
+function _calcTimerSizes(containerH, containerW){
+  // containerH: 使える縦px, containerW: 使える横px
+  const dim = Math.min(containerH, containerW);
+  const ringSz   = Math.round(cl(dim * 0.72, 56, 220));
+  const ringR    = Math.round(ringSz * 0.365);
+  const arcW     = Math.round(cl(containerW * 0.82, 80, 240));
+  const arcR     = Math.round(arcW * 0.325);
+  const timeFsz  = Math.round(cl(ringSz * 0.195, 11, 42)) + 'px';
+  const minFsz   = Math.round(cl(containerH * 0.22, 20, 64)) + 'px';
+  const blkFsz   = Math.round(cl(containerH * 0.14, 14, 42)) + 'px';
+  const blkSegs  = Math.round(cl(Math.floor(containerH / 14), 8, 20));
+  const blkCols  = Math.round(cl(blkSegs / 2, 4, 10));
+  return {ringSz, ringR, arcW, arcR, timeFsz, minFsz, blkFsz, blkSegs, blkCols};
+}
+
+function _renderPomoStyleW(){
+  const style = S.pomoStyle || 'ring';
+  const {mode, sec, total} = S.pomo;
+  const rem = +(sec / (total || 1)).toFixed(4);
+  const ms  = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+
+  // ドックサイズも含めてキャッシュキーに
+  const dockH = S.dock.size || 220;
+  const key = `${style}|${ms}|${mode}|${dockH}`;
+  if(key === _lastPomoRenderKey) return;
+  _lastPomoRenderKey = key;
+
+  const isB     = mode !== 'work';
+  const modeKey = {work:'work', break:'brk', long:'longBrk'}[mode];
+
+  // ── ドック内タイマー ──
+  const elD = $('pomoStyleWrapD');
+  if(elD){
+    // ドック: 高さ = ドック全体 − タブバー(34) − コントロール(75) − パディング
+    const avH = Math.max(50, dockH - 34 - 75);
+    // 横幅: タイマーペイン幅(300) − 左右gap(18)
+    const avW = 282;
+    _drawPomoStyle(elD, style, ms, rem, isB, modeKey, avH, avW);
+  }
+
+  // ── フローティングウィンドウ内タイマー ──
+  const elW = $('pomoStyleWrap');
+  if(elW){
+    const fw = $('fwTimer');
+    // fwTimer のうちタブバー(32) + スタイルスイッチャー(36) + コントロール(60) を引く
+    const fwH = fw ? fw.offsetHeight - 32 - 36 - 60 : 200;
+    const fwW = fw ? fw.offsetWidth  - 16 : 260;
+    const avH = Math.max(60, fwH);
+    const avW = Math.max(80, fwW);
+    _drawPomoStyle(elW, style, ms, rem, isB, modeKey, avH, avW);
+  }
+}
+
+function _drawPomoStyle(el, style, ms, rem, isB, modeKey, avH, avW){
+  const {ringSz,ringR,arcW,arcR,timeFsz,minFsz,blkFsz,blkSegs,blkCols} = _calcTimerSizes(avH, avW);
+  const ringDA = (2*Math.PI*ringR).toFixed(1);
+  const ringDO = (ringDA*(1-rem)).toFixed(2);
+  const arcLen = (Math.PI*arcR).toFixed(1);
+  const arcDO  = (arcLen*(1-rem)).toFixed(2);
+
+  if(style==='ring'){
+    el.innerHTML=`<div class="ps-ring ${isB?'brk':''}" style="width:${ringSz}px;height:${ringSz}px">
+      <svg class="ps-svg" viewBox="0 0 ${ringSz} ${ringSz}">
+        <circle class="ps-bg" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}"/>
+        <circle class="ps-arc" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}" stroke-dasharray="${ringDA}" stroke-dashoffset="${ringDO}"/>
+      </svg>
+      <div class="ps-inner">
+        <div class="ps-time" style="font-size:${timeFsz}">${ms}</div>
+        <div class="ps-mode">${T(modeKey)}</div>
+      </div>
+    </div>`;
+  } else if(style==='arc'){
+    el.innerHTML=`<div class="ps-arc-wrap ${isB?'brk':''}" style="width:${arcW}px">
+      <svg class="ps-svg-arc" viewBox="0 0 ${arcW} ${Math.round(arcW*.67)}">
+        <path class="ps-arc-bg"   d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}"/>
+        <path class="ps-arc-fill" d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}" stroke-dasharray="${arcLen}" stroke-dashoffset="${arcDO}"/>
+        <text class="ps-arc-time" x="${arcW/2}" y="${arcW*.52}" style="font-size:${timeFsz}">${ms}</text>
+        <text class="ps-arc-mode" x="${arcW/2}" y="${arcW*.63}">${T(modeKey)}</text>
+      </svg>
+    </div>`;
+  } else if(style==='minimal'){
+    const pct=Math.round(rem*100);
+    el.innerHTML=`<div class="ps-minimal ${isB?'brk':''}" style="width:100%;max-width:${avW}px">
+      <div class="ps-min-time" style="font-size:${minFsz}">${ms}</div>
+      <div class="ps-min-bar"><div class="ps-min-fill" style="width:${pct}%"></div></div>
+      <div class="ps-min-mode">${T(modeKey)}</div>
+    </div>`;
+  } else if(style==='blocks'){
+    const filled = Math.round(rem*blkSegs);
+    const segs = Array.from({length:blkSegs},(_,i)=>`<div class="ps-blk${i<filled?' on':''}"></div>`).join('');
+    el.innerHTML=`<div class="ps-blocks ${isB?'brk':''}" style="width:100%;max-width:${avW}px">
+      <div class="ps-blk-time" style="font-size:${blkFsz}">${ms}</div>
+      <div class="ps-blk-grid" style="grid-template-columns:repeat(${blkCols},1fr)">${segs}</div>
+      <div class="ps-blk-mode">${T(modeKey)}</div>
+    </div>`;
+  }
 }
 function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running){clearInterval(S.pomo.iv);S.pomo.iv=setInterval(pomoTick,1000);}else{clearInterval(S.pomo.iv);S.pomo.iv=null;}renderPomo();}
 /* 作業完了共通処理。earnedSec=実際に経過した秒数 */
@@ -2990,7 +3088,7 @@ function swLap(){if(!S.sw.running&&S.sw.ms===0)return;S.sw.laps.push({lap:S.sw.m
 function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
 function renderLaps(){const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');[$('swLaps'),$('swLapsW')].forEach(e=>{if(e){e.innerHTML=h;e.scrollTop=e.scrollHeight;}});}
 function switchTimer(tab){S.timerTab=tab;savUI();const p=tab==='pomo';$('tPomo').classList.toggle('on',p);$('tSw').classList.toggle('on',!p);$('bPomo').classList.toggle('on',p);$('bSw').classList.toggle('on',!p);$('tPomoW').classList.toggle('on',p);$('tSwW').classList.toggle('on',!p);$('bPomoW').classList.toggle('on',p);$('bSwW').classList.toggle('on',!p);}
-function switchTimerBoth(tab){switchTimer(tab);}
+function switchTimerBoth(tab){switchTimerAll(tab);}
 
 /* ═══ FLOAT WINDOWS ═══ */
 function toggleFW(name){const wo=!S.fw[name];S.fw[name]=wo;_applyFW(name);if(wo){if(!S.dock.collapsed){S.dock.collapsed=true;$('dock').classList.add('dHidden');updateMainInset();_updateCollapseBtn();}}else{const any=Object.values(S.fw).some(v=>v);if(!any&&S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}}if(name==='cal')renderCal();savUI();}
@@ -3001,11 +3099,23 @@ function _applyFW(name){const map={task:'fwTask',timer:'fwTimer',cal:'fwCalendar
 document.querySelectorAll('.fw').forEach(win=>{
   const tb=win.querySelector('.fwTb');
   if(tb){tb.addEventListener('mousedown',e=>{if(e.target.closest('.fwDots'))return;if(e.button!==0)return;const r=win.getBoundingClientRect();let ox=e.clientX-r.left,oy=e.clientY-r.top;win.style.transition='none';document.querySelectorAll('.fw').forEach(w=>w.style.zIndex=50);win.style.zIndex=51;const mv=e2=>{let x=cl(e2.clientX-ox,0,window.innerWidth-win.offsetWidth);let y=cl(e2.clientY-oy,0,window.innerHeight-win.offsetHeight);win.style.left=x+'px';win.style.top=y+'px';win.style.right='auto';win.style.bottom='auto';$('sT').classList.toggle('show',e2.clientY<40);$('sB').classList.toggle('show',e2.clientY>window.innerHeight-40);$('sL').classList.toggle('show',e2.clientX<40);$('sR').classList.toggle('show',e2.clientX>window.innerWidth-40);};const up=e2=>{win.style.transition='';['sT','sB','sL','sR'].forEach(id=>$(id).classList.remove('show'));const nm=win.id==='fwTask'?'task':win.id==='fwTimer'?'timer':'cal';const edge=45;if(e2.clientY>window.innerHeight-edge||e2.clientY<edge||e2.clientX<edge||e2.clientX>window.innerWidth-edge)dockFW(nm);document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
-  win.querySelectorAll('[data-d]').forEach(h=>{h.addEventListener('mousedown',e=>{e.stopPropagation();e.preventDefault();const dir=h.dataset.d;const r=win.getBoundingClientRect();let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;const mv=e2=>{const dx=e2.clientX-sx,dy=e2.clientY-sy;let nl=sl,nt=st,nw=sw,nh=sh;if(dir.includes('e'))nw=Math.max(180,sw+dx);if(dir.includes('s'))nh=Math.max(160,sh+dy);if(dir.includes('w')){nw=Math.max(180,sw-dx);nl=sl+dx;}if(dir.includes('n')){nh=Math.max(160,sh-dy);nt=st+dy;}win.style.width=nw+'px';win.style.height=nh+'px';win.style.left=nl+'px';win.style.top=nt+'px';win.style.right='auto';win.style.bottom='auto';};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});});
+  win.querySelectorAll('[data-d]').forEach(h=>{h.addEventListener('mousedown',e=>{e.stopPropagation();e.preventDefault();const dir=h.dataset.d;const r=win.getBoundingClientRect();let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;const mv=e2=>{const dx=e2.clientX-sx,dy=e2.clientY-sy;let nl=sl,nt=st,nw=sw,nh=sh;if(dir.includes('e'))nw=Math.max(180,sw+dx);if(dir.includes('s'))nh=Math.max(160,sh+dy);if(dir.includes('w')){nw=Math.max(180,sw-dx);nl=sl+dx;}if(dir.includes('n')){nh=Math.max(160,sh-dy);nt=st+dy;}win.style.width=nw+'px';win.style.height=nh+'px';win.style.left=nl+'px';win.style.top=nt+'px';win.style.right='auto';win.style.bottom='auto';if(win.id==='fwTimer'){_lastPomoRenderKey='';_renderPomoStyleW();const swFszW=Math.round(cl((nh-32-34)*0.28,18,56));const sdW=$('swDispW');if(sdW)sdW.style.fontSize=swFszW+'px';}};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});});
 });
 
 /* ═══ DOCK ═══ */
-function applyDockPos(){const dock=$('dock');const sz=S.dock.size||220;dock.style.height=sz+'px';$('dpTimer').style.cssText='flex:0 0 300px;border-left:1px solid var(--b1);border-top:none';updateMainInset();_updateCollapseBtn();}
+function applyDockPos(){
+  const dock=$('dock');
+  const sz=S.dock.size||220;
+  dock.style.height=sz+'px';
+  $('dpTimer').style.cssText='flex:0 0 300px;border-left:1px solid var(--b1);border-top:none';
+  updateMainInset();
+  _updateCollapseBtn();
+  // ストップウォッチ表示フォントサイズをドック高さに合わせる
+  const swFsz=Math.round(cl((sz-34)*0.28,18,52));
+  const sd=$('swDisp');if(sd)sd.style.fontSize=swFsz+'px';
+  // ポモドーロも再描画
+  _lastPomoRenderKey='';_renderPomoStyleW();
+}
 function updateMainInset(){if(S.dock.collapsed){$('main').style.cssText='position:fixed;z-index:2;display:flex;flex-direction:column;inset:0';return;}const sz=S.dock.size||220;$('main').style.cssText=`position:fixed;z-index:2;display:flex;flex-direction:column;top:0;left:0;right:0;bottom:${sz}px`;}
 function toggleDock(){S.dock.collapsed=!S.dock.collapsed;$('dock').classList.toggle('dHidden',S.dock.collapsed);updateMainInset();_updateCollapseBtn();savUI();}
 function _updateCollapseBtn(){const b=$('dCollapseBtn');if(b)b.textContent=S.dock.collapsed?'▲':'▼';const sb=$('dockShowBtn');if(sb)sb.classList.toggle('visible',!!S.dock.collapsed);}
@@ -3033,11 +3143,17 @@ function _updateCollapseBtn(){const b=$('dCollapseBtn');if(b)b.textContent=S.doc
     if(!drag)return;
     const ns=cl(d0-(e.clientY-s0),80,window.innerHeight*.75);
     S.dock.size=ns;$('dock').style.height=ns+'px';updateMainInset();
+    _lastPomoRenderKey='';_renderPomoStyleW();
+    const swFsz=Math.round(cl((ns-34)*0.28,18,52));
+    const sd=$('swDisp');if(sd)sd.style.fontSize=swFsz+'px';
   }
   function tmv(e){
     if(!drag)return;e.preventDefault();
     const ns=cl(d0-(e.touches[0].clientY-s0),80,window.innerHeight*.75);
     S.dock.size=ns;$('dock').style.height=ns+'px';updateMainInset();
+    _lastPomoRenderKey='';_renderPomoStyleW();
+    const swFsz=Math.round(cl((ns-34)*0.28,18,52));
+    const sd=$('swDisp');if(sd)sd.style.fontSize=swFsz+'px';
   }
   function up(){
     drag=false;bar.classList.remove('dragging');savUI();
@@ -3200,9 +3316,36 @@ function thToggle(id){
   if(arrow)arrow.textContent=isOpen?'▸':'▾';
   head.setAttribute('aria-expanded',String(!isOpen));
 }
-function openTheme(){$('thOv').classList.toggle('open')}
+/* ── overlay-open helper ── */
+function _syncOverlayOpen(){
+  const any=$('thOv').classList.contains('open')
+    || $('streakOv').classList.contains('open')
+    || $('resetOv')?.style.display==='flex';
+  document.body.classList.toggle('overlay-open', !!any);
+}
+function openTheme(){
+  $('thOv').classList.toggle('open');
+  _syncOverlayOpen();
+}
 function setPomoStyle(s){S.pomoStyle=s;savUI();renderPomo();document.querySelectorAll('.pomoStyleBtn').forEach(b=>b.classList.toggle('on',b.dataset.style===s));}
 function thOvCk(e){if(e.target===$('thOv'))openTheme()}
+
+/* ═══ DATA RESET ═══ */
+function confirmReset(){
+  const ov=$('resetOv');
+  if(ov){ov.style.display='flex';_syncOverlayOpen();}
+}
+function closeReset(){
+  const ov=$('resetOv');
+  if(ov){ov.style.display='none';}
+  _syncOverlayOpen();
+}
+function doReset(){
+  try{Object.values(SK).forEach(k=>localStorage.removeItem(k));}catch{}
+  closeReset();
+  toast('🗑 リセットしました');
+  setTimeout(()=>location.reload(),900);
+}
 
 /* ═══ DONATE + TOAST ═══ */
 function showDonate(){const b=$('donBanner');b.classList.remove('hidden','fadeout');clearTimeout(window._donTimer);window._donTimer=setTimeout(()=>{b.classList.add('fadeout');setTimeout(()=>b.classList.add('hidden'),650);},8000);}
@@ -3222,10 +3365,11 @@ document.addEventListener('keydown',e=>{
   if(e.key==='2')toggleFW('timer');
   if(e.key==='3')toggleFW('cal');
   if(e.key==='Escape'){
+    if($('resetOv')?.style.display==='flex'){closeReset();return;}
     if($('streakPop').classList.contains('show')){closeStreakPop();return;}
     if($('calDayDetail').classList.contains('show')){closeDayDetail();return;}
-    if($('thOv').classList.contains('open')){$('thOv').classList.remove('open');return;}
-    if($('streakOv').classList.contains('open')){$('streakOv').classList.remove('open');return;}
+    if($('thOv').classList.contains('open')){openTheme();return;}
+    if($('streakOv').classList.contains('open')){closeStreak();return;}
   }
 });
 $('addName').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
