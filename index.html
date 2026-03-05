@@ -1017,9 +1017,9 @@ input.tIn{font-size:11px;padding:4px 7px}
 </style>
 <!-- Firebase SDK (Realtime Database) -->
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getDatabase, ref, onValue, runTransaction, onDisconnect, serverTimestamp, set, remove }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, onDisconnect, set }
+from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5cNpGpJRhSheF4DWm5b6O4zsGu4AhW34",
@@ -1032,48 +1032,39 @@ const firebaseConfig = {
   measurementId: "G-EB6110CP3H"
 };
 
-  const IS_CONFIGURED = !firebaseConfig.apiKey.startsWith('YOUR_');
+const IS_CONFIGURED = !firebaseConfig.apiKey.startsWith('YOUR_');
 
-  if (IS_CONFIGURED) {
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // ── セッション固有のIDを生成 ──
-    const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    const presRef   = ref(db, `presence/${sessionId}`);
-    const countRef  = ref(db, 'onlineCount');
-
-    // ── オンライン登録 ──
-    async function goOnline() {
-      await set(presRef, { t: Date.now() });
-      onDisconnect(presRef).remove();   // タブを閉じると自動削除
+if (IS_CONFIGURED) {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  // ── セッション固有ID ──
+  const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const presRef = ref(db, `presence/${sessionId}`);
+  const presenceRoot = ref(db, 'presence');
+  // ── Firebase接続確認 ──
+  const connectedRef = ref(db, '.info/connected');
+  onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      // 切断時自動削除
+      onDisconnect(presRef).remove();
+      // オンライン登録
+      set(presRef, {
+        t: Date.now()
+      });
     }
-
-    // ── オンライン人数をリアルタイム取得 ──
-    const presenceRoot = ref(db, 'presence');
-    onValue(presenceRoot, snap => {
-      const n = snap.exists() ? Object.keys(snap.val()).length : 0;
-      window._setOnlineCount(n);
-    });
-
-    // ── 可視状態が変わったとき ──
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        goOnline();
-      } else {
-        remove(presRef);   // バックグラウンドでは離脱扱い
-      }
-    });
-
-    goOnline();
-
-    // ── ページ離脱時（beforeunload は Safari で不安定なので onDisconnect 主体）──
-    window.addEventListener('pagehide', () => { remove(presRef); });
-  } else {
-    // 未設定のときはデモ表示
-    window._setOnlineCount(1);
-    console.info('[SCHED] Firebase未設定 — デモモードで表示中');
-  }
+  });
+  // ── オンライン人数取得 ──
+  onValue(presenceRoot, (snap) => {
+    const n = snap.exists()
+      ? Object.keys(snap.val()).length
+      : 0;
+    window._setOnlineCount(n);
+  });
+} else {
+  // Firebase未設定
+  window._setOnlineCount(1);
+  console.info('[SCHED] Firebase未設定 — デモモードで表示中');
+}
 </script>
 </head>
 <body>
