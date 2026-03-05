@@ -1,32 +1,55 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" prefix="og: https://ogp.me/ns#">
 <head>
 <meta charset="UTF-8">
- <meta name="theme-color" content="#EEBBCD">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SCHEDはシンプルで使いやすいスケジュール管理Webアプリです。無料でブラウザから利用できます。">
-<meta property="og:title" content="SCHED | スケジュール管理Webアプリ">
-<meta property="og:description" content="ブラウザで使える無料スケジュール管理ツール">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#030308" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef0f8" media="(prefers-color-scheme: light)">
+<title>SCHED | タスク管理・ポモドーロタイマー・カレンダー一体型Webアプリ</title>
+<meta name="description" content="SCHEDはタスク管理・ポモドーロタイマー・カレンダー・BGMが一体になった無料の生産性向上Webアプリ。ストリーク・レベルシステムで毎日の習慣化をサポートします。">
+<meta name="keywords" content="スケジュール管理,タスク管理,ポモドーロ,タイマー,カレンダー,生産性,習慣,無料アプリ,PWA">
+<meta name="author" content="SCHED">
+<meta name="robots" content="index, follow">
+<meta name="application-name" content="SCHED">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SCHED">
+<meta name="format-detection" content="telephone=no">
+<!-- OGP -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://shalloboba.github.io/sched-test/">
+<meta property="og:title" content="SCHED | タスク管理・ポモドーロ一体型Webアプリ">
+<meta property="og:description" content="タスク管理・ポモドーロタイマー・カレンダー・BGMが一体。ストリーク&レベルシステムで習慣化を支援する無料PWA。">
 <meta property="og:image" content="https://shalloboba.github.io/sched-test/ogp.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SCHED | スケジュール管理Webアプリ">
-<meta name="twitter:description" content="ブラウザで使える無料スケジュール管理ツール">
-<meta name="twitter:image" content="https://shalloboba.github.io/sched-test/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:site_name" content="SCHED">
 <meta property="og:locale" content="ja_JP">
-<title>SCHED | シンプルなスケジュール管理Webアプリ</title>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SCHED | タスク管理・ポモドーロ一体型Webアプリ">
+<meta name="twitter:description" content="タスク管理・ポモドーロタイマー・カレンダー・BGMが一体。無料PWA。">
+<meta name="twitter:image" content="https://shalloboba.github.io/sched-test/ogp.png">
+<!-- Canonical -->
+<link rel="canonical" href="https://shalloboba.github.io/sched-test/">
 <link rel="manifest" href="/sched-test/manifest.json">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="https://shalloboba.github.io/sched-test/icon-192.png">
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- JSON-LD structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"SCHED","url":"https://shalloboba.github.io/sched-test/","description":"タスク管理・ポモドーロタイマー・カレンダー・BGMが一体になった無料の生産性向上Webアプリ","applicationCategory":"ProductivityApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":"ja"}
+</script>
 <style>
 :root{
   --ar:220;--ag:175;--ab:70;
   --ac:rgb(var(--ar),var(--ag),var(--ab));
   --ac0:rgba(var(--ar),var(--ag),var(--ab),.10);
+  --ac05:rgba(var(--ar),var(--ag),var(--ab),.05);
   --ac2:rgba(var(--ar),var(--ag),var(--ab),.22);
   --ac4:rgba(var(--ar),var(--ag),var(--ab),.40);
   --acb:rgba(var(--ar),var(--ag),var(--ab),.30);
@@ -44,8 +67,8 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--jp);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;user-select:none;transition:background .3s,color .3s}
-button{font-family:var(--ui);cursor:pointer;border:none;outline:none;background:none;color:inherit}
+body{font-family:var(--jp);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;user-select:none;transition:background .3s,color .3s;font-synthesis:none}
+button{font-family:var(--ui);cursor:pointer;border:none;outline:none;background:none;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 input{font-family:var(--mono);outline:none;color:var(--tp)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 
@@ -58,7 +81,8 @@ input{font-family:var(--mono);outline:none;color:var(--tp)}
 
 /* TOPBAR */
 #topbar{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:12px 20px 10px;gap:20px;position:relative;
-  background:var(--gl);border-bottom:1px solid var(--b1);backdrop-filter:blur(28px) saturate(1.4);z-index:5}
+  background:var(--gl);border-bottom:1px solid var(--b1);backdrop-filter:blur(28px) saturate(1.6);z-index:5;
+  box-shadow:0 1px 0 rgba(255,255,255,.04),0 4px 24px rgba(0,0,0,.3)}
 .hL{position:absolute;left:12px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center}
 .hR{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center}
 #clockTime{font-family:var(--mono);font-size:clamp(26px,4vw,52px);font-weight:500;letter-spacing:-1px;line-height:1;color:var(--ac);
@@ -77,14 +101,42 @@ input{font-family:var(--mono);outline:none;color:var(--tp)}
 #levelBadge{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;border:1px solid var(--b2);background:var(--sf);
   font-family:var(--mono);font-size:8px;color:var(--ts);cursor:pointer;transition:all .2s;white-space:nowrap}
 #levelBadge:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0);box-shadow:0 0 10px var(--ac2)}
-.lvl-icon{font-size:11px}
-.lvl-bar-wrap{width:32px;height:3px;background:var(--b2);border-radius:2px;overflow:hidden}
-.lvl-bar{height:100%;background:linear-gradient(90deg,var(--ac),rgba(var(--ar),var(--ag),var(--ab),.6));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.lvl-icon{font-size:11px;transition:filter .4s,transform .4s;display:inline-block}
+/* 7日+ : 炎エフェクト */
+.lvl-icon.tier-fire{
+  animation:fireFlicker .6s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 6px rgba(255,120,30,.9)) drop-shadow(0 0 12px rgba(255,60,0,.6));
+}
+@keyframes fireFlicker{
+  0%{transform:scale(1) rotate(-2deg);filter:drop-shadow(0 0 4px rgba(255,140,0,.8)) drop-shadow(0 0 10px rgba(255,50,0,.5));}
+  50%{transform:scale(1.12) rotate(1deg);filter:drop-shadow(0 0 8px rgba(255,200,50,1)) drop-shadow(0 0 18px rgba(255,80,0,.7));}
+  100%{transform:scale(1.04) rotate(-1deg);filter:drop-shadow(0 0 6px rgba(255,120,30,.9)) drop-shadow(0 0 14px rgba(255,60,0,.6));}
+}
+/* 30日+ : 雷エフェクト */
+.lvl-icon.tier-thunder{
+  animation:thunderZap .5s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(120,180,255,.9)) drop-shadow(0 0 16px rgba(80,140,255,.7));
+}
+@keyframes thunderZap{
+  0%,90%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(100,160,255,.8)) drop-shadow(0 0 12px rgba(60,120,255,.5));}
+  93%{transform:scale(1.18) skewX(-4deg);filter:drop-shadow(0 0 12px rgba(200,220,255,1)) drop-shadow(0 0 24px rgba(100,160,255,.9)) drop-shadow(0 0 40px rgba(60,120,255,.6));}
+  96%{transform:scale(1.05) skewX(2deg);filter:drop-shadow(0 0 8px rgba(180,210,255,.9)) drop-shadow(0 0 20px rgba(80,140,255,.7));}
+}
+/* ストリークバッジ tier styling */
 #streakBadge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;border:1px solid var(--b2);background:var(--sf);
   font-family:var(--mono);font-size:8px;color:var(--ts);cursor:pointer;transition:all .2s;white-space:nowrap}
 #streakBadge:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
 #streakBadge.active{border-color:rgba(255,180,50,.5);color:rgba(255,180,50,1);background:rgba(255,180,50,.08);box-shadow:0 0 12px rgba(255,180,50,.15)}
+#streakBadge[data-tier="1"]{border-color:rgba(255,100,20,.6);color:rgba(255,150,50,1);background:rgba(255,80,0,.1);box-shadow:0 0 14px rgba(255,80,0,.25)}
+#streakBadge[data-tier="2"]{border-color:rgba(100,160,255,.7);color:rgba(160,200,255,1);background:rgba(80,140,255,.12);box-shadow:0 0 16px rgba(80,140,255,.35),0 0 32px rgba(60,120,255,.15)}
+.streak-icon{display:inline-block;transition:all .3s}
+#streakBadge[data-tier="1"] .streak-icon{animation:streakFire .7s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(255,100,0,.8))}
+#streakBadge[data-tier="2"] .streak-icon{animation:streakThunder .6s ease-in-out infinite}
+@keyframes streakFire{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.2) rotate(3deg)}}
+@keyframes streakThunder{0%,85%,100%{transform:scale(1)}88%{transform:scale(1.3) skewX(-5deg)}92%{transform:scale(1.1) skewX(3deg)}}
 #streakNum{font-weight:500;font-size:10px}
+.lvl-bar-wrap{width:32px;height:3px;background:var(--b2);border-radius:2px;overflow:hidden}
+.lvl-bar{height:100%;background:linear-gradient(90deg,var(--ac),rgba(var(--ar),var(--ag),var(--ab),.6));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
 
 /* MID */
 #mid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;position:relative;overflow:hidden}
@@ -108,7 +160,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp)}
 #dock{position:fixed;z-index:20;background:var(--gl);backdrop-filter:blur(28px) saturate(1.3);overflow:hidden;
   left:0;right:0;bottom:0;height:220px;border-top:1px solid var(--b1);border-radius:14px 14px 0 0;
   display:flex;flex-direction:column;transition:transform var(--tr);
-  box-shadow:0 -8px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
+  box-shadow:0 -8px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);will-change:transform}
 #dock.dHidden{transform:translateY(100%);pointer-events:none}
 #dockBar{flex-shrink:0;height:34px;display:flex;align-items:center;padding:0 12px;gap:7px;
   border-bottom:1px solid var(--b1);position:relative;cursor:ns-resize;user-select:none;
@@ -148,20 +200,20 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
   font-weight:500;padding:4px 10px;flex-shrink:0;transition:all .15s;letter-spacing:.5px}
 .bAdd:hover{filter:brightness(1.2);box-shadow:0 0 14px var(--ac4)}
 .bAdd:active{transform:scale(.95)}
-.tScroll{overflow-y:auto;flex:1}
+.tScroll{overflow-y:auto;flex:1;overscroll-behavior:contain}
 
 /* TASK ROWS */
 .tRow{display:grid;grid-template-columns:18px 50px 1fr auto auto 18px;align-items:center;gap:5px;
-  padding:6px 10px;border-bottom:1px solid var(--b1);cursor:pointer;transition:background .15s;
+  padding:6px 10px;border-bottom:1px solid var(--b1);cursor:pointer;transition:background .12s,transform .12s;
   position:relative;overflow:hidden}
 .tRow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--ac);
   transform:scaleY(0);transition:transform .15s;border-radius:0 2px 2px 0}
 .tRow.noT{grid-template-columns:18px 0 1fr auto auto 18px}.tRow.noT .tTime{display:none}
-.tRow:hover{background:rgba(255,255,255,.022)}
+.tRow:hover{background:rgba(255,255,255,.028);transform:translateX(1px)}
 .tRow:hover::before{transform:scaleY(1)}
 .tRow.isNow{background:var(--ac0)}
 .tRow.isNow::before{transform:scaleY(1)}
-.tRow.isDone{opacity:.25}.tRow.isDone .tName{text-decoration:line-through}
+.tRow.isDone{opacity:.22}.tRow.isDone .tName{text-decoration:line-through}
 .tRow.isDone::before{background:var(--ts)}
 .tEmoji{font-size:12px;text-align:center;line-height:1}
 .tTime{font-family:var(--mono);font-size:9px;color:var(--ac);font-weight:500}
@@ -201,15 +253,16 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 .pomoRing svg{transform:rotate(-90deg)}
 .pr-bg{fill:none;stroke:var(--b2)}
 .pr-arc{fill:none;stroke:var(--red);stroke-linecap:round;transition:stroke-dashoffset .5s linear,stroke .4s;
-  filter:drop-shadow(0 0 5px rgba(255,71,87,.4))}
-.pomoRing.brk .pr-arc{stroke:var(--blue);filter:drop-shadow(0 0 5px rgba(63,169,245,.4))}
+  filter:drop-shadow(0 0 6px rgba(255,71,87,.5))}
+.pomoRing.brk .pr-arc{stroke:var(--blue);filter:drop-shadow(0 0 6px rgba(63,169,245,.5))}
 .pRingIn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
 .pRT{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--red);transition:color .4s}
 .pomoRing.brk .pRT{color:var(--blue)}
 .pRM{font-family:var(--mono);font-size:6px;letter-spacing:2px;color:var(--ts);text-transform:uppercase}
-.pDots{display:flex;gap:3px;justify-content:center}
-.pd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background .28s,transform .28s}
-.pd.done{background:var(--red)}.pd.cur{background:var(--ac);transform:scale(1.5);box-shadow:0 0 6px var(--ac)}
+.pDots{display:flex;gap:4px;justify-content:center}
+.pd{width:6px;height:6px;border-radius:50%;background:var(--b2);transition:background .3s,transform .3s,box-shadow .3s}
+.pd.done{background:var(--red);box-shadow:0 0 6px rgba(255,71,87,.5)}
+.pd.cur{background:var(--ac);transform:scale(1.6);box-shadow:0 0 8px var(--ac)}
 .pSR{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
 .pF label{display:block;font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--ts);text-transform:uppercase;margin-bottom:2px}
 .pF input{width:100%;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
@@ -222,15 +275,17 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 .swLR{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--ts);padding:2px 5px;border-radius:3px}
 .swLR:last-child{color:var(--blue);background:rgba(63,169,245,.07)}
 .bc{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r2);
-  font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.5px;transition:all .15s;white-space:nowrap}
-.bc.p{background:var(--ac);color:var(--bg)}.bc.p:hover{filter:brightness(1.15);box-shadow:0 0 12px var(--ac4)}
-.bc.g{border:1px solid var(--b2);color:var(--ts);background:var(--ra)}.bc.g:hover{border-color:var(--ac);color:var(--ac)}
-.bc:active{transform:scale(.94)}
+  font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.5px;transition:all .12s;white-space:nowrap}
+.bc.p{background:var(--ac);color:var(--bg)}.bc.p:hover{filter:brightness(1.18);box-shadow:0 0 14px var(--ac4)}
+.bc.g{border:1px solid var(--b2);color:var(--ts);background:var(--ra)}.bc.g:hover{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
+.bc:active{transform:scale(.92)}
 
 /* FLOATING WINDOWS */
 .fw{position:fixed;z-index:50;background:var(--gl);border:1px solid var(--b2);border-radius:var(--r);
-  backdrop-filter:blur(30px) saturate(1.4);
-  box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden;transition:opacity .2s,transform .2s}
+  backdrop-filter:blur(40px) saturate(1.6);
+  box-shadow:0 32px 80px rgba(0,0,0,.55),0 8px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07);
+  display:flex;flex-direction:column;overflow:hidden;transition:opacity .25s,transform .25s;will-change:transform}
+.fw.hidden{opacity:0;pointer-events:none;transform:scale(.97) translateY(6px)}
 .fw.hidden{opacity:0;pointer-events:none;transform:scale(.92) translateY(10px)}
 .fw .rn{position:absolute;top:0;left:8px;right:8px;height:4px;cursor:n-resize;z-index:5}
 .fw .rs{position:absolute;bottom:0;left:8px;right:8px;height:4px;cursor:s-resize;z-index:5}
@@ -240,14 +295,15 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 .fw .rne{position:absolute;top:0;right:0;width:8px;height:8px;cursor:ne-resize;z-index:6}
 .fw .rsw{position:absolute;bottom:0;left:0;width:8px;height:8px;cursor:sw-resize;z-index:6}
 .fw .rse{position:absolute;bottom:0;right:0;width:8px;height:8px;cursor:se-resize;z-index:6}
-.fwTb{height:30px;flex-shrink:0;display:flex;align-items:center;gap:6px;padding:0 10px;
-  border-bottom:1px solid var(--b1);cursor:grab;background:rgba(255,255,255,.02)}
+.fwTb{height:32px;flex-shrink:0;display:flex;align-items:center;gap:6px;padding:0 10px;
+  border-bottom:1px solid var(--b1);cursor:grab;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01))}
 .fwTb:active{cursor:grabbing}
-.fwDots{display:flex;gap:4px;flex-shrink:0}
-.fwDot{width:9px;height:9px;border-radius:50%;cursor:pointer;transition:filter .13s,transform .13s}
+.fwDots{display:flex;gap:5px;flex-shrink:0}
+.fwDot{width:10px;height:10px;border-radius:50%;cursor:pointer;transition:filter .13s,transform .13s;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
 .fwDot.c{background:#ff5f57}.fwDot.m{background:#febc2e}.fwDot.x{background:#28c840}
-.fwDot:hover{filter:brightness(1.25);transform:scale(1.15)}
-.fwTitle{flex:1;text-align:center;font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--ts)}
+.fwDot:hover{filter:brightness(1.3);transform:scale(1.2)}
+.fwTitle{flex:1;text-align:center;font-family:var(--mono);font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--ts);opacity:.7}
 .fwTimerInner{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:160px}
 
 /* ══════════════════════════════════════════
@@ -398,7 +454,9 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 .strLvlCard{border-radius:var(--r);background:var(--ra);border:1px solid var(--b1);padding:16px 18px;
   display:flex;gap:14px;align-items:center;position:relative;overflow:hidden}
 .strLvlCard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac0),transparent);pointer-events:none}
-.strLvlIcon{font-size:32px;flex-shrink:0;animation:flicker 2s ease-in-out infinite alternate}
+.strLvlIcon{font-size:32px;flex-shrink:0;animation:flicker 2s ease-in-out infinite alternate;display:inline-block}
+.strLvlIcon.tier-fire{animation:fireFlicker .6s ease-in-out infinite alternate;filter:drop-shadow(0 0 8px rgba(255,120,30,.9)) drop-shadow(0 0 16px rgba(255,60,0,.6))}
+.strLvlIcon.tier-thunder{animation:thunderZap .5s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(120,180,255,.9)) drop-shadow(0 0 20px rgba(80,140,255,.7))}
 @keyframes flicker{0%{transform:scale(1)}100%{transform:scale(1.1) rotate(3deg)}}
 .strLvlInfo{flex:1;min-width:0}
 .strLvlName{font-family:var(--ui);font-size:18px;font-weight:900;color:var(--tp);letter-spacing:-.5px}
@@ -579,10 +637,10 @@ input.nIn{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:v
 .snap{position:fixed;z-index:99;background:var(--ac);opacity:0;pointer-events:none;transition:opacity .15s;border-radius:2px}
 #sT{top:0;left:0;right:0;height:2px}#sB{bottom:0;left:0;right:0;height:2px}#sL{top:0;bottom:0;left:0;width:2px}#sR{top:0;bottom:0;right:0;width:2px}.snap.show{opacity:.6}
 #toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(40px);
-  background:var(--sf);border:1px solid var(--b2);color:var(--tp);
-  font-family:var(--mono);font-size:10px;font-weight:500;padding:7px 18px;border-radius:99px;
+  background:rgba(20,20,35,.95);border:1px solid var(--b3);color:var(--tp);
+  font-family:var(--mono);font-size:10px;font-weight:500;padding:8px 20px;border-radius:99px;
   z-index:900;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .28s;
-  letter-spacing:1px;box-shadow:var(--shadow);pointer-events:none;opacity:0;white-space:nowrap}
+  letter-spacing:1px;box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);pointer-events:none;opacity:0;white-space:nowrap;backdrop-filter:blur(20px)}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* ══════════════════════════════════════════
@@ -626,16 +684,19 @@ input.tIn{font-size:11px;padding:4px 7px}
    MOBILE BOTTOM NAV
 ══════════════════════════════════════════ */
 #mobileNav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:25;
-  background:var(--gl);border-top:1px solid var(--b1);backdrop-filter:blur(28px) saturate(1.4);
+  background:var(--gl);border-top:1px solid var(--b1);backdrop-filter:blur(32px) saturate(1.6);
   padding:6px 0 env(safe-area-inset-bottom,6px);
-  grid-template-columns:repeat(5,1fr)}
+  grid-template-columns:repeat(5,1fr);
+  box-shadow:0 -1px 0 rgba(255,255,255,.04),0 -8px 32px rgba(0,0,0,.4)}
 .mnBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   padding:8px 4px;cursor:pointer;border:none;background:none;color:var(--ts);
-  font-family:var(--mono);font-size:8px;letter-spacing:.5px;transition:color .15s;
-  -webkit-tap-highlight-color:transparent;min-height:52px;position:relative}
+  font-family:var(--mono);font-size:8px;letter-spacing:.5px;transition:color .15s,transform .1s;
+  -webkit-tap-highlight-color:transparent;min-height:52px;position:relative;touch-action:manipulation}
+.mnBtn:active{transform:scale(.88)}
 .mnBtn.on{color:var(--ac)}
 .mnBtn.on::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--ac);border-radius:0 0 2px 2px;box-shadow:0 0 8px var(--ac)}
-.mnBtn .mni{font-size:20px;line-height:1}
+.mnBtn .mni{font-size:20px;line-height:1;transition:transform .15s}
+.mnBtn.on .mni{transform:scale(1.1)}
 .mnBtn .mnl{font-size:8px}
 
 /* ══════════════════════════════════════════
@@ -647,7 +708,7 @@ input.tIn{font-size:11px;padding:4px 7px}
   flex-direction:column;overflow:hidden;
   padding-bottom:env(safe-area-inset-bottom,0);max-height:88vh;
   transform:translateY(110%);transition:transform .3s cubic-bezier(.32,.72,0,1);
-  display:flex;pointer-events:none}
+  display:flex;pointer-events:none;will-change:transform}
 .mSheet.open{transform:translateY(0);pointer-events:auto}
 .mSheetPull{width:40px;height:4px;background:var(--b2);border-radius:2px;margin:12px auto 3px;flex-shrink:0}
 .mSheetHeader{display:flex;align-items:center;justify-content:center;padding:4px 48px 10px;position:relative;flex-shrink:0}
@@ -656,7 +717,7 @@ input.tIn{font-size:11px;padding:4px 7px}
   border:1px solid var(--b2);background:var(--ra);display:flex;align-items:center;justify-content:center;
   font-size:16px;color:var(--ts);cursor:pointer;transition:all .15s}
 .mSheetClose:hover{border-color:var(--ac);color:var(--ac)}
-.mSheetBody{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}
+.mSheetBody{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #mSheetOv{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:29;backdrop-filter:blur(4px)}
 #mSheetOv.open{display:block}
 
@@ -714,6 +775,12 @@ input.tIn{font-size:11px;padding:4px 7px}
   .bgmB{padding:8px 12px;font-size:11px}
   /* Don banner off mobile */
   #donBanner{display:none}
+  /* Performance: reduce backdrop-filter complexity on mobile */
+  #topbar{backdrop-filter:blur(16px)}
+  #mSheetOv{backdrop-filter:none}
+  .mSheet{-webkit-overflow-scrolling:touch}
+  /* Prevent layout thrash on scroll */
+  .tRow{contain:layout style}
 }
 
 /* ══════════════════════════════════════════
@@ -727,9 +794,250 @@ input.tIn{font-size:11px;padding:4px 7px}
   .strHeatCell{width:10px;height:10px}
   #bgmPanel{left:8px;right:8px;width:calc(100% - 16px)}
 }
+
+/* ══════════════════════════════════════════
+   POMODORO STYLE VARIANTS
+══════════════════════════════════════════ */
+.ps-switcher{display:flex;gap:4px;justify-content:center;margin-bottom:10px}
+.pomoStyleBtn{width:32px;height:24px;border-radius:6px;border:1px solid var(--b2);background:var(--ra);
+  font-size:12px;color:var(--ts);cursor:pointer;transition:all .15s;touch-action:manipulation}
+.pomoStyleBtn.on{border-color:var(--ac);color:var(--ac);background:var(--ac0);box-shadow:0 0 8px var(--ac2)}
+.pomoStyleBtn:hover:not(.on){border-color:var(--b3);color:var(--tp)}
+
+/* Ring */
+.ps-ring{position:relative;width:140px;height:140px;margin:0 auto 4px}
+.ps-ring.brk .ps-arc{stroke:var(--blue);filter:drop-shadow(0 0 8px rgba(63,169,245,.5))}
+.ps-svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ps-bg{fill:none;stroke:var(--b2);stroke-width:8}
+.ps-arc{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;
+  transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1),stroke .4s;
+  filter:drop-shadow(0 0 8px rgba(255,71,87,.5))}
+.ps-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ps-time{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--red);line-height:1;transition:color .4s}
+.ps-ring.brk .ps-time{color:var(--blue)}
+.ps-mode{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--ts);text-transform:uppercase}
+
+/* Arc */
+.ps-arc-wrap{margin:0 auto 4px;width:160px}
+.ps-svg-arc{width:100%;display:block}
+.ps-arc-bg{fill:none;stroke:var(--b2);stroke-width:8;stroke-linecap:round}
+.ps-arc-fill{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;
+  transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1),stroke .4s;
+  filter:drop-shadow(0 0 6px rgba(255,71,87,.4))}
+.ps-arc-wrap.brk .ps-arc-fill{stroke:var(--blue);filter:drop-shadow(0 0 6px rgba(63,169,245,.4))}
+.ps-arc-time{font-family:var(--mono);font-size:18px;font-weight:500;fill:var(--red);text-anchor:middle;transition:fill .4s}
+.ps-arc-wrap.brk .ps-arc-time{fill:var(--blue)}
+.ps-arc-mode{font-family:var(--mono);font-size:7px;letter-spacing:2px;fill:var(--ts);text-anchor:middle;text-transform:uppercase}
+
+/* Minimal */
+.ps-minimal{padding:8px 4px;text-align:center}
+.ps-min-time{font-family:var(--mono);font-size:44px;font-weight:500;color:var(--red);letter-spacing:-2px;line-height:1;transition:color .4s}
+.ps-minimal.brk .ps-min-time{color:var(--blue)}
+.ps-min-bar{height:3px;background:var(--b2);border-radius:2px;overflow:hidden;margin:8px 0 4px}
+.ps-min-fill{height:100%;background:var(--red);border-radius:2px;transition:width .9s cubic-bezier(.4,0,.2,1),background .4s}
+.ps-minimal.brk .ps-min-fill{background:var(--blue)}
+.ps-min-mode{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--ts);text-transform:uppercase}
+
+/* Blocks */
+.ps-blocks{padding:8px 4px;text-align:center}
+.ps-blk-time{font-family:var(--mono);font-size:30px;font-weight:500;color:var(--red);letter-spacing:-1px;line-height:1;transition:color .4s;margin-bottom:10px}
+.ps-blocks.brk .ps-blk-time{color:var(--blue)}
+.ps-blk-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-bottom:6px}
+.ps-blk{height:8px;border-radius:2px;background:var(--b2);transition:background .3s,box-shadow .3s}
+.ps-blk.on{background:var(--red);box-shadow:0 0 4px rgba(255,71,87,.3)}
+.ps-blocks.brk .ps-blk.on{background:var(--blue);box-shadow:0 0 4px rgba(63,169,245,.3)}
+.ps-blk-mode{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--ts);text-transform:uppercase}
+
+/* ══════════════════════════════════════════
+   THEME ACCORDION
+══════════════════════════════════════════ */
+.thSection{border-bottom:1px solid var(--b1)}
+.thSection:last-of-type{border-bottom:none}
+.thSectionHead{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:none;border:none;color:var(--ts);cursor:pointer;
+  font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:1px;text-align:left;
+  transition:color .15s,background .15s;touch-action:manipulation}
+.thSectionHead:hover{color:var(--tp);background:rgba(255,255,255,.03)}
+.thSectionHead.open{color:var(--ac)}
+.thArrow{font-size:10px;transition:transform .2s;opacity:.7;flex-shrink:0}
+.thSectionBody{display:none;padding:0 14px 12px;animation:thFadeIn .18s ease}
+.thSectionBody.open{display:block}
+@keyframes thFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════════
+   LANGUAGE + TIMER STYLE BUTTONS
+══════════════════════════════════════════ */
+.langBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+.langBtn{padding:8px 10px;border-radius:var(--r2);border:1px solid var(--b2);background:var(--ra);
+  font-family:var(--mono);font-size:9px;color:var(--ts);cursor:pointer;transition:all .15s;text-align:left;
+  touch-action:manipulation;letter-spacing:.3px}
+.langBtn.on{border-color:var(--ac);color:var(--ac);background:var(--ac0);box-shadow:0 0 10px var(--ac2)}
+.langBtn:hover:not(.on){border-color:var(--b3);color:var(--tp);background:rgba(255,255,255,.03)}
+.timerStyleBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+.timerStyleBtns .pomoStyleBtn{width:auto;height:auto;padding:8px 10px;font-size:9px;font-family:var(--mono);letter-spacing:.5px;text-align:left}
+
+/* ══════════════════════════════════════════
+   DESIGN OVERHAUL — grad text, depth
+══════════════════════════════════════════ */
+#mid{isolation:isolate}
+#curTask{
+  background:linear-gradient(135deg,var(--tp) 0%,rgba(var(--ar),var(--ag),var(--ab),.85) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+#curTask.empty{background:none;-webkit-text-fill-color:var(--ts)}
+#clockTime{
+  background:linear-gradient(135deg,var(--ac) 30%,rgba(var(--ar),var(--ag),var(--ab),.55) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 22px rgba(var(--ar),var(--ag),var(--ab),.45));
+}
+.strTitle{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;
+  padding:18px 18px 0;
+  background:linear-gradient(135deg,var(--tp),var(--ac));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ssStat{position:relative;overflow:hidden}
+.ssStat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac05),transparent);pointer-events:none}
+.swatch{width:20px;height:20px;border-radius:6px;cursor:pointer;border:2px solid transparent;
+  transition:transform .13s,border-color .13s,box-shadow .13s}
+.swatch:hover{transform:scale(1.18);box-shadow:0 0 10px rgba(255,255,255,.2)}
+.swatch.on{border-color:var(--tp);box-shadow:0 0 0 2px var(--ac)}
+.spBox{position:relative;overflow:hidden}
+.spBox::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,var(--ac0),transparent);pointer-events:none}
+#streakPop.show .spBox{transform:scale(1)}
+
+/* ══════════════════════════════════════════
+   PWA STANDALONE MODE
+══════════════════════════════════════════ */
+@media (display-mode: standalone){
+  #topbar{padding-top:max(12px,env(safe-area-inset-top))}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .tier-fire,.tier-thunder{animation:none!important;filter:none!important}
+}
+#streakPanel,#thPanel{content-visibility:auto;contain-intrinsic-size:0 600px}
+/* ══════════════════════════════════════════
+   ONLINE BADGE
+══════════════════════════════════════════ */
+#onlineBadge{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:99px;
+  border:1px solid rgba(72,199,120,.35);
+  background:rgba(72,199,120,.08);
+  font-family:var(--mono);font-size:9px;font-weight:500;
+  color:rgba(72,199,120,.9);
+  letter-spacing:.5px;cursor:default;
+  transition:border-color .3s,background .3s,color .3s;
+  opacity:0;transform:scale(.85);
+  animation:onlineFadeIn .4s .5s ease forwards;
+}
+#onlineBadge.solo{
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  color:var(--ts);
+}
+.onlineDot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgb(72,199,120);flex-shrink:0;
+  box-shadow:0 0 6px rgba(72,199,120,.7);
+  animation:onlinePulse 2s ease-in-out infinite;
+}
+#onlineBadge.solo .onlineDot{
+  background:var(--ts);box-shadow:none;animation:none;
+}
+#onlineCount{
+  font-variant-numeric:tabular-nums;
+  transition:opacity .2s;
+}
+#onlineCount.changing{opacity:0}
+.onlineLabel{opacity:.7}
+@keyframes onlineFadeIn{to{opacity:1;transform:scale(1)}}
+@keyframes onlinePulse{
+  0%,100%{box-shadow:0 0 4px rgba(72,199,120,.5)}
+  50%{box-shadow:0 0 10px rgba(72,199,120,.9),0 0 18px rgba(72,199,120,.3)}
+}
+/* モバイルでは非表示 */
+@media(max-width:700px){#onlineBadge{display:none}}
+
+::-webkit-scrollbar-track{background:transparent}
 </style>
+<!-- Firebase SDK (Realtime Database) -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getDatabase, ref, onValue, runTransaction, onDisconnect, serverTimestamp, set, remove }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5cNpGpJRhSheF4DWm5b6O4zsGu4AhW34",
+  authDomain: "sched-3fd99.firebaseapp.com",
+  databaseURL: "https://sched-3fd99-default-rtdb.firebaseio.com",
+  projectId: "sched-3fd99",
+  storageBucket: "sched-3fd99.firebasestorage.app",
+  messagingSenderId: "980517137105",
+  appId: "1:980517137105:web:29087514bfcfbd68d233f0",
+  measurementId: "G-EB6110CP3H"
+};
+
+  const IS_CONFIGURED = !FIREBASE_CONFIG.apiKey.startsWith('YOUR_');
+
+  if (IS_CONFIGURED) {
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db  = getDatabase(app);
+
+    // ── セッション固有のIDを生成 ──
+    const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const presRef   = ref(db, `presence/${sessionId}`);
+    const countRef  = ref(db, 'onlineCount');
+
+    // ── オンライン登録 ──
+    async function goOnline() {
+      await set(presRef, { t: Date.now() });
+      onDisconnect(presRef).remove();   // タブを閉じると自動削除
+    }
+
+    // ── オンライン人数をリアルタイム取得 ──
+    const presenceRoot = ref(db, 'presence');
+    onValue(presenceRoot, snap => {
+      const n = snap.exists() ? Object.keys(snap.val()).length : 0;
+      window._setOnlineCount(n);
+    });
+
+    // ── 可視状態が変わったとき ──
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        goOnline();
+      } else {
+        remove(presRef);   // バックグラウンドでは離脱扱い
+      }
+    });
+
+    goOnline();
+
+    // ── ページ離脱時（beforeunload は Safari で不安定なので onDisconnect 主体）──
+    window.addEventListener('pagehide', () => { remove(presRef); });
+  } else {
+    // 未設定のときはデモ表示
+    window._setOnlineCount(1);
+    console.info('[SCHED] Firebase未設定 — デモモードで表示中');
+  }
+</script>
 </head>
 <body>
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;
+  background:var(--sf);border-top:1px solid var(--b2);padding:12px 16px;
+  display:none;align-items:center;gap:10px;backdrop-filter:blur(20px);
+  box-shadow:0 -8px 32px rgba(0,0,0,.4)">
+  <span style="font-size:20px">📱</span>
+  <div style="flex:1">
+    <div style="font-family:var(--ui);font-size:12px;font-weight:700;color:var(--tp)" data-i18n="pwaInstall">ホーム画面に追加</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--ts);margin-top:1px">SCHEDをアプリとして使う</div>
+  </div>
+  <button onclick="doInstall()" style="padding:7px 14px;border-radius:var(--r2);background:var(--ac);color:var(--bg);
+    font-family:var(--mono);font-size:9px;font-weight:500;border:none;cursor:pointer">追加</button>
+  <button onclick="dismissInstall()" style="width:28px;height:28px;border-radius:50%;background:var(--b2);color:var(--ts);
+    font-family:var(--mono);font-size:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+</div>
 
 <canvas id="bgC"></canvas><canvas id="ptC"></canvas>
 <div class="snap" id="sT"></div><div class="snap" id="sB"></div>
@@ -738,22 +1046,28 @@ input.tIn{font-size:11px;padding:4px 7px}
 <div id="main">
   <header id="topbar">
     <div class="hL">
-      <button class="wt" id="wtTask"  onclick="toggleFW('task')"><span class="d"></span>タスク</button>
-      <button class="wt" id="wtTimer" onclick="toggleFW('timer')"><span class="d"></span>タイマー</button>
-      <button class="wt" id="wtCal"   onclick="toggleFW('cal')"><span class="d"></span>カレンダー</button>
+      <button class="wt" id="wtTask"  onclick="toggleFW('task')"><span class="d"></span><span data-i18n="taskBtn">タスク</span></button>
+      <button class="wt" id="wtTimer" onclick="toggleFW('timer')"><span class="d"></span><span data-i18n="timerBtn">タイマー</span></button>
+      <button class="wt" id="wtCal"   onclick="toggleFW('cal')"><span class="d"></span><span data-i18n="calBtn">カレンダー</span></button>
+      <!-- オンラインバッジ -->
+      <div id="onlineBadge" data-i18n-title="onlineBadgeTitle" title="現在オンラインの人数">
+        <span class="onlineDot"></span>
+        <span id="onlineCount">1</span>
+        <span class="onlineLabel" data-i18n="onlineUnit">人</span>
+      </div>
     </div>
     <div class="clock-wrap">
       <div id="clockTime">00:00:00</div>
       <div id="clockDate">—</div>
     </div>
     <div class="hR">
-      <div id="levelBadge" onclick="openStreak()" title="レベル・実績">
+      <div id="levelBadge" onclick="openStreak()" data-i18n-title="levelTitle" data-i18n-aria="levelAriaLabel" title="レベル・実績" aria-label="レベル・実績を表示">
         <span class="lvl-icon" id="lvlIcon">🌱</span>
         <span id="lvlName" style="font-size:8px">Lv.1</span>
         <div class="lvl-bar-wrap"><div class="lvl-bar" id="lvlBar" style="width:0%"></div></div>
       </div>
-      <div id="streakBadge" onclick="openStreak()" title="ストリーク">
-        <span>🔥</span><span id="streakNum">0</span><span style="font-size:7px;letter-spacing:1px">日</span>
+      <div id="streakBadge" onclick="openStreak()" data-i18n-title="streakTitle2" data-i18n-aria="streakAriaLabel" title="ストリーク" aria-label="ストリーク情報を表示" data-tier="0">
+        <span class="streak-icon">🔥</span><span id="streakNum">0</span><span style="font-size:7px;letter-spacing:1px">日</span>
       </div>
       <button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)">♪</button>
       <button class="ib" onclick="openTheme()" title="テーマ">◐</button>
@@ -779,7 +1093,7 @@ input.tIn{font-size:11px;padding:4px 7px}
   </div>
   <div id="dockBody">
     <div class="dpane" id="dpTask">
-      <div class="ph"><span class="phLbl">📋 今日の予定</span><span class="phLbl" id="tCnt">0件</span></div>
+      <div class="ph"><span class="phLbl" data-i18n="todayTasks">📋 今日の予定</span><span class="phLbl" id="tCnt">0件</span></div>
       <div class="addRow">
         <div class="mToggle">
           <button class="mb on" id="mNow"  onclick="setMode('now')">今すぐ</button>
@@ -799,20 +1113,23 @@ input.tIn{font-size:11px;padding:4px 7px}
       <div class="tStack">
         <div class="tbody on pd-body" id="bPomo">
           <div style="display:flex;align-items:center;gap:9px">
-            <div class="pomoRing" id="pRing">
-              <svg width="68" height="68" viewBox="0 0 68 68"><circle class="pr-bg" cx="34" cy="34" r="28" stroke-width="4"/><circle class="pr-arc" id="pArc" cx="34" cy="34" r="28" stroke-width="4" stroke-dasharray="175.9" stroke-dashoffset="0"/></svg>
-              <div class="pRingIn"><div class="pRT" id="pRT">25:00</div><div class="pRM" id="pRM">作業</div></div>
-            </div>
+            <!-- DYNAMIC POMO DISPLAY — mirrors float window style -->
+            <div id="pomoStyleWrapD" style="flex-shrink:0"></div>
             <div style="display:flex;flex-direction:column;gap:5px">
               <div class="pDots" id="pDots"></div>
               <div class="cr">
-                <button class="bc p" id="pBtn" onclick="pomoToggle()">▶ 開始</button>
-                <button class="bc g" onclick="pomoReset()">↺</button>
-                <button class="bc g" onclick="pomoSkip()">⏭</button>
+                <button class="bc p" id="pBtn" data-pomo-toggle onclick="pomoToggle()">▶ 開始</button>
+                <button class="bc g" data-pomo-reset onclick="pomoReset()" data-i18n="reset">↺</button>
+                <button class="bc g" data-pomo-skip onclick="pomoSkip()" data-i18n="skip">⏭</button>
               </div>
               <div class="tSubLbl" id="pSub">作業時間</div>
             </div>
           </div>
+          <!-- hidden compat elements for renderPomo -->
+          <span id="pRT" style="display:none">25:00</span>
+          <span id="pRM" style="display:none">作業</span>
+          <div id="pRing" style="display:none"></div>
+          <svg style="display:none"><circle id="pArc" stroke-dasharray="175.9" stroke-dashoffset="0"/></svg>
           <div class="pSR">
             <div class="pF"><label>作業(分)</label><input type="number" id="pWork" value="25" min="1" max="99" onchange="pomoChg()"></div>
             <div class="pF"><label>休憩(分)</label><input type="number" id="pBreak" value="5" min="1" max="99" onchange="pomoChg()"></div>
@@ -823,9 +1140,9 @@ input.tIn{font-size:11px;padding:4px 7px}
         <div class="tbody sw-body" id="bSw">
           <div class="tDisp" id="swDisp">00:00:00</div>
           <div class="cr">
-            <button class="bc p" id="swBtn" onclick="swToggle()">▶ 開始</button>
-            <button class="bc g" onclick="swLap()">◎ ラップ</button>
-            <button class="bc g" onclick="swReset()">↺</button>
+            <button class="bc p" id="swBtn" onclick="swToggle()">▶</button>
+            <button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button>
+            <button class="bc g" onclick="swReset()" data-i18n="reset">↺</button>
           </div>
           <div class="swLaps" id="swLaps"></div>
         </div>
@@ -840,7 +1157,7 @@ input.tIn{font-size:11px;padding:4px 7px}
   <div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div>
   <div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('task')"></div><div class="fwDot m" onclick="dockFW('task')"></div></div><div class="fwTitle">TASK LIST</div></div>
   <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:120px">
-    <div class="ph"><span class="phLbl">予定リスト</span><span class="phLbl" id="tCntW">0件</span></div>
+    <div class="ph"><span class="phLbl" data-i18n="taskListTitle">予定リスト</span><span class="phLbl" id="tCntW">0件</span></div>
     <div class="addRow">
       <div class="mToggle"><button class="mb on" id="mNowW" onclick="setModeW('now')">今すぐ</button><button class="mb" id="mTimeW" onclick="setModeW('time')">時間指定</button></div>
       <input type="time" id="addTimeW" class="tIn hide">
@@ -852,28 +1169,41 @@ input.tIn{font-size:11px;padding:4px 7px}
 </div>
 
 <!-- FLOAT: Timer -->
-<div class="fw hidden" id="fwTimer" style="width:280px;min-height:200px;top:80px;right:28px">
+<div class="fw hidden" id="fwTimer" style="width:290px;min-height:200px;top:80px;right:28px">
   <div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div>
   <div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div>
   <div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('timer')"></div><div class="fwDot m" onclick="dockFW('timer')"></div></div><div class="fwTitle">TIMER</div></div>
   <div class="fwTimerInner">
-    <div class="timerTabs"><button class="ttab on" id="tPomoW" onclick="switchTimerBoth('pomo')">🍅 ポモドーロ</button><button class="ttab" id="tSwW" onclick="switchTimerBoth('sw')">⏱ ストップ</button></div>
+    <div class="timerTabs"><button class="ttab on" id="tPomoW" onclick="switchTimerBoth('pomo')">🍅 Pomodoro</button><button class="ttab" id="tSwW" onclick="switchTimerBoth('sw')">⏱ Stopwatch</button></div>
     <div class="tStack">
       <div class="tbody on pd-body" id="bPomoW">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="pomoRing" id="pRingW">
-            <svg width="60" height="60" viewBox="0 0 60 60"><circle class="pr-bg" cx="30" cy="30" r="24" stroke-width="3.5"/><circle class="pr-arc" id="pArcW" cx="30" cy="30" r="24" stroke-width="3.5" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg>
-            <div class="pRingIn"><div class="pRT" id="pRTW" style="font-size:10px">25:00</div><div class="pRM" id="pRMW" style="font-size:6px">作業</div></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px">
-            <div class="pDots" id="pDotsW"></div>
-            <div class="cr"><button class="bc p" id="pBtnW" onclick="pomoToggle()">▶ 開始</button><button class="bc g" onclick="pomoReset()">↺</button><button class="bc g" onclick="pomoSkip()">⏭</button></div>
+        <!-- style switcher -->
+        <div class="ps-switcher">
+          <button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')">○</button>
+          <button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')">◡</button>
+          <button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')">▬</button>
+          <button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')">▦</button>
+        </div>
+        <!-- dynamic render target -->
+        <div id="pomoStyleWrap"></div>
+        <!-- dots + controls always visible -->
+        <div style="margin-top:8px">
+          <div class="pDots" id="pDotsW"></div>
+          <div class="cr" style="margin-top:6px">
+            <button class="bc p" id="pBtnW" onclick="pomoToggle()">▶ 開始</button>
+            <button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button>
+            <button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button>
           </div>
         </div>
+        <!-- hidden elements for renderPomo compat -->
+        <span id="pRTW" style="display:none">25:00</span>
+        <span id="pRMW" style="display:none">作業</span>
+        <div id="pRingW" style="display:none"></div>
+        <svg style="display:none"><circle id="pArcW" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg>
       </div>
       <div class="tbody sw-body" id="bSwW">
         <div class="tDisp" id="swDispW" style="font-size:28px">00:00:00</div>
-        <div class="cr"><button class="bc p" id="swBtnW" onclick="swToggle()">▶ 開始</button><button class="bc g" onclick="swLap()">◎ ラップ</button><button class="bc g" onclick="swReset()">↺</button></div>
+        <div class="cr"><button class="bc p" id="swBtnW" onclick="swToggle()">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div>
         <div class="swLaps" id="swLapsW"></div>
       </div>
     </div>
@@ -908,11 +1238,11 @@ input.tIn{font-size:11px;padding:4px 7px}
   </div>
   <div class="cddAddRow">
     <div class="mToggle" style="flex-shrink:0">
-      <button class="mb on" id="cddModeNow" onclick="setCddMode('now')">今すぐ</button>
+      <button class="mb on" id="cddModeNow" onclick="setCddMode('now')" data-i18n="nowBtn">今すぐ</button>
       <button class="mb"    id="cddModeTime" onclick="setCddMode('time')">時間指定</button>
     </div>
     <input type="time" id="cddTimeInput" class="tIn hide" style="flex-shrink:0;width:90px">
-    <input type="text" id="cddInput" placeholder="タスク・予定を追加…" onkeydown="cddKeydown(event)">
+    <input type="text" id="cddInput" placeholder="タスク・予定を追加…" data-i18n-ph="cddPh" onkeydown="cddKeydown(event)">
     <button class="bAdd" onclick="cddAddTask()">+</button>
   </div>
   <div id="cddTaskList" class="cddTaskList"></div>
@@ -927,7 +1257,7 @@ input.tIn{font-size:11px;padding:4px 7px}
       <img id="ytThumb" src="" alt="">
       <div class="ytNPMeta">
         <div id="ytTitle">—</div>
-        <span id="ytStatusBadge">停止中</span>
+        <span id="ytStatusBadge" data-i18n="stopMed">停止中</span>
       </div>
     </div>
     <div class="ytNPBot">
@@ -979,39 +1309,86 @@ input.tIn{font-size:11px;padding:4px 7px}
 <!-- THEME -->
 <div id="thOv" onclick="thOvCk(event)">
   <div id="thPanel">
-    <div class="thTitle">テーマ設定</div>
-    <div><div class="sLbl">カラー</div><div class="swGrid" id="swGrid"></div></div>
-    <div>
-      <div class="sLbl">カラーコード</div>
-      <div class="hexRow">
-        <input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)">
-        <input type="text" id="hexInput" value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false">
-        <div id="rgbPrev" style="flex:0 0 28px;height:28px;border-radius:var(--r2);border:1px solid var(--b2)"></div>
-      </div>
-      <div class="rgbGrid" style="margin-top:7px">
-        <div class="rgbF"><label>R</label><input type="number" id="rgbR" min="0" max="255" value="220" oninput="onRgb()"></div>
-        <div class="rgbF"><label>G</label><input type="number" id="rgbG" min="0" max="255" value="175" oninput="onRgb()"></div>
-        <div class="rgbF"><label>B</label><input type="number" id="rgbB" min="0" max="255" value="70"  oninput="onRgb()"></div>
-      </div>
-    </div>
-    <div><div class="sLbl">色相</div><input type="range" id="hueSlider" min="0" max="360" value="38" oninput="onHue(this.value)"></div>
-    <div>
-      <div class="sLbl">背景</div>
-      <div class="bgOpts">
-        <button class="bgOpt on" data-bg="dark"   onclick="setBg('dark')">ダーク</button>
-        <button class="bgOpt"    data-bg="amoled" onclick="setBg('amoled')">AMOLED</button>
-        <button class="bgOpt"    data-bg="dim"    onclick="setBg('dim')">ディム</button>
-        <button class="bgOpt"    data-bg="light"  onclick="setBg('light')">ライト</button>
-        <button class="bgOpt"    data-bg="white"  onclick="setBg('white')">ホワイト</button>
+    <div class="thTitle" id="thPanelTitle">テーマ設定</div>
+
+    <div class="thSection">
+      <button class="thSectionHead open" onclick="thToggle('thSecColor')">
+        <span>🎨 カラー</span><span class="thArrow">▾</span>
+      </button>
+      <div class="thSectionBody open" id="thSecColor">
+        <div class="swGrid" id="swGrid"></div>
+        <div style="margin-top:10px">
+          <div class="sLbl">カラーコード</div>
+          <div class="hexRow">
+            <input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)">
+            <input type="text" id="hexInput" value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false">
+            <div id="rgbPrev" style="flex:0 0 28px;height:28px;border-radius:var(--r2);border:1px solid var(--b2)"></div>
+          </div>
+          <div class="rgbGrid" style="margin-top:7px">
+            <div class="rgbF"><label>R</label><input type="number" id="rgbR" min="0" max="255" value="220" oninput="onRgb()"></div>
+            <div class="rgbF"><label>G</label><input type="number" id="rgbG" min="0" max="255" value="175" oninput="onRgb()"></div>
+            <div class="rgbF"><label>B</label><input type="number" id="rgbB" min="0" max="255" value="70"  oninput="onRgb()"></div>
+          </div>
+          <div style="margin-top:8px"><div class="sLbl" data-i18n="hueLabel">色相</div><input type="range" id="hueSlider" min="0" max="360" value="38" oninput="onHue(this.value)"></div>
+        </div>
       </div>
     </div>
-    <div>
-      <div class="sLbl">フォント</div>
-      <div class="fpBtns" id="fpBtns"></div>
-      <div class="fCust"><input type="text" id="fIn" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()">適用</button></div>
-      <div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div>
-      <div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a></div>
+
+    <div class="thSection">
+      <button class="thSectionHead" onclick="thToggle('thSecBg')">
+        <span>🌑 背景</span><span class="thArrow">▸</span>
+      </button>
+      <div class="thSectionBody" id="thSecBg">
+        <div class="bgOpts">
+          <button class="bgOpt on" data-bg="dark"   onclick="setBg('dark')">ダーク</button>
+          <button class="bgOpt"    data-bg="amoled" onclick="setBg('amoled')">AMOLED</button>
+          <button class="bgOpt"    data-bg="dim"    onclick="setBg('dim')">ディム</button>
+          <button class="bgOpt"    data-bg="light"  onclick="setBg('light')">ライト</button>
+          <button class="bgOpt"    data-bg="white"  onclick="setBg('white')">ホワイト</button>
+        </div>
+      </div>
     </div>
+
+    <div class="thSection">
+      <button class="thSectionHead" onclick="thToggle('thSecFont')">
+        <span>🔤 フォント</span><span class="thArrow">▸</span>
+      </button>
+      <div class="thSectionBody" id="thSecFont">
+        <div class="fpBtns" id="fpBtns"></div>
+        <div class="fCust"><input type="text" id="fIn" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()">適用</button></div>
+        <div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div>
+        <div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a></div>
+      </div>
+    </div>
+
+    <div class="thSection">
+      <button class="thSectionHead" onclick="thToggle('thSecLang')">
+        <span>🌐 言語</span><span class="thArrow">▸</span>
+      </button>
+      <div class="thSectionBody" id="thSecLang">
+        <div class="langBtns">
+          <button class="langBtn on" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button>
+          <button class="langBtn" data-lang="en" onclick="setLang('en')">🇺🇸 English</button>
+          <button class="langBtn" data-lang="zh" onclick="setLang('zh')">🇨🇳 中文</button>
+          <button class="langBtn" data-lang="ko" onclick="setLang('ko')">🇰🇷 한국어</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="thSection">
+      <button class="thSectionHead" onclick="thToggle('thSecTimer')">
+        <span>⏱ タイマー表示</span><span class="thArrow">▸</span>
+      </button>
+      <div class="thSectionBody" id="thSecTimer">
+        <div class="timerStyleBtns">
+          <button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')">○ Ring</button>
+          <button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')">◡ Arc</button>
+          <button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')">▬ Minimal</button>
+          <button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')">▦ Blocks</button>
+        </div>
+      </div>
+    </div>
+
     <button class="thClose" onclick="openTheme()">閉じる</button>
   </div>
 </div>
@@ -1024,15 +1401,18 @@ input.tIn{font-size:11px;padding:4px 7px}
     <div class="strLvlCard">
       <div class="strLvlIcon" id="spLvlIcon">🌱</div>
       <div class="strLvlInfo">
-        <div class="strLvlName" id="spLvlName">Beginner</div>
-        <div class="strLvlNum" id="spLvlNum">Level 1</div>
+        <div class="strLvlName" id="spLvlName">Seedling</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="strLvlNum" id="spLvlNum">Level 1 / 18</div>
+          <div id="spLvlTitle" style="font-family:var(--mono);font-size:8px;color:var(--ac);letter-spacing:2px;opacity:.8">始まりの一歩</div>
+        </div>
         <div class="strLvlBarWrap"><div class="strLvlBarFill" id="spLvlFill" style="width:0%"></div></div>
-        <div class="strLvlXP" id="spLvlXP">0 / 60 XP</div>
+        <div class="strLvlXP" id="spLvlXP">—</div>
       </div>
     </div>
     <!-- Stats -->
     <div class="strStats">
-      <div class="strStat"><div class="val" id="spStreak">0</div><div class="lbl">🔥 連続日</div></div>
+      <div class="strStat"><div class="val" id="spStreak">0</div><div class="lbl" data-i18n="streakDays">🔥 連続日</div></div>
       <div class="strStat"><div class="val" id="spMax">0</div><div class="lbl">🏆 最長</div></div>
       <div class="strStat"><div class="val" id="spTotal">0</div><div class="lbl">📅 累計日</div></div>
       <div class="strStat"><div class="val" id="spMinutes">0</div><div class="lbl">⏱ 総分数</div></div>
@@ -1084,11 +1464,11 @@ input.tIn{font-size:11px;padding:4px 7px}
 
 <!-- MOBILE NAV -->
 <nav id="mobileNav">
-  <button class="mnBtn on" id="mnTask"   onclick="mNav('task')"><span class="mni">📋</span><span class="mnl">タスク</span></button>
-  <button class="mnBtn"    id="mnTimer"  onclick="mNav('timer')"><span class="mni">⏱</span><span class="mnl">タイマー</span></button>
-  <button class="mnBtn"    id="mnCal"    onclick="mNav('cal')"><span class="mni">📅</span><span class="mnl">カレンダー</span></button>
+  <button class="mnBtn on" id="mnTask"   onclick="mNav('task')"><span class="mni">📋</span><span class="mnl" data-i18n="taskBtn">タスク</span></button>
+  <button class="mnBtn"    id="mnTimer"  onclick="mNav('timer')"><span class="mni">⏱</span><span class="mnl" data-i18n="timerBtn">タイマー</span></button>
+  <button class="mnBtn"    id="mnCal"    onclick="mNav('cal')"><span class="mni">📅</span><span class="mnl" data-i18n="calBtn">カレンダー</span></button>
   <button class="mnBtn"    id="mnBgm"    onclick="mNav('bgm')"><span class="mni">🎵</span><span class="mnl">BGM</span></button>
-  <button class="mnBtn"    id="mnMore"   onclick="mNav('more')"><span class="mni">⚙️</span><span class="mnl">設定</span></button>
+  <button class="mnBtn"    id="mnMore"   onclick="mNav('more')"><span class="mni">⚙️</span><span class="mnl" data-i18n="settingsBtn">設定</span></button>
 </nav>
 
 <!-- MOBILE SHEET OVERLAY -->
@@ -1097,7 +1477,7 @@ input.tIn{font-size:11px;padding:4px 7px}
 <!-- MOBILE SHEET: TASK -->
 <div class="mSheet" id="mSheetTask">
   <div class="mSheetPull"></div>
-  <div class="mSheetHeader"><span class="mSheetTitle">📋 今日の予定</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
+  <div class="mSheetHeader"><span class="mSheetTitle" data-i18n="todayTasks">📋 今日の予定</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody" style="display:flex;flex-direction:column;overflow:hidden;max-height:calc(80vh - 60px)">
     <div class="addRow">
       <div class="mToggle"><button class="mb on" id="mNowM" onclick="setModeM('now')">今すぐ</button><button class="mb" id="mTimeM" onclick="setModeM('time')">時間指定</button></div>
@@ -1112,7 +1492,7 @@ input.tIn{font-size:11px;padding:4px 7px}
 <!-- MOBILE SHEET: TIMER -->
 <div class="mSheet" id="mSheetTimer">
   <div class="mSheetPull"></div>
-  <div class="mSheetHeader"><span class="mSheetTitle">⏱ タイマー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
+  <div class="mSheetHeader"><span class="mSheetTitle" data-i18n="timerSheet" id="_timerSheetTitle">⏱ タイマー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody" style="padding:12px 16px 20px">
     <div class="timerTabs" style="margin-bottom:16px">
       <button class="ttab on" id="tPomoM" onclick="switchTimerAll('pomo')">🍅 ポモドーロ</button>
@@ -1127,7 +1507,7 @@ input.tIn{font-size:11px;padding:4px 7px}
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="pDots" id="pDotsM"></div>
-          <div class="cr"><button class="bc p" id="pBtnM" onclick="pomoToggle()">▶ 開始</button><button class="bc g" onclick="pomoReset()">↺</button><button class="bc g" onclick="pomoSkip()">⏭</button></div>
+          <div class="cr"><button class="bc p" id="pBtnM" onclick="pomoToggle()">▶</button><button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button><button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button></div>
         </div>
       </div>
       <div class="pSR" style="width:100%;max-width:320px">
@@ -1141,9 +1521,9 @@ input.tIn{font-size:11px;padding:4px 7px}
     <div id="bSwM" style="display:none;flex-direction:column;align-items:center;gap:14px">
       <div class="tDisp" id="swDispM" style="font-size:48px;color:var(--blue);text-shadow:0 0 36px rgba(63,169,245,.35)">00:00:00</div>
       <div class="cr">
-        <button class="bc p" id="swBtnM" onclick="swToggle()">▶ 開始</button>
-        <button class="bc g" onclick="swLap()">◎ ラップ</button>
-        <button class="bc g" onclick="swReset()">↺</button>
+        <button class="bc p" id="swBtnM" onclick="swToggle()">▶</button>
+        <button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button>
+        <button class="bc g" onclick="swReset()" data-i18n="reset">↺</button>
       </div>
       <div class="swLaps" id="swLapsM" style="width:100%;max-height:120px"></div>
     </div>
@@ -1153,7 +1533,7 @@ input.tIn{font-size:11px;padding:4px 7px}
 <!-- MOBILE SHEET: CALENDAR -->
 <div class="mSheet" id="mSheetCal">
   <div class="mSheetPull"></div>
-  <div class="mSheetHeader"><span class="mSheetTitle">📅 カレンダー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
+  <div class="mSheetHeader"><span class="mSheetTitle" data-i18n="calSheet">📅 カレンダー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody">
     <div class="calInner" style="min-height:0;max-height:calc(80vh - 60px)">
       <div class="calViewTabs">
@@ -1177,7 +1557,7 @@ input.tIn{font-size:11px;padding:4px 7px}
   <div class="mSheetHeader"><span class="mSheetTitle">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody" style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px">
     <button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left">
-      <span style="font-size:22px">⚡</span><div><div style="font-weight:600">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">レベル・ヒートマップ</div></div>
+      <span style="font-size:22px">⚡</span><div><div style="font-weight:600" data-i18n="streakTitle">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="streakDays">レベル・ヒートマップ</div></div>
     </button>
     <button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left">
       <span style="font-size:22px">◐</span><div><div style="font-weight:600">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">カラー・フォント・背景</div></div>
@@ -1195,9 +1575,9 @@ input.tIn{font-size:11px;padding:4px 7px}
 </div>
 
 <!-- DOCK SHOW BUTTON -->
-<button id="dockShowBtn" onclick="toggleDock()" title="ドックを表示">
+<button id="dockShowBtn" onclick="toggleDock()" data-i18n-title="dockShowTitle" title="ドックを表示">
   <span>▲</span>
-  <span class="dsbTooltip">ドック表示 (D)</span>
+  <span class="dsbTooltip" data-i18n="dockShowTitle">ドック表示 (D)</span>
 </button>
 
 <!-- STREAK CELEBRATION POPUP -->
@@ -1224,7 +1604,7 @@ const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pad=n=>String(n).padStart(2,'0');
 function nowS(){const n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds()}
 function t2s(str){if(!str)return null;const[h,m]=str.split(':').map(Number);return h*3600+m*60}
-function fmtCD(dm){if(dm<=0)return'進行中';if(dm<60)return`${dm}分後`;const h=Math.floor(dm/60),m=dm%60;return m?`${h}h${m}m後`:`${h}時間後`}
+function fmtCD(dm){if(dm<=0)return T('active');if(dm<60){const _mf=T('minAgo');return typeof _mf==='function'?_mf(dm):`${dm}分後`;}const h=Math.floor(dm/60),m=dm%60;const _hf=T('hourAgo');return typeof _hf==='function'?_hf(h,m):(m?`${h}h${m}m後`:`${h}時間後`);}
 function fmtMs(ms){const s=Math.floor(ms/1000);return`${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`}
 function fmtSec(s){s=Math.round(s);const m=Math.floor(s/60),ss=s%60;return`${m}:${pad(ss)}`}
 function dateKey(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
@@ -1256,16 +1636,355 @@ function detectEmoji(name){
   return '📌';
 }
 
+/* ═══ i18n ═══ */
+const I18N={
+  ja:{work:'作業',brk:'休憩',longBrk:'長休憩',start:'▶ 開始',pause:'⏸ 一時停止',
+    reset:'↺',skip:'⏭',lap:'◎ ラップ',taskPh:'タスク名を入力…',nowBtn:'今すぐ',timeBtn:'時間指定',
+    workLbl:'作業(分)',brkLbl:'休憩(分)',longLbl:'長休憩(分)',setsLbl:'セット数',
+    pomoCmpl:'🏆 全セット完了！長休憩へ',pomoBreak:'☕ 休憩時間です',pomoWork:'💪 作業開始！',
+    notifCmplT:'全セット完了！',notifCmplB:'セット達成！長めの休憩をどうぞ。',
+    notifBrkT:'☕ 休憩時間',notifBrkB:'少し休んで気分転換しましょう。',
+    notifWorkT:'💪 作業開始！',notifWorkB:'集中して取り組みましょう。',
+    styleRing:'リング',styleArc:'アーク',styleMinimal:'ミニマル',styleBlocks:'ブロック',
+    langLabel:'言語',timerStyleLabel:'タイマー表示',themeTitle:'テーマ設定',nowImm:'今すぐ',nowNext:'今すぐ実行中',remaining:'残り',min:'分',
+    // UI buttons / labels
+    taskBtn:'タスク',timerBtn:'タイマー',calBtn:'カレンダー',
+    todayTasks:'📋 今日の予定',taskListTitle:'予定リスト',
+    calSheet:'📅 カレンダー',timerSheet:'⏱ タイマー',
+    settingsBtn:'設定',bgmBtn:'BGM',
+    taskCount:(n)=>`${n}件`,
+    // Task list
+    noSched:'まだ予定がありません',
+    done:'完了',active:'進行中',ended:'終了',
+    pastDate:'⚠ 過去の日付には予定を追加できません',
+    taskAdded:'タスクを追加しました ✓',taskNameRequired:'タスク名を入力してください',
+    calDayNoTask:'この日の予定はありません',dayDetailNoTask:'予定がありません',
+    calDayAddPh:'予定を追加…',
+    cddPh:'タスク・予定を追加…',
+    stopMed:'停止中',playMed:'再生中',
+    // Calendar
+    months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    monthsShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    weekDays:['日','月','火','水','木','金','土'],
+    dateFormat:(y,m,d)=>`${y}年${m}月${d}日`,
+    yearFormat:(y)=>`${y}年`,
+    yearMonthFormat:(y,m)=>`${y}年${m}月`,
+    calNoDayTask:'この日の予定はありません',
+    // Streak / level
+    streakDays:'連続日',streakMax:'最長記録',streakTotal:'累計ログイン',streakXP:'XP',
+    loginFirst:'初日ログイン！おめでとう🎉',loginStreak:(n)=>`${n}日連続ログイン！`,
+    streakSubs:['毎日続けて目標を達成しよう','この調子で頑張ろう！','継続は力なり 💪','素晴らしい習慣です！','あなたは最高です 🌟'],
+    xpNextLvl:(cur,next)=>`${cur} / ${next} min → 次のレベル`,xpMaxLvl:'✨ MAX LEVEL 達成！',
+    streakLabel:(n)=>`${n}日連続`,
+    tierFire:'🔥 7日+ 炎継続中！',tierThunder:'⚡ 30日+ 雷帯電中！',
+    heatTip:(m,d,min,login)=>`${m}/${d} — ${min}分${login?'（ログイン）':''}`,
+    // Lap/time
+    lapLabel:(n)=>`Lap ${n}`,
+    endUnknown:'(終了未定)',
+    // PWA
+    pwaInstall:'ホーム画面に追加しました！',
+    // Calendar day view
+    timeNow:'今すぐ',hueLabel:'色相',hueSection:'色相',
+    // ストップウォッチ
+    swStop:'⏸ 停止',swResume:'▶ 再開',swStart2:'▶ 開始',
+    // fmtCD
+    minAgo:(n)=>`${n}分後`,hourAgo:(h,m)=>m?`${h}h${m}m後`:`${h}時間後`,
+    // ウィンドウ dockFW トースト
+    dockFWTask:'タスクをドックへ',dockFWTimer:'タイマーをドックへ',dockFWClose:'閉じました',
+    dockFWCal:'カレンダーを閉じました',
+    // YouTube/BGM エラー
+    ytApiError:T('ytApiError'),ytInvalidId:T('ytInvalidId'),
+    ytNotFound:T('ytNotFound'),ytNoEmbed:T('ytNoEmbed'),ytError:T('ytError'),
+    // onlineBadge title
+    onlineBadgeTitle:'現在オンラインの人数',
+    // levelBadge / streakBadge aria
+    levelAriaLabel:'レベル・実績を表示',streakAriaLabel:'ストリーク情報を表示',
+    // dockShowBtn
+    dockShowTitle:'ドック表示 (D)',onlineUnit:'人',onlineTip:(n)=>`現在 ${n} 人が使用中`,onlineAlone:'今あなただけが使用中',
+    streakTitle:'⚡ 実績 & ストリーク',noTask:'タスクを追加してください',allDone:'✓ すべて完了！',waiting:'次の予定を待機中…',
+  },
+  en:{work:'Work',brk:'Break',longBrk:'Long Break',start:'▶ Start',pause:'⏸ Pause',
+    reset:'↺',skip:'⏭',lap:'◎ Lap',taskPh:'Enter task name…',nowBtn:'Now',timeBtn:'Timed',
+    workLbl:'Work (min)',brkLbl:'Break (min)',longLbl:'Long (min)',setsLbl:'Sets',
+    pomoCmpl:'🏆 All sets done! Long break',pomoBreak:'☕ Break time',pomoWork:'💪 Start working!',
+    notifCmplT:'All sets complete!',notifCmplB:'sets done! Time for a long break.',
+    notifBrkT:'☕ Break Time',notifBrkB:'Take a breather.',
+    notifWorkT:'💪 Work Time!',notifWorkB:'Stay focused.',
+    styleRing:'Ring',styleArc:'Arc',styleMinimal:'Minimal',styleBlocks:'Blocks',
+    langLabel:'Language',timerStyleLabel:'Timer Style',themeTitle:'Settings',nowImm:'Now',nowNext:'Running now',remaining:'',min:'min left',
+    taskBtn:'Tasks',timerBtn:'Timer',calBtn:'Calendar',
+    todayTasks:'📋 Today',taskListTitle:'Task List',
+    calSheet:'📅 Calendar',timerSheet:'⏱ Timer',
+    settingsBtn:'Settings',bgmBtn:'BGM',
+    taskCount:(n)=>n===1?'1 task':`${n} tasks`,
+    noSched:'No tasks yet',
+    done:'Done',active:'Active',ended:'Ended',
+    pastDate:'⚠ Cannot add tasks to past dates',
+    taskAdded:'Task added ✓',taskNameRequired:'Please enter a task name',
+    calDayNoTask:'No tasks this day',dayDetailNoTask:'No tasks',
+    calDayAddPh:'Add event…',
+    cddPh:'Add task or event…',
+    stopMed:'Stopped',playMed:'Playing',
+    months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    monthsShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    weekDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    dateFormat:(y,m,d)=>`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${d}, ${y}`,
+    yearFormat:(y)=>`${y}`,
+    yearMonthFormat:(y,m)=>`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${y}`,
+    calNoDayTask:'No tasks this day',
+    streakDays:'Day Streak',streakMax:'Best Streak',streakTotal:'Total Days',streakXP:'XP',
+    loginFirst:'First day! Welcome 🎉',loginStreak:(n)=>`${n} day streak!`,
+    streakSubs:['Keep going every day!','Great momentum!','Consistency is power 💪','Amazing habit!','You are the best 🌟'],
+    xpNextLvl:(cur,next)=>`${cur} / ${next} min → Next level`,xpMaxLvl:'✨ MAX LEVEL!',
+    streakLabel:(n)=>`${n} day streak`,
+    tierFire:'🔥 7d+ On Fire!',tierThunder:'⚡ 30d+ Electrified!',
+    heatTip:(m,d,min,login)=>`${m}/${d} — ${min}min${login?' (login)':''}`,
+    lapLabel:(n)=>`Lap ${n}`,
+    endUnknown:'(end unknown)',
+    pwaInstall:'Added to home screen!',
+    timeNow:'Now',hueLabel:'Hue',hueSection:'Hue',
+    swStop:'⏸ Stop',swResume:'▶ Resume',swStart2:'▶ Start',
+    minAgo:(n)=>`${n}min`,hourAgo:(h,m)=>m?`${h}h${m}m`:`${h}h`,
+    dockFWTask:'Tasks to dock',dockFWTimer:'Timer to dock',dockFWClose:'Closed',
+    dockFWCal:'Calendar closed',
+    ytApiError:'⚠ YouTube API failed to load',ytInvalidId:'Invalid video ID',
+    ytNotFound:'Video not found',ytNoEmbed:'Embedding not allowed',ytError:'YouTube load error',
+    onlineBadgeTitle:'People online now',
+    levelAriaLabel:'View level & achievements',streakAriaLabel:'View streak info',
+    dockShowTitle:'Show Dock (D)',onlineUnit:'online',onlineTip:(n)=>`${n} people using SCHED`,onlineAlone:'Just you right now',
+    streakTitle:'⚡ Stats & Streak',noTask:'Add a task to get started',allDone:'✓ All done!',waiting:'Waiting for next task…',
+  },
+  zh:{work:'专注',brk:'休息',longBrk:'长休息',start:'▶ 开始',pause:'⏸ 暂停',
+    reset:'↺',skip:'⏭',lap:'◎ 计圈',taskPh:'输入任务名称…',nowBtn:'现在',timeBtn:'定时',
+    workLbl:'专注(分)',brkLbl:'休息(分)',longLbl:'长休息(分)',setsLbl:'组数',
+    pomoCmpl:'🏆 全部完成！长休息',pomoBreak:'☕ 休息时间',pomoWork:'💪 开始专注！',
+    notifCmplT:'全部完成！',notifCmplB:'组完成！开始长休息。',
+    notifBrkT:'☕ 休息时间',notifBrkB:'稍作休息。',
+    notifWorkT:'💪 专注时间！',notifWorkB:'保持专注。',
+    styleRing:'圆环',styleArc:'弧形',styleMinimal:'简约',styleBlocks:'方块',
+    langLabel:'语言',timerStyleLabel:'样式',themeTitle:'主题设置',nowImm:'现在',nowNext:'立即执行',remaining:'剩余',min:'分',
+    taskBtn:'任务',timerBtn:'计时器',calBtn:'日历',
+    todayTasks:'📋 今日计划',taskListTitle:'计划列表',
+    calSheet:'📅 日历',timerSheet:'⏱ 计时器',
+    settingsBtn:'设置',bgmBtn:'BGM',
+    taskCount:(n)=>`${n}项`,
+    noSched:'暂无任务',
+    done:'完成',active:'进行中',ended:'已结束',
+    pastDate:'⚠ 无法向过去日期添加任务',
+    taskAdded:'任务已添加 ✓',taskNameRequired:'请输入任务名称',
+    calDayNoTask:'当天没有任务',dayDetailNoTask:'没有任务',
+    calDayAddPh:'添加事项…',
+    cddPh:'添加任务或事项…',
+    stopMed:'停止',playMed:'播放中',
+    months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    monthsShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    weekDays:['日','一','二','三','四','五','六'],
+    dateFormat:(y,m,d)=>`${y}年${m}月${d}日`,
+    yearFormat:(y)=>`${y}年`,
+    yearMonthFormat:(y,m)=>`${y}年${m}月`,
+    calNoDayTask:'当天没有任务',
+    streakDays:'连续天数',streakMax:'最长记录',streakTotal:'累计登录',streakXP:'经验',
+    loginFirst:'第一天！欢迎 🎉',loginStreak:(n)=>`连续${n}天！`,
+    streakSubs:['每天坚持达成目标','继续保持！','坚持就是力量 💪','习惯真棒！','你是最棒的 🌟'],
+    xpNextLvl:(cur,next)=>`${cur} / ${next} min → 下一级`,xpMaxLvl:'✨ 最高等级！',
+    streakLabel:(n)=>`连续${n}天`,
+    tierFire:'🔥 7天+ 燃烧中！',tierThunder:'⚡ 30天+ 雷电！',
+    heatTip:(m,d,min,login)=>`${m}/${d} — ${min}分钟${login?'（登录）':''}`,
+    lapLabel:(n)=>`第${n}圈`,
+    endUnknown:'(未定结束)',
+    pwaInstall:'已添加到主屏幕！',
+    timeNow:'现在',hueLabel:'色相',hueSection:'色相',
+    swStop:'⏸ 停止',swResume:'▶ 继续',swStart2:'▶ 开始',
+    minAgo:(n)=>`${n}分钟后`,hourAgo:(h,m)=>m?`${h}小时${m}分后`:`${h}小时后`,
+    dockFWTask:'任务到工具栏',dockFWTimer:'计时器到工具栏',dockFWClose:'已关闭',
+    dockFWCal:'日历已关闭',
+    ytApiError:'⚠ YouTube API加载失败',ytInvalidId:'视频ID无效',
+    ytNotFound:'未找到视频',ytNoEmbed:'不允许嵌入',ytError:'YouTube加载错误',
+    onlineBadgeTitle:'当前在线人数',
+    levelAriaLabel:'查看等级和成就',streakAriaLabel:'查看连续信息',
+    dockShowTitle:'显示工具栏 (D)',onlineUnit:'人',onlineTip:(n)=>`当前 ${n} 人在线`,onlineAlone:'目前只有你',
+    streakTitle:'⚡ 成就 & 连续',noTask:'添加任务以开始',allDone:'✓ 全部完成！',waiting:'等待下一任务…',
+  },
+  ko:{work:'작업',brk:'휴식',longBrk:'긴 휴식',start:'▶ 시작',pause:'⏸ 일시정지',
+    reset:'↺',skip:'⏭',lap:'◎ 랩',taskPh:'작업 이름 입력…',nowBtn:'바로',timeBtn:'시간 지정',
+    workLbl:'작업(분)',brkLbl:'휴식(분)',longLbl:'긴 휴식(분)',setsLbl:'세트',
+    pomoCmpl:'🏆 전체 완료！긴 휴식',pomoBreak:'☕ 휴식 시간',pomoWork:'💪 작업 시작！',
+    notifCmplT:'전체 완료！',notifCmplB:'세트 달성！긴 휴식을 취하세요。',
+    notifBrkT:'☕ 휴식 시간',notifBrkB:'잠깐 쉬세요。',
+    notifWorkT:'💪 작업 시간！',notifWorkB:'집중하세요。',
+    styleRing:'링',styleArc:'호형',styleMinimal:'미니멀',styleBlocks:'블록',
+    langLabel:'언어',timerStyleLabel:'타이머 스타일',themeTitle:'테마 설정',nowImm:'지금',nowNext:'지금 실행 중',remaining:'남은',min:'분',
+    taskBtn:'작업',timerBtn:'타이머',calBtn:'달력',
+    todayTasks:'📋 오늘 일정',taskListTitle:'일정 목록',
+    calSheet:'📅 달력',timerSheet:'⏱ 타이머',
+    settingsBtn:'설정',bgmBtn:'BGM',
+    taskCount:(n)=>`${n}건`,
+    noSched:'일정이 없습니다',
+    done:'완료',active:'진행 중',ended:'종료',
+    pastDate:'⚠ 과거 날짜에는 일정을 추가할 수 없습니다',
+    taskAdded:'작업이 추가되었습니다 ✓',taskNameRequired:'작업 이름을 입력하세요',
+    calDayNoTask:'이날 일정이 없습니다',dayDetailNoTask:'일정 없음',
+    calDayAddPh:'일정 추가…',
+    cddPh:'작업 또는 일정 추가…',
+    stopMed:'정지',playMed:'재생 중',
+    months:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+    monthsShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    weekDays:['일','월','화','수','목','금','토'],
+    dateFormat:(y,m,d)=>`${y}년 ${m}월 ${d}일`,
+    yearFormat:(y)=>`${y}년`,
+    yearMonthFormat:(y,m)=>`${y}년 ${m}월`,
+    calNoDayTask:'이날 일정이 없습니다',
+    streakDays:'연속 일수',streakMax:'최장 기록',streakTotal:'누적 로그인',streakXP:'XP',
+    loginFirst:'첫날 로그인! 환영해요 🎉',loginStreak:(n)=>`${n}일 연속 로그인！`,
+    streakSubs:['매일 계속해서 목표를 달성하세요','이 기세로 계속!','지속이 힘 💪','훌륭한 습관!','당신은 최고 🌟'],
+    xpNextLvl:(cur,next)=>`${cur} / ${next} min → 다음 레벨`,xpMaxLvl:'✨ 최고 레벨！',
+    streakLabel:(n)=>`${n}일 연속`,
+    tierFire:'🔥 7일+ 불꽃！',tierThunder:'⚡ 30일+ 번개！',
+    heatTip:(m,d,min,login)=>`${m}/${d} — ${min}분${login?'（로그인）':''}`,
+    lapLabel:(n)=>`랩 ${n}`,
+    endUnknown:'(종료 미정)',
+    pwaInstall:'홈 화면에 추가됐습니다！',
+    timeNow:'지금',hueLabel:'색조',hueSection:'색조',
+    swStop:'⏸ 정지',swResume:'▶ 재개',swStart2:'▶ 시작',
+    minAgo:(n)=>`${n}분 후`,hourAgo:(h,m)=>m?`${h}h${m}m 후`:`${h}시간 후`,
+    dockFWTask:'작업을 도크로',dockFWTimer:'타이머를 도크로',dockFWClose:'닫혔습니다',
+    dockFWCal:'달력이 닫혔습니다',
+    ytApiError:'⚠ YouTube API 로드 실패',ytInvalidId:'동영상 ID가 올바르지 않습니다',
+    ytNotFound:'동영상을 찾을 수 없습니다',ytNoEmbed:'삽입이 허용되지 않습니다',ytError:'YouTube 로드 오류',
+    onlineBadgeTitle:'현재 온라인 인원',
+    levelAriaLabel:'레벨·실적 보기',streakAriaLabel:'스트릭 정보 보기',
+    dockShowTitle:'도크 표시 (D)',onlineUnit:'명',onlineTip:(n)=>`현재 ${n}명 사용 중`,onlineAlone:'지금은 혼자 사용 중',
+    streakTitle:'⚡ 실적 & 스트릭',noTask:'작업을 추가하세요',allDone:'✓ 모두 완료！',waiting:'다음 일정 대기 중…',
+  },
+};
+const T=k=>(I18N[S.lang]||I18N.ja)[k]||(I18N.ja[k]||k);
+function setLang(l){S.lang=l;savUI();applyLang();toast((I18N[l]||I18N.ja).langLabel+': '+(l==='ja'?'日本語':l==='en'?'English':l==='zh'?'中文':'한국어'));}
+function applyLang(){
+  const l=S.lang||'ja';
+  document.documentElement.lang=l==='zh'?'zh-CN':l==='ko'?'ko':l==='en'?'en':'ja';
+
+  // ── data-i18n / data-i18n-ph attributes ──────────────────
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v=T(el.dataset.i18n);
+    if(typeof v==='string')el.textContent=v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const v=T(el.dataset.i18nPh||el.dataset.i18n);
+    if(typeof v==='string')el.placeholder=v;
+  });
+  // cddInput special (uses data-i18n-ph attr name)
+  const _cdd=$('cddInput');if(_cdd)_cdd.placeholder=T('cddPh');
+
+  // ── Task input placeholders ───────────────────────────────
+  ['addName','addNameW','addNameM'].forEach(id=>{const e=$(id);if(e)e.placeholder=T('taskPh');});
+
+  // ── Mode buttons ──────────────────────────────────────────
+  ['mNow','mNowW','mNowM'].forEach(id=>{const e=$(id);if(e)e.textContent=T('nowBtn');});
+  ['mTime','mTimeW','mTimeM'].forEach(id=>{const e=$(id);if(e)e.textContent=T('timeBtn');});
+
+  // ── Pomo mode labels ──────────────────────────────────────
+  const modeKey={work:'work',break:'brk',long:'longBrk'}[S.pomo.mode]||'work';
+  ['pRM','pRMW','pRMM'].forEach(id=>{const e=$(id);if(e)e.textContent=T(modeKey);});
+  const ps=$('pSub');if(ps)ps.textContent=T(modeKey);
+
+  // ── Pomo/SW buttons ───────────────────────────────────────
+  const running=S.pomo.running;
+  ['pBtn','pBtnW','pBtnM'].forEach(id=>{const e=$(id);if(e)e.textContent=running?T('pause'):T('start');});
+  const swRunning=S.sw.running;
+  ['swBtn','swBtnW','swBtnM'].forEach(id=>{
+    const e=$(id);if(!e)return;
+    e.textContent=swRunning?T('pause'):T('start');
+  });
+
+  // ── Pomo settings labels ──────────────────────────────────
+  document.querySelectorAll('.pF label').forEach(lb=>{
+    const inp=lb.parentElement?.querySelector('input');if(!inp)return;
+    if(inp.id.startsWith('pWork'))lb.textContent=T('workLbl');
+    else if(inp.id.startsWith('pBreak'))lb.textContent=T('brkLbl');
+    else if(inp.id.startsWith('pLong'))lb.textContent=T('longLbl');
+    else if(inp.id.startsWith('pSets'))lb.textContent=T('setsLbl');
+  });
+
+  // ── Timer tabs ────────────────────────────────────────────
+  const _swLabels={ja:'ストップ',zh:'秒表',ko:'스톱워치',en:'Stopwatch'};
+  const swLabel=_swLabels[l]||'Stopwatch';
+  ['tPomo','tPomoW','tPomoM'].forEach(id=>{const e=$(id);if(e)e.textContent='🍅 Pomodoro';});
+  ['tSw','tSwW','tSwM'].forEach(id=>{const e=$(id);if(e)e.textContent='⏱ '+swLabel;});
+
+  // ── Streak panel ──────────────────────────────────────────
+  const st=$('streakTitle');if(st)st.textContent=T('streakTitle');
+  // XP label (if already open)
+  const xpEl=$('spLvlXP');
+  if(xpEl){
+    const tm=S.streak.totalMinutes||0;const info=getLevelInfo(tm);
+    const _xpf=T('xpNextLvl'),_xpm=T('xpMaxLvl');
+    xpEl.textContent=info.xpNext?(typeof _xpf==='function'?_xpf(info.xpCur,info.xpNext):`${info.xpCur}/${info.xpNext}`):_xpm||'';
+  }
+
+  // ── curTask empty state ───────────────────────────────────
+  const ct=$('curTask');
+  if(ct&&ct.classList.contains('empty')&&ct.textContent&&ct.textContent!=='—'){
+    const noTaskVals=Object.values(I18N).map(d=>d.noTask).filter(Boolean);
+    const allDoneVals=Object.values(I18N).map(d=>d.allDone).filter(Boolean);
+    const waitVals=Object.values(I18N).map(d=>d.waiting).filter(Boolean);
+    const cur=ct.textContent;
+    if(noTaskVals.includes(cur))ct.textContent=T('noTask');
+    else if(allDoneVals.includes(cur))ct.textContent=T('allDone');
+    else if(waitVals.includes(cur))ct.textContent=T('waiting');
+  }
+
+  // ── Re-render dynamic content ─────────────────────────────
+  renderT();      // task list + count
+  renderCal();    // calendar titles + weekday headers
+  renderPomo();   // timer display
+
+  // ── title / aria-label 属性 ──────────────────────────────
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{
+    const v=T(el.dataset.i18nTitle);if(typeof v==='string')el.title=v;
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{
+    const v=T(el.dataset.i18nAria);if(typeof v==='string')el.setAttribute('aria-label',v);
+  });
+
+  // ── SW ボタンテキスト ──────────────────────────────────────
+  const _swR=S.sw?.running||false;
+  ['swBtn','swBtnW','swBtnM'].forEach(id=>{
+    const e=$(id);if(!e)return;
+    e.textContent=_swR?T('swStop'):T('swStart2');
+  });
+
+  // ── onlineLabel ユニット ───────────────────────────────────
+  const _olLbl=$('onlineBadge')?.querySelector('.onlineLabel');
+  if(_olLbl)_olLbl.textContent=T('onlineUnit')||'人';
+
+  // ── Selector states ───────────────────────────────────────
+  document.querySelectorAll('.langBtn').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  document.querySelectorAll('.pomoStyleBtn').forEach(b=>b.classList.toggle('on',b.dataset.style===S.pomoStyle));
+
+  // ── Theme panel title ─────────────────────────────────────
+  const tt=$('thPanelTitle');if(tt)tt.textContent=T('themeTitle');
+}
+
 /* ═══ LEVEL SYSTEM ═══ */
 const LEVELS=[
-  {min:0,   name:'Beginner',  icon:'🌱'},
-  {min:60,  name:'Learner',   icon:'📖'},
-  {min:180, name:'Focused',   icon:'🎯'},
-  {min:360, name:'Dedicated', icon:'⚡'},
-  {min:600, name:'Expert',    icon:'🔥'},
-  {min:1000,name:'Master',    icon:'💎'},
-  {min:1800,name:'Legend',    icon:'🌟'},
-  {min:3000,name:'Mythic',    icon:'👑'},
+  {min:0,    name:'Seedling',   icon:'🌱', title:'始まりの一歩'},
+  {min:30,   name:'Sprout',     icon:'🌿', title:'芽吹き'},
+  {min:60,   name:'Learner',    icon:'📖', title:'学習者'},
+  {min:120,  name:'Student',    icon:'✏️', title:'努力家'},
+  {min:200,  name:'Curious',    icon:'🔍', title:'探求者'},
+  {min:300,  name:'Focused',    icon:'🎯', title:'集中力'},
+  {min:450,  name:'Driven',     icon:'🚀', title:'推進力'},
+  {min:600,  name:'Dedicated',  icon:'⚡', title:'献身者'},
+  {min:800,  name:'Achiever',   icon:'🏅', title:'達成者'},
+  {min:1000, name:'Expert',     icon:'🔥', title:'エキスパート'},
+  {min:1300, name:'Veteran',    icon:'🗡️', title:'ベテラン'},
+  {min:1700, name:'Elite',      icon:'💠', title:'エリート'},
+  {min:2200, name:'Master',     icon:'💎', title:'マスター'},
+  {min:2800, name:'Grandmaster',icon:'🌟', title:'グランドマスター'},
+  {min:3500, name:'Legend',     icon:'🌙', title:'レジェンド'},
+  {min:4500, name:'Mythic',     icon:'👑', title:'ミシック'},
+  {min:6000, name:'Transcendent',icon:'🌌',title:'超越者'},
+  {min:8000, name:'Eternal',    icon:'♾️', title:'永遠'},
 ];
 function getLevelInfo(totalMin){
   let lv=LEVELS[0];let ni=1;
@@ -1275,12 +1994,26 @@ function getLevelInfo(totalMin){
   const xpCur=totalMin-lv.min;const xpNext=nextLv?nextLv.min-lv.min:null;
   return{lv,idx:LEVELS.indexOf(lv),pct,xpCur,xpNext};
 }
+/* ストリーク段階: 0=通常, 1=炎(7日+), 2=雷(30日+) */
+function _streakTier(streak){
+  if(streak>=30)return 2;
+  if(streak>=7)return 1;
+  return 0;
+}
 function updateLevelUI(){
   const tm=S.streak.totalMinutes||0;
-  const{lv,pct,xpCur,xpNext}=getLevelInfo(tm);
-  $('lvlIcon').textContent=lv.icon;
+  const{lv,pct}=getLevelInfo(tm);
+  const streak=_calcStreak();
+  const tier=_streakTier(streak);
+  const iconEl=$('lvlIcon');
+  iconEl.textContent=lv.icon;
+  // ストリークtierに応じてクラスを付与
+  iconEl.className='lvl-icon'+(tier===2?' tier-thunder':tier===1?' tier-fire':'');
   $('lvlName').textContent=`Lv.${LEVELS.indexOf(lv)+1}`;
   $('lvlBar').style.width=pct+'%';
+  // streakBadge tier styling
+  const sb=$('streakBadge');
+  sb.dataset.tier=tier;
 }
 
 /* ═══ STATE ═══ */
@@ -1289,7 +2022,7 @@ const S={
   addMode:'now',addModeW:'now',
   pomo:{running:false,mode:'work',sec:0,total:0,sets:0,iv:null},
   sw:{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null},
-  timerTab:'pomo',
+  timerTab:'pomo',pomoStyle:'ring',lang:'ja',
   theme:{r:220,g:175,b:70,bg:'dark',font:'Noto Sans JP'},
   bgm:{cur:null},ytP:null,
   fw:{task:false,timer:false,cal:false},
@@ -1303,13 +2036,13 @@ const SK={t:'sc9_t',th:'sc9_th',ui:'sc9_ui',ct:'sc9_ct',str:'sc9_str'};
 function loadS(){
   try{const v=localStorage.getItem(SK.t);if(v)S.tasks=JSON.parse(v)}catch{}
   try{const v=localStorage.getItem(SK.th);if(v)Object.assign(S.theme,JSON.parse(v))}catch{}
-  try{const v=localStorage.getItem(SK.ui);if(v){const u=JSON.parse(v);if(u.fw)S.fw=u.fw;if(u.dock)Object.assign(S.dock,u.dock);if(u.timerTab)S.timerTab=u.timerTab;}}catch{}
+  try{const v=localStorage.getItem(SK.ui);if(v){const u=JSON.parse(v);if(u.fw)S.fw=u.fw;if(u.dock)Object.assign(S.dock,u.dock);if(u.timerTab)S.timerTab=u.timerTab;if(u.pomoStyle)S.pomoStyle=u.pomoStyle;if(u.lang)S.lang=u.lang;}}catch{}
   try{const v=localStorage.getItem(SK.ct);if(v)S.calTasks=JSON.parse(v)}catch{}
   try{const v=localStorage.getItem(SK.str);if(v)Object.assign(S.streak,JSON.parse(v))}catch{}
 }
 function savT(){try{localStorage.setItem(SK.t,JSON.stringify(S.tasks))}catch{}}
 function savTh(){try{localStorage.setItem(SK.th,JSON.stringify(S.theme))}catch{}}
-function savUI(){try{localStorage.setItem(SK.ui,JSON.stringify({fw:S.fw,dock:S.dock,timerTab:S.timerTab}))}catch{}}
+function savUI(){try{localStorage.setItem(SK.ui,JSON.stringify({fw:S.fw,dock:S.dock,timerTab:S.timerTab,pomoStyle:S.pomoStyle,lang:S.lang}))}catch{}}
 function savCT(){try{localStorage.setItem(SK.ct,JSON.stringify(S.calTasks))}catch{}}
 function savStr(){try{localStorage.setItem(SK.str,JSON.stringify(S.streak))}catch{}}
 
@@ -1363,55 +2096,57 @@ function snd(t){
 const BGM_YT={white:'nMfPqeZjc2c',pink:'ZXtimhajVh4',rain:'mPZkdNFkNps',thunder:'zNAVAb7NFKY',lofi:'5qap5aO4i9A',jazz:'DSGyEsJ17cI',forest:'xNN7iTA57jM',ocean:'WHPEKLQID4U',cafe:'gaGrAZPuHR4',space:'bGikFCOPPGI',fire:'L_LUpnjgPso'};
 let _ytApiReady=false,_ytApiLoading=false,_ytApiCbs=[],_ytLoop=true,_ytInfoIv=null,_ytVideoId='';
 window.onYouTubeIframeAPIReady=function(){_ytApiReady=true;_ytApiLoading=false;const p=_ytApiCbs.slice();_ytApiCbs=[];p.forEach(f=>{try{f();}catch(e){}});};
-function _ensureYtApi(cb){if(_ytApiReady){cb();return;}_ytApiCbs.push(cb);if(_ytApiLoading)return;if(document.querySelector('script[src*="youtube.com/iframe_api"]')){_ytApiLoading=true;return;}_ytApiLoading=true;const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{_ytApiLoading=false;_ytApiCbs=[];toast('⚠ YouTube API読み込み失敗')};document.head.appendChild(s);}
+function _ensureYtApi(cb){if(_ytApiReady){cb();return;}_ytApiCbs.push(cb);if(_ytApiLoading)return;if(document.querySelector('script[src*="youtube.com/iframe_api"]')){_ytApiLoading=true;return;}_ytApiLoading=true;const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{_ytApiLoading=false;_ytApiCbs=[];toast(T('ytApiError'))};document.head.appendChild(s);}
 function _destroyPlayer(){_stopInfoPolling();if(S.ytP){try{S.ytP.stopVideo();}catch{}try{S.ytP.destroy();}catch{}S.ytP=null;}}
 function _spawnPlayer(videoId,onReadyCb){
   const frame=$('ytFrame');frame.innerHTML='';
   const div=document.createElement('div');div.id='ytDiv';frame.appendChild(div);
   const op=(location.protocol==='file:')?{}:{origin:location.origin};
-  S.ytP=new YT.Player('ytDiv',{height:'1',width:'1',videoId,playerVars:Object.assign({autoplay:1,controls:0,disablekb:1,fs:0,rel:0,playsinline:1,enablejsapi:1,loop:_ytLoop?1:0,...(_ytLoop?{playlist:videoId}:{})},op),events:{onReady:function(e){try{e.target.setVolume(Math.round(parseFloat($('bgmVol').value)*100));}catch{}e.target.playVideo();_startInfoPolling();if(onReadyCb)onReadyCb(e.target);},onStateChange:function(e){_updateInfoBadge(e.data);if(e.data===YT.PlayerState.ENDED&&!_ytLoop)_stopInfoPolling();},onError:function(e){const m={2:'動画IDが無効',100:'動画が見つかりません',101:'埋め込み不可',150:'埋め込み不可'};toast('⚠ '+(m[e.data]||'YouTube読み込みエラー'));_destroyPlayer();_resetYtUI();}}});
+  S.ytP=new YT.Player('ytDiv',{height:'1',width:'1',videoId,playerVars:Object.assign({autoplay:1,controls:0,disablekb:1,fs:0,rel:0,playsinline:1,enablejsapi:1,loop:_ytLoop?1:0,...(_ytLoop?{playlist:videoId}:{})},op),events:{onReady:function(e){try{e.target.setVolume(Math.round(parseFloat($('bgmVol').value)*100));}catch{}e.target.playVideo();_startInfoPolling();if(onReadyCb)onReadyCb(e.target);},onStateChange:function(e){_updateInfoBadge(e.data);if(e.data===YT.PlayerState.ENDED&&!_ytLoop)_stopInfoPolling();},onError:function(e){const m={2:T('ytInvalidId'),100:T('ytNotFound'),101:T('ytNoEmbed'),150:T('ytNoEmbed')};toast('⚠ '+(m[e.data]||T('ytError')));_destroyPlayer();_resetYtUI();}}});
 }
-function _resetYtUI(){S.bgm.cur=null;document.querySelectorAll('.bgmB').forEach(b=>b.classList.remove('on'));$('ytNowPlaying').classList.remove('show');$('ytTitle').textContent='—';$('ytProgFill').style.width='0%';$('ytTime').textContent='0:00 / 0:00';$('ytStatusBadge').textContent='停止中';$('ytStatusBadge').className='';$('ytPlayPauseBtn').textContent='▶';$('ytThumb').classList.remove('show');$('ytThumb').src='';_ytVideoId='';}
+function _resetYtUI(){S.bgm.cur=null;document.querySelectorAll('.bgmB').forEach(b=>b.classList.remove('on'));$('ytNowPlaying').classList.remove('show');$('ytTitle').textContent='—';$('ytProgFill').style.width='0%';$('ytTime').textContent='0:00 / 0:00';$('ytStatusBadge').textContent=T('stopMed');$('ytStatusBadge').dataset.i18n='stopMed';$('ytStatusBadge').className='';$('ytPlayPauseBtn').textContent='▶';$('ytThumb').classList.remove('show');$('ytThumb').src='';_ytVideoId='';}
 function _showThumb(vid){if(!vid)return;const img=$('ytThumb');img.src=`https://img.youtube.com/vi/${vid}/mqdefault.jpg`;img.classList.add('show');}
 function setBgm(type){
   if(S.bgm.cur===type){_destroyPlayer();_resetYtUI();return;}
-  const vid=BGM_YT[type];if(!vid){toast('BGMが見つかりません');return;}
-  _destroyPlayer();_resetYtUI();_ytVideoId=vid;toast('🎵 読み込み中…');
-  _ensureYtApi(()=>{_spawnPlayer(vid,()=>{S.bgm.cur=type;document.querySelector(`.bgmB[data-bgm="${type}"]`)?.classList.add('on');$('ytTitle').textContent=type.charAt(0).toUpperCase()+type.slice(1)+' Ambience';$('ytNowPlaying').classList.add('show');_showThumb(vid);toast('🎵 BGM 再生中');});});
+  const vid=BGM_YT[type];if(!vid){toast(T('stopMed'));return;}
+  _destroyPlayer();_resetYtUI();_ytVideoId=vid;toast(T('bgmLoading'));
+  _ensureYtApi(()=>{_spawnPlayer(vid,()=>{S.bgm.cur=type;document.querySelector(`.bgmB[data-bgm="${type}"]`)?.classList.add('on');$('ytTitle').textContent=type.charAt(0).toUpperCase()+type.slice(1)+' Ambience';$('ytNowPlaying').classList.add('show');_showThumb(vid);toast(T('bgmPlaying'));});});
 }
 function ytId(url){const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_\-]{11})/);return m?m[1]:null;}
-function playYt(){const url=$('ytUrl').value.trim();if(!url){toast('URLを入力してください');return;}const id=ytId(url);if(!id){toast('URLが正しくありません');return;}_destroyPlayer();_resetYtUI();_ytVideoId=id;toast('▶ 読み込み中…');_ensureYtApi(()=>{_spawnPlayer(id,player=>{S.bgm.cur='yt';try{const t=player.getVideoData&&player.getVideoData().title;if(t)$('ytTitle').textContent=t;}catch{}$('ytNowPlaying').classList.add('show');_showThumb(id);toast('🎵 YouTube BGM 再生中');});});}
+function playYt(){const url=$('ytUrl').value.trim();if(!url){toast(T('bgmUrlEmpty'));return;}const id=ytId(url);if(!id){toast(T('bgmUrlInvalid'));return;}_destroyPlayer();_resetYtUI();_ytVideoId=id;toast(T('bgmLoading'));_ensureYtApi(()=>{_spawnPlayer(id,player=>{S.bgm.cur='yt';try{const t=player.getVideoData&&player.getVideoData().title;if(t)$('ytTitle').textContent=t;}catch{}$('ytNowPlaying').classList.add('show');_showThumb(id);toast(T('bgmYtPlaying'));});});}
 function stopYt(){_destroyPlayer();_resetYtUI();}
 function setBgmVol(v){if(S.ytP)try{S.ytP.setVolume(Math.round(parseFloat(v)*100))}catch{}}
 function ytPlayPause(){if(!S.ytP)return;try{const st=S.ytP.getPlayerState();if(st===YT.PlayerState.PLAYING){S.ytP.pauseVideo();$('ytPlayPauseBtn').textContent='▶';}else{S.ytP.playVideo();$('ytPlayPauseBtn').textContent='⏸';}}catch{}}
-function ytToggleLoop(){_ytLoop=!_ytLoop;$('ytLoopBtn').classList.toggle('on',_ytLoop);if(S.ytP){try{const vid=S.ytP.getVideoData().video_id;const t=S.ytP.getCurrentTime()||0;const wp=(S.ytP.getPlayerState()===YT.PlayerState.PLAYING);if(vid){_destroyPlayer();_ensureYtApi(()=>{_spawnPlayer(vid,p=>{if(t>0)try{p.seekTo(t,true);}catch{}if(!wp)try{p.pauseVideo();}catch{}});});}}catch{}}toast(_ytLoop?'ループ ON':'ループ OFF');}
+function ytToggleLoop(){_ytLoop=!_ytLoop;$('ytLoopBtn').classList.toggle('on',_ytLoop);if(S.ytP){try{const vid=S.ytP.getVideoData().video_id;const t=S.ytP.getCurrentTime()||0;const wp=(S.ytP.getPlayerState()===YT.PlayerState.PLAYING);if(vid){_destroyPlayer();_ensureYtApi(()=>{_spawnPlayer(vid,p=>{if(t>0)try{p.seekTo(t,true);}catch{}if(!wp)try{p.pauseVideo();}catch{}});});}}catch{}}toast(_ytLoop?T('loopOn'):T('loopOff'));}
 function ytSeek(e){if(!S.ytP)return;try{const r=$('ytProgBar').getBoundingClientRect();S.ytP.seekTo((e.clientX-r.left)/r.width*S.ytP.getDuration(),true);}catch{}}
 function _startInfoPolling(){_stopInfoPolling();$('ytNowPlaying').classList.add('show');_ytInfoIv=setInterval(_pollYtInfo,500);}
 function _stopInfoPolling(){if(_ytInfoIv){clearInterval(_ytInfoIv);_ytInfoIv=null;}}
 function _pollYtInfo(){if(!S.ytP)return;try{const cur=S.ytP.getCurrentTime()||0;const dur=S.ytP.getDuration()||0;$('ytProgFill').style.width=(dur>0?cur/dur*100:0).toFixed(2)+'%';$('ytTime').textContent=`${fmtSec(cur)} / ${fmtSec(dur)}`;try{const t=S.ytP.getVideoData().title;if(t&&t.length>0)$('ytTitle').textContent=t;}catch{}}catch{}}
-function _updateInfoBadge(state){const b=$('ytStatusBadge');if(state===1){b.textContent='再生中';b.className='playing';$('ytPlayPauseBtn').textContent='⏸';}else if(state===2){b.textContent='一時停止';b.className='paused';$('ytPlayPauseBtn').textContent='▶';}else if(state===0){b.textContent='終了';b.className='';}else if(state===3){b.textContent='バッファ中…';b.className='';}else{b.textContent='停止中';b.className='';}}
+function _updateInfoBadge(state){const b=$('ytStatusBadge');if(state===1){b.textContent=T('playMed');b.className='playing';$('ytPlayPauseBtn').textContent='⏸';}else if(state===2){b.textContent=T('pause').replace('⏸ ','');b.className='paused';$('ytPlayPauseBtn').textContent='▶';}else if(state===0){b.textContent=T('ended');b.className='';}else if(state===3){b.textContent='…';b.className='';}else{b.textContent=T('stopMed');b.className='';}}
 
 /* BGM drag */
 (()=>{let drag=false,ox=0,oy=0;$('bgmDragBar').addEventListener('mousedown',e=>{drag=true;const r=$('bgmPanel').getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;$('bgmPanel').style.transition='none';document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});function mv(e){if(!drag)return;const p=$('bgmPanel');p.style.left=cl(e.clientX-ox,0,window.innerWidth-p.offsetWidth)+'px';p.style.top=cl(e.clientY-oy,0,window.innerHeight-p.offsetHeight)+'px';p.style.bottom='auto';p.style.transform='none';}function up(){drag=false;$('bgmPanel').style.transition='';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}})();
 function toggleBgmPanel(){const p=$('bgmPanel');const ws=p.classList.contains('hidden');if(ws&&!p.style.left){p.style.transform='';}p.classList.toggle('hidden');$('ibBgm').classList.toggle('on',ws);}
 
-/* ═══ WAVE — Light-mode aware ═══ */
+/* ═══ WAVE — Light-mode aware / mobile-optimised ═══ */
 let _waveEnergy=0;
+const _mob=()=>window.innerWidth<=768;
 function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}catch{return false}})();}
 (()=>{
-  const c=$('bgC'),cx=c.getContext('2d');let W,H,t=0;
-  const r=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight};
-  r();window.addEventListener('resize',r);
-  const dr=()=>{
+  const c=$('bgC'),cx=c.getContext('2d',{alpha:true});let W,H,t=0,_af=null;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();
+  let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
+  function dr(){
     cx.clearRect(0,0,W,H);
     const playing=_isPlaying();
     const target=playing?(.4+.6*Math.abs(Math.sin(t*2.7))*.7):0;
     _waveEnergy+=( target-_waveEnergy)*0.06;
-    const e=_waveEnergy;
-    const light=isLight();
-    const baseAlpha=light?.32:.035; // Strong on light themes
-    for(let i=0;i<4;i++){
-      const base=H*(.15+i*.22);
+    const e=_waveEnergy,light=isLight(),mob=_mob();
+    const baseAlpha=light?.32:.035;
+    const waves=mob?2:4,step=mob?10:4;
+    for(let i=0;i<waves;i++){
+      const base=H*(.15+i*.22*(4/waves));
       const amp=22+e*60;
       const y=base+Math.sin(t*.35+i*2.1)*H*.035;
       const g=cx.createLinearGradient(0,y-80,0,y+80);
@@ -1421,31 +2156,47 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
       g.addColorStop(.5,`rgba(${ar},${ag},${ab},${alpha})`);
       g.addColorStop(1,`rgba(${ar},${ag},${ab},0)`);
       cx.fillStyle=g;cx.beginPath();cx.moveTo(0,y);
-      for(let x=0;x<=W;x+=5){const w=Math.sin(x*.006+t*(.26+i*.09))*amp+Math.sin(x*.011+t*(.42-i*.08))*(amp*.4);cx.lineTo(x,y+w);}
+      for(let x=0;x<=W;x+=step){const w=Math.sin(x*.006+t*(.26+i*.09))*amp+Math.sin(x*.011+t*(.42-i*.08))*(amp*.4);cx.lineTo(x,y+w);}
       cx.lineTo(W,y+90);cx.lineTo(0,y+90);cx.closePath();cx.fill();
     }
-    t+=.009;requestAnimationFrame(dr);};dr();
+    t+=.009;_af=requestAnimationFrame(dr);
+  }
+  dr();
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){cancelAnimationFrame(_af);_af=null;}
+    else if(!_af)dr();
+  });
 })();
 (()=>{
-  const c=$('ptC'),cx=c.getContext('2d');let W,H;
-  const ps=[];const r=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight};
-  r();window.addEventListener('resize',r);
-  for(let i=0;i<28;i++)ps.push({x:Math.random()*1200,y:Math.random()*800,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
-  const dr=()=>{cx.clearRect(0,0,W,H);const t=Date.now()*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
+  const c=$('ptC'),cx=c.getContext('2d',{alpha:true});let W,H,_af=null;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();
+  let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
+  const cnt=_mob()?12:28;
+  const ps=[];
+  for(let i=0;i<cnt;i++)ps.push({x:Math.random()*1200,y:Math.random()*800,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
+  function dr(){
+    cx.clearRect(0,0,W,H);const t=Date.now()*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
     ps.forEach(p=>{p.x+=p.vx*mul;p.y+=p.vy*mul;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
       const a=p.op*(light?.9:(.5+.5*Math.sin(t+p.ph)))*(1+_waveEnergy*.8)*(light?3.5:1);
       cx.beginPath();cx.arc(p.x,p.y,p.r*(1+_waveEnergy*.5),0,Math.PI*2);
       cx.fillStyle=`rgba(${S.theme.r},${S.theme.g},${S.theme.b},${Math.min(a,.85)})`;cx.fill();});
-    requestAnimationFrame(dr);};dr();
+    _af=requestAnimationFrame(dr);
+  }
+  dr();
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){cancelAnimationFrame(_af);_af=null;}
+    else if(!_af)dr();
+  });
 })();
 
 /* ═══ CLOCK ═══ */
-const DAYS=['日','月','火','水','木','金','土'];
+const DAYS=null;// replaced by T('weekDays')
 let _lastClockStr='',_lastDateStr='',_lastTickSec=-1;
 function tick(){
   const n=new Date();
   const ts=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
-  const ds=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日（${DAYS[n.getDay()]}）`;
+  const _wdA=T('weekDays');const _cdfFmt=T('clockDateFmt');const ds=typeof _cdfFmt==='function'?_cdfFmt(n.getFullYear(),n.getMonth()+1,n.getDate(),n.getDay()):`${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`;
   if(ts!==_lastClockStr){$('clockTime').textContent=ts;_lastClockStr=ts;}
   if(ds!==_lastDateStr){$('clockDate').textContent=ds;_lastDateStr=ds;}
   const sec=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
@@ -1478,8 +2229,8 @@ function _allTodayTasks(){
 }
 function _invalidateTaskCache(){_taskCache=null;_taskCacheKey='';}
 function _mkT(nId,tId,mode){
-  const name=$(nId).value.trim();if(!name){toast('タスク名を入力してください');return null}
-  let time=null;if(mode==='time'){time=$(tId).value;if(!time){toast('時間を入力してください');return null}}
+  const name=$(nId).value.trim();if(!name){toast(T('taskNameRequired'));return null}
+  let time=null;if(mode==='time'){time=$(tId).value;if(!time){toast(T('timeRequired'));return null}}
   return{id:Date.now(),time,name,done:false};
 }
 function addTask(){const t=_mkT('addName','addTime',S.addMode);if(!t)return;_push(t);$('addName').value='';if(S.addMode==='time')$('addTime').value='';}
@@ -1487,7 +2238,7 @@ function addTaskW(){const t=_mkT('addNameW','addTimeW',S.addModeW);if(!t)return;
 function _push(task){
   S.tasks.push(task);
   S.tasks.sort((a,b)=>{if(!a.time&&!b.time)return 0;if(!a.time)return -1;if(!b.time)return 1;return a.time.localeCompare(b.time);});
-  _invalidateTaskCache();savT();renderT();snd('add');toast('タスクを追加しました ✓');
+  _invalidateTaskCache();savT();renderT();snd('add');toast(T('taskAdded'));
 }
 function delT(id){
   const k=todayKey();
@@ -1509,22 +2260,22 @@ function renderT(){
   const all=_allTodayTasks();
   const html=_tHtml(all);
   ['tScroll','tScrollW'].forEach(id=>{const e=$(id);if(e)e.innerHTML=html});
-  const cnt=`${all.length}件`;
+  const cntFn=T('taskCount');const cnt=typeof cntFn==='function'?cntFn(all.length):all.length+'';
   ['tCnt','tCntW'].forEach(id=>{const e=$(id);if(e)e.textContent=cnt});
 }
 function _tHtml(tasks){
-  if(!tasks.length)return'<div class="tEmpty">まだ予定がありません</div>';
+  if(!tasks.length)return`<div class="tEmpty">${T('noSched')}</div>`;
   const ns=nowS(),nm=Math.floor(ns/60);
   return tasks.map(t=>{
     const im=!t.time,ts=im?null:t2s(t.time),tm=ts!==null?Math.floor(ts/60):null;
     const df=tm!==null?tm-nm:0;
     const isN=!t.done&&(im||(df<=0&&df>-120));
     let cc='up',ct='';
-    if(t.done){cc='past';ct='完了';}
-    else if(isN){cc='act';ct='進行中';}
-    else if(ts!==null&&df<=-120){cc='past';ct='終了';}
+    if(t.done){cc='past';ct=T('done');}
+    else if(isN){cc='act';ct=T('active');}
+    else if(ts!==null&&df<=-120){cc='past';ct=T('ended');}
     else if(tm!==null)ct=fmtCD(df);
-    const badge=im&&!t.done?'<span class="bNow">今すぐ</span>':'<span></span>';
+    const badge=im&&!t.done?`<span class="bNow">${T('nowImm')}</span>`:'<span></span>';
     const calBadge=t.fromCal?'<span class="tSrc">📅</span>':'';
     const rc=['tRow',im?'noT':'',t.done?'isDone':'',isN&&!t.done?'isNow':''].filter(Boolean).join(' ');
     const emoji=detectEmoji(t.name);
@@ -1546,27 +2297,27 @@ function refreshCDs(now){
     const t=taskMap.get(id);
     if(!t||t.done)return;const im=!t.time;
     const cd=row.querySelector('.tCd');if(!cd)return;
-    if(im){cd.textContent='進行中';cd.className='tCd act';return;}
+    if(im){cd.textContent=T('active');cd.className='tCd act';return;}
     const df=Math.floor(t2s(t.time)/60)-nm;
     if(df>0){cd.textContent=fmtCD(df);cd.className='tCd up';}
-    else if(df>-120){cd.textContent='進行中';cd.className='tCd act';}
-    else{cd.textContent='終了';cd.className='tCd past';}
+    else if(df>-120){cd.textContent=T('active');cd.className='tCd act';}
+    else{cd.textContent=T('ended');cd.className='tCd past';}
   });
 }
 function refreshCur(now){
   const sec=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
   const nEl=$('curTask'),mEl=$('curMeta'),bEl=$('curTBadge');
   const tasks=_allTodayTasks();
-  if(!tasks.length){nEl.textContent='タスクを追加してください';nEl.className='empty';mEl.classList.remove('show');$('main').classList.remove('allDone');return;}
+  if(!tasks.length){nEl.textContent=T('noTask');nEl.className='empty';mEl.classList.remove('show');$('main').classList.remove('allDone');return;}
   let cur=null;
   const imm=tasks.find(t=>!t.time&&!t.done);if(imm)cur={task:imm,im:true};
   if(!cur){for(const t of tasks){if(t.time&&!t.done&&t2s(t.time)<=sec)cur={task:t,im:false};}}
   let next=null;for(const t of tasks){if(t.time&&!t.done&&t2s(t.time)>sec){next=t;break;}}
-  if(!cur){const hasFut=tasks.some(t=>t.time&&!t.done&&t2s(t.time)>sec);const allDone=tasks.every(t=>t.done);nEl.textContent=allDone?'✓ すべて完了！':hasFut?'次の予定を待機中…':'—';nEl.className='empty';mEl.classList.remove('show');$('main').classList.toggle('allDone',allDone&&tasks.length>0);return;}
+  if(!cur){const hasFut=tasks.some(t=>t.time&&!t.done&&t2s(t.time)>sec);const allDone=tasks.every(t=>t.done);nEl.textContent=allDone?T('allDone'):hasFut?T('waiting'):'—';nEl.className='empty';mEl.classList.remove('show');$('main').classList.toggle('allDone',allDone&&tasks.length>0);return;}
   nEl.textContent=cur.task.name;nEl.className='';mEl.classList.add('show');$('main').classList.remove('allDone');
-  if(cur.im){bEl.textContent=next?`今すぐ → ${next.time}`:'今すぐ実行中';return;}
-  if(!next){bEl.textContent=`${cur.task.time} → (終了未定)`;return;}
-  bEl.textContent=`${cur.task.time} → ${next.time}　残り${Math.ceil((t2s(next.time)-sec)/60)}分`;
+  if(cur.im){bEl.textContent=next?`${T('nowImm')} → ${next.time}`:T('nowNext');return;}
+  if(!next){bEl.textContent=`${cur.task.time} → ${T('endUnknown')}`;return;}
+  const _rm=T('remaining'),_mn=T('min');bEl.textContent=`${cur.task.time} → ${next.time}　${_rm}${Math.ceil((t2s(next.time)-sec)/60)}${_mn}`;
 }
 
 /* ═══ CALENDAR ═══ */
@@ -1576,8 +2327,8 @@ function cycleCalView(){const vs=['year','month','day'];setCalView(vs[(vs.indexO
 function calMove(d){const v=S.cal.view;if(v==='year'){S.cal.year+=d;}else{S.cal.month+=d;if(S.cal.month<0){S.cal.month=11;S.cal.year--;}else if(S.cal.month>11){S.cal.month=0;S.cal.year++;}}renderCal();}
 function renderCal(){
   const{view,year,month}=S.cal;
-  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  $('calTitle').textContent=view==='year'?`${year}年`:`${year}年${MONTHS[month]}`;
+  const _yf=T('yearFormat'),_ymf=T('yearMonthFormat'),_mArr=T('months');
+  $('calTitle').textContent=view==='year'?(typeof _yf==='function'?_yf(year):`${year}`):(typeof _ymf==='function'?_ymf(year,month+1):`${year}/${Array.isArray(_mArr)?_mArr[month]:month+1}`);
   const body=$('calBody');body.innerHTML='';
   if(view==='year')renderCalYear(body,year);
   else if(view==='month')renderCalMonth(body,year,month);
@@ -1586,11 +2337,11 @@ function renderCal(){
 function renderCalYear(body,year){
   const div=document.createElement('div');div.className='calYearGrid';
   const today=new Date();
-  ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((mn,m)=>{
+  const _msArr=T('monthsShort');['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((mn,m)=>{const _mName=Array.isArray(_msArr)?_msArr[m]:mn;
     const mm=document.createElement('div');mm.className='calYearMonth';
     let hasT=Object.keys(S.calTasks).some(k=>{const[ky,km]=k.split('-').map(Number);return ky===year&&km===m+1&&S.calTasks[k].length>0;});
     if(hasT)mm.classList.add('has-tasks');
-    const t=document.createElement('div');t.className='calYMTitle';t.textContent=mn;
+    const t=document.createElement('div');t.className='calYMTitle';t.textContent=_mName;
     const g=document.createElement('div');g.className='calYMMiniGrid';
     const fd=new Date(year,m,1).getDay();const dim=new Date(year,m+1,0).getDate();
     for(let d=0;d<fd;d++){const e=document.createElement('div');e.className='calYMDay';g.appendChild(e);}
@@ -1603,7 +2354,7 @@ function renderCalMonth(body,year,month){
   const div=document.createElement('div');div.className='calGrid';
   const today=new Date();
   const dh=document.createElement('div');dh.className='calDayHeaders';
-  ['日','月','火','水','木','金','土'].forEach(d=>{const e=document.createElement('div');e.className='calDH';e.textContent=d;dh.appendChild(e);});
+  const _wdArr=T('weekDays');(Array.isArray(_wdArr)?_wdArr:['日','月','火','水','木','金','土']).forEach(d=>{const e=document.createElement('div');e.className='calDH';e.textContent=d;dh.appendChild(e);});
   div.appendChild(dh);
   const days=document.createElement('div');days.className='calDays';
   const fd=new Date(year,month,1).getDay();const dim=new Date(year,month+1,0).getDate();const prevDim=new Date(year,month,0).getDate();
@@ -1630,11 +2381,12 @@ function renderCalDay(body,year,month){
   const today=new Date();const day=today.getDate();const k=`${year}-${pad(month+1)}-${pad(day)}`;
   const tasks=S.calTasks[k]||[];
   const div=document.createElement('div');div.style.cssText='padding:10px;overflow-y:auto;flex:1';
-  const hdr=document.createElement('div');hdr.style.cssText='font-family:var(--mono);font-size:9px;color:var(--ac);letter-spacing:2px;margin-bottom:8px';hdr.textContent=`${year}年${month+1}月${day}日`;div.appendChild(hdr);
-  if(!tasks.length){const e=document.createElement('div');e.className='tEmpty';e.textContent='この日の予定はありません';div.appendChild(e);}
+  const _dfFn=T('dateFormat');const _dayHdr=typeof _dfFn==='function'?_dfFn(year,month+1,day):`${year}/${month+1}/${day}`;
+  const hdr=document.createElement('div');hdr.style.cssText='font-family:var(--mono);font-size:9px;color:var(--ac);letter-spacing:2px;margin-bottom:8px';hdr.textContent=_dayHdr;div.appendChild(hdr);
+  if(!tasks.length){const e=document.createElement('div');e.className='tEmpty';e.textContent=T('calDayNoTask');div.appendChild(e);}
   else tasks.forEach(t=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--b1);cursor:pointer';row.onclick=()=>{t.done=!t.done;savCT();body.innerHTML='';renderCalDay(body,year,month);renderT();};const cb=document.createElement('div');cb.className='cddCheckbox';if(t.done)cb.textContent='✓';const nm=document.createElement('div');nm.style.cssText='font-size:11px;font-family:var(--jp);flex:1;color:var(--tp)';nm.textContent=t.name;if(t.done)nm.style.textDecoration='line-through';row.appendChild(cb);row.appendChild(nm);div.appendChild(row);});
   const ar=document.createElement('div');ar.style.cssText='display:flex;gap:4px;margin-top:8px';
-  const inp=document.createElement('input');inp.type='text';inp.placeholder='予定を追加…';inp.style.cssText='flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);font-family:var(--jp);font-size:11px;padding:4px 7px;color:var(--tp)';
+  const inp=document.createElement('input');inp.type='text';inp.placeholder=T('calDayAddPh');inp.style.cssText='flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);font-family:var(--jp);font-size:11px;padding:4px 7px;color:var(--tp)';
   const btn=document.createElement('button');btn.className='bAdd';btn.textContent='+';
   btn.onclick=()=>{const n=inp.value.trim();if(!n)return;if(!S.calTasks[k])S.calTasks[k]=[];S.calTasks[k].push({id:Date.now(),name:n,done:false});savCT();inp.value='';body.innerHTML='';renderCalDay(body,year,month);renderT();renderCal();};
   inp.onkeydown=e=>{if(e.key==='Enter')btn.click()};
@@ -1642,7 +2394,7 @@ function renderCalDay(body,year,month){
 }
 function openDayDetail(year,month,day){
   const k=`${year}-${pad(month)}-${pad(day)}`;_cddDate=k;
-  $('cddDate').textContent=`${year}年${month}月${day}日`;
+  const _cdfFn=T('dateFormat');$('cddDate').textContent=typeof _cdfFn==='function'?_cdfFn(year,month,day):`${year}/${month}/${day}`;
   // Reset mode
   setCddMode('now');$('cddTimeInput').value='';
   // Past date: hide add row
@@ -1658,7 +2410,7 @@ function openDayDetail(year,month,day){
 function closeDayDetail(){const d=$('calDayDetail');d.classList.remove('show');d.style.cssText='';_cddDate=null;}
 function renderDayDetail(){
   const tasks=S.calTasks[_cddDate]||[];const list=$('cddTaskList');list.innerHTML='';
-  if(!tasks.length){list.innerHTML='<div class="tEmpty" style="padding:10px">予定がありません</div>';return;}
+  if(!tasks.length){list.innerHTML=`<div class="tEmpty" style="padding:10px">${T('dayDetailNoTask')}</div>`;return;}
   tasks.forEach((t,i)=>{
     const row=document.createElement('div');row.className='cddTask'+(t.done?' done':'');
     row.onclick=()=>{t.done=!t.done;savCT();renderDayDetail();renderCal();renderT();};
@@ -1666,7 +2418,7 @@ function renderDayDetail(){
     const nm=document.createElement('div');nm.className='cddTName';nm.textContent=t.name;
     const timeBadge=document.createElement('div');
     timeBadge.style.cssText='font-family:var(--mono);font-size:8px;color:var(--ac);white-space:nowrap;flex-shrink:0';
-    timeBadge.textContent=t.time||'今すぐ';
+    timeBadge.textContent=t.time||T('timeNow');
     const del=document.createElement('button');del.className='cddTDel';del.textContent='×';
     del.onclick=e=>{e.stopPropagation();S.calTasks[_cddDate].splice(i,1);savCT();renderDayDetail();renderCal();renderT();};
     row.appendChild(cb);row.appendChild(timeBadge);row.appendChild(nm);row.appendChild(del);list.appendChild(row);
@@ -1683,18 +2435,18 @@ function cddAddTask(){
   const n=$('cddInput').value.trim();if(!n||!_cddDate)return;
   // Past date check
   const today=todayKey();
-  if(_cddDate<today){toast('⚠ 過去の日付には予定を追加できません');return;}
+  if(_cddDate<today){toast(T('pastDate'));return;}
   let time=null;
   if(_cddMode==='time'){
     time=$('cddTimeInput').value;
-    if(!time){toast('時間を入力してください');return;}
+    if(!time){toast(T('timeRequired'));return;}
     // If today, block past times
     if(_cddDate===today){
       const now=new Date();
       const[h,m]=time.split(':').map(Number);
       const taskSec=h*3600+m*60;
       const nowSec=now.getHours()*3600+now.getMinutes()*60;
-      if(taskSec<nowSec){toast('⚠ 現在時刻より前の時間は指定できません');return;}
+      if(taskSec<nowSec){toast(T('timePastError'));return;}
     }
   }
   if(!S.calTasks[_cddDate])S.calTasks[_cddDate]=[];
@@ -1729,8 +2481,8 @@ function initStreak(){
 function showStreakPop(){
   const s=_calcStreak();
   $('spPopDays').textContent=s;
-  $('spPopLabel').textContent=s===1?'初日ログイン！おめでとう🎉':`${s}日連続ログイン！`;
-  const subs=['毎日続けて目標を達成しよう','この調子で頑張ろう！','継続は力なり 💪','素晴らしい習慣です！','あなたは最高です 🌟'];
+  const _lf=T('loginFirst'),_ls=T('loginStreak');$('spPopLabel').textContent=s===1?_lf:(typeof _ls==='function'?_ls(s):`${s}日連続ログイン！`);
+  const subs=T('streakSubs')||['毎日続けて目標を達成しよう','この調子で頑張ろう！','継続は力なり 💪','素晴らしい習慣です！','あなたは最高です 🌟'];
   $('spPopSub').textContent=subs[Math.min(s-1,subs.length-1)];
   // Confetti
   const c=$('spConfetti');c.innerHTML='';
@@ -1752,7 +2504,18 @@ function _calcStreak(){
   for(let i=dates.length-1;i>=0;i--){const d=new Date(dates[i]);d.setHours(0,0,0,0);const diff=(check-d)/86400000;if(diff===0){streak++;check.setDate(check.getDate()-1);}else if(diff>1)break;}
   return streak;
 }
-function updateStreakBadge(){const s=_calcStreak();$('streakNum').textContent=s;$('streakBadge').classList.toggle('active',s>0);}
+function updateStreakBadge(){
+  const s=_calcStreak();
+  $('streakNum').textContent=s;
+  const tier=_streakTier(s);
+  const sb=$('streakBadge');
+  sb.classList.toggle('active',s>0);
+  sb.dataset.tier=tier;
+  // アイコン変更: 通常→炎→雷
+  const iconSpan=sb.querySelector('.streak-icon');
+  if(iconSpan)iconSpan.textContent=tier===2?'⚡':tier===1?'🔥':'🔥';
+  updateLevelUI();
+}
 
 /* HEATMAP */
 function buildHeatmap(){
@@ -1781,7 +2544,7 @@ function buildHeatmap(){
         if(lvl>0)cell.dataset.lvl=lvl;
         if(dateKey(date)===todayKey())cell.classList.add('today-cell');
         const loginDay=(S.streak.dates||[]).includes(k);
-        const tip=`${date.getMonth()+1}/${date.getDate()} — ${mins}分${loginDay?'（ログイン）':''}`;
+        const _htFn=T('heatTip');const tip=typeof _htFn==='function'?_htFn(date.getMonth()+1,date.getDate(),mins,loginDay):`${date.getMonth()+1}/${date.getDate()} — ${mins}分${loginDay?'（ログイン）':''}`;
         cell.title=tip;
       }else{cell.style.opacity='.15';}
       grid.appendChild(cell);
@@ -1792,7 +2555,7 @@ function buildHeatmap(){
       lastMonth=wStart.getMonth();
       const m=document.createElement('div');m.className='strHeatMonth';
       m.style.cssText=`width:${(12+2)}px;text-align:center;font-family:var(--mono);font-size:7px;color:var(--tt)`;
-      m.textContent=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][wStart.getMonth()];
+      const _hmsArr=T('monthsShort');m.textContent=(Array.isArray(_hmsArr)?_hmsArr:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])[wStart.getMonth()];
       monthRow.appendChild(m);
     }else{
       const m=document.createElement('div');m.style.cssText=`width:${(12+2)}px`;monthRow.appendChild(m);
@@ -1807,10 +2570,16 @@ function openStreak(){
   $('spMinutes').textContent=S.streak.totalMinutes||0;
   // Level info
   const tm=S.streak.totalMinutes||0;const info=getLevelInfo(tm);
-  $('spLvlIcon').textContent=info.lv.icon;$('spLvlName').textContent=info.lv.name;
-  $('spLvlNum').textContent=`Level ${LEVELS.indexOf(info.lv)+1}`;
+  const lvlIdx=LEVELS.indexOf(info.lv)+1;
+  const iconEl=$('spLvlIcon');
+  iconEl.textContent=info.lv.icon;
+  const tier=_streakTier(s);
+  iconEl.className='strLvlIcon'+(tier===2?' tier-thunder':tier===1?' tier-fire':'');
+  $('spLvlName').textContent=info.lv.name;
+  $('spLvlTitle').textContent=info.lv.title||'';
+  $('spLvlNum').textContent=`Level ${lvlIdx} / ${LEVELS.length}`;
   $('spLvlFill').style.width=info.pct+'%';
-  $('spLvlXP').textContent=info.xpNext?`${info.xpCur} / ${info.xpNext} min →次のレベル`:`MAX LEVEL達成！`;
+  const _xpf=T('xpNextLvl'),_xpm=T('xpMaxLvl');$('spLvlXP').textContent=info.xpNext?(typeof _xpf==='function'?_xpf(info.xpCur,info.xpNext):`${info.xpCur}/${info.xpNext}`):(_xpm||'MAX');
   buildHeatmap();
   $('streakOv').classList.add('open');
 }
@@ -1828,10 +2597,11 @@ function pomoChg(){if(!S.pomo.running){const t=pW();Object.assign(S.pomo,{mode:'
 function renderPomo(){
   const{mode,sec,sets,running,total}=S.pomo;const n=pSets();
   const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
-  const ml={work:'作業',break:'休憩',long:'長休憩'}[mode];
+  const modeKey={work:'work',break:'brk',long:'longBrk'}[mode];
+  const ml=T(modeKey);
   [$('pRT'),$('pRTW')].forEach(e=>{if(e)e.textContent=ms});
   [$('pRM'),$('pRMW')].forEach(e=>{if(e)e.textContent=ml});
-  const ps=$('pSub');if(ps)ps.textContent={work:'作業時間',break:'休憩時間',long:'長休憩'}[mode];
+  const ps=$('pSub');if(ps)ps.textContent=T(mode==='work'?'work':mode==='break'?'brk':'longBrk');
   const rem=sec/(total||1);
   $('pArc').setAttribute('stroke-dashoffset',(175.9*(1-rem)).toFixed(3));
   $('pArcW').setAttribute('stroke-dashoffset',(150.8*(1-rem)).toFixed(3));
@@ -1840,29 +2610,118 @@ function renderPomo(){
   [$('bPomo'),$('bPomoW')].forEach(e=>{if(e)e.classList.toggle('brk',isB)});
   const dh=Array.from({length:n},(_,i)=>`<span class="pd${i<sets?' done':i===sets?' cur':''}"></span>`).join('');
   [$('pDots'),$('pDotsW')].forEach(e=>{if(e)e.innerHTML=dh});
-  [$('pBtn'),$('pBtnW')].forEach(e=>{if(e)e.textContent=running?'⏸ 一時停止':'▶ 開始'});
+  [$('pBtn'),$('pBtnW')].forEach(e=>{if(e)e.textContent=running?T('pause'):T('start')});
+  // pomodoro style on float window
+  _renderPomoStyleW();
+}
+function _renderPomoStyleW(){
+  const style=S.pomoStyle||'ring';
+  const{mode,sec,total,sets}=S.pomo;
+  const rem=sec/(total||1);const n=pSets();
+  const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+  const isB=mode!=='work';
+  const modeKey={work:'work',break:'brk',long:'longBrk'}[mode];
+  // Render to both float window and dock
+  const targets=[
+    {el:$('pomoStyleWrap'), small:false},
+    {el:$('pomoStyleWrapD'), small:true},
+  ];
+  targets.forEach(({el,small})=>{
+    if(!el)return;
+    const ringSz=small?76:140;const ringR=small?32:52;
+    const ringDA=(2*Math.PI*ringR).toFixed(1);
+    const ringDO=(ringDA*(1-rem)).toFixed(2);
+    const arcW=small?100:160;
+    const arcR=small?40:52;
+    const arcLen=(Math.PI*arcR).toFixed(1);
+    const arcDO=(arcLen*(1-rem)).toFixed(2);
+    const timeFsz=small?'13px':'26px';
+    const blkTimeFsz=small?'18px':'30px';
+    const minTimeFsz=small?'32px':'44px';
+    if(style==='ring'){
+      el.innerHTML=`<div class="ps-ring ${isB?'brk':''}" style="width:${ringSz}px;height:${ringSz}px">
+        <svg class="ps-svg" viewBox="0 0 ${ringSz} ${ringSz}"><circle class="ps-bg" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}"/><circle class="ps-arc" cx="${ringSz/2}" cy="${ringSz/2}" r="${ringR}" stroke-dasharray="${ringDA}" stroke-dashoffset="${ringDO}"/></svg>
+        <div class="ps-inner"><div class="ps-time" style="font-size:${timeFsz}">${ms}</div><div class="ps-mode">${T(modeKey)}</div></div>
+      </div>`;
+    } else if(style==='arc'){
+      el.innerHTML=`<div class="ps-arc-wrap ${isB?'brk':''}" style="width:${arcW}px">
+        <svg class="ps-svg-arc" viewBox="0 0 ${arcW} ${Math.round(arcW*.67)}">
+          <path class="ps-arc-bg" d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}"/>
+          <path class="ps-arc-fill" d="M${arcW*.08},${arcW*.58} A${arcR},${arcR} 0 1,1 ${arcW*.92},${arcW*.58}" stroke-dasharray="${arcLen}" stroke-dashoffset="${arcDO}"/>
+          <text class="ps-arc-time" x="${arcW/2}" y="${arcW*.52}" style="font-size:${timeFsz}">${ms}</text>
+          <text class="ps-arc-mode" x="${arcW/2}" y="${arcW*.63}">${T(modeKey)}</text>
+        </svg>
+      </div>`;
+    } else if(style==='minimal'){
+      const pct=Math.round(rem*100);
+      el.innerHTML=`<div class="ps-minimal ${isB?'brk':''}" style="min-width:${small?70:100}px">
+        <div class="ps-min-time" style="font-size:${minTimeFsz}">${ms}</div>
+        <div class="ps-min-bar"><div class="ps-min-fill" style="width:${pct}%"></div></div>
+        <div class="ps-min-mode">${T(modeKey)}</div>
+      </div>`;
+    } else if(style==='blocks'){
+      const total_segs=small?12:20;const filled=Math.round(rem*total_segs);
+      const cols=small?6:10;
+      const segs=Array.from({length:total_segs},(_,i)=>`<div class="ps-blk${i<filled?' on':''}"></div>`).join('');
+      el.innerHTML=`<div class="ps-blocks ${isB?'brk':''}" style="min-width:${small?70:100}px">
+        <div class="ps-blk-time" style="font-size:${blkTimeFsz}">${ms}</div>
+        <div class="ps-blk-grid" style="grid-template-columns:repeat(${cols},1fr)">${segs}</div>
+        <div class="ps-blk-mode">${T(modeKey)}</div>
+      </div>`;
+    }
+  });
 }
 function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running)S.pomo.iv=setInterval(pomoTick,1000);else clearInterval(S.pomo.iv);renderPomo();}
+/* 作業完了共通処理。earnedSec=実際に経過した秒数 */
+function _pomoFinishWork(earnedSec){
+  const earnedMins=Math.max(0,Math.floor(earnedSec/60));
+  if(earnedMins>0)addPomoXP(earnedMins);
+  snd('brk');
+  const n=pSets();
+  S.pomo.sets++;
+  if(S.pomo.sets>=n){
+    S.pomo.sets=0;
+    Object.assign(S.pomo,{mode:'long',sec:pL(),total:pL()});
+    toast(T('pomoCmpl'));
+    _notify(T('notifCmplT'),n+T('notifCmplB'));
+  }else{
+    Object.assign(S.pomo,{mode:'break',sec:pB(),total:pB()});
+    toast(T('pomoBreak'));
+    _notify(T('notifBrkT'),T('notifBrkB'));
+  }
+}
 function pomoTick(){
   if(S.pomo.sec>0){S.pomo.sec--;renderPomo();return;}
-  const n=pSets();
   if(S.pomo.mode==='work'){
-    const workMins=Math.round(parseInt($('pWork').value)||25);
-    addPomoXP(workMins); // XP for completing a pomodoro
-    snd('brk');S.pomo.sets++;
-    if(S.pomo.sets%n===0){Object.assign(S.pomo,{mode:'long',sec:pL(),total:pL()});toast('🎉 長休憩！よく頑張りました');_notify('🎉 長休憩！','よく頑張りました。しっかり休んでください。');}
-    else{Object.assign(S.pomo,{mode:'break',sec:pB(),total:pB()});toast('☕ 休憩時間です');_notify('☕ 休憩時間','少し休んで気分転換しましょう。');}
-  }else{snd('done');Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});toast('💪 作業開始！');_notify('💪 作業開始！','集中して取り組みましょう。');}
+    _pomoFinishWork(S.pomo.total);
+  }else{
+    snd('done');
+    Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});
+    toast(T('pomoWork'));
+    _notify(T('notifWorkT'),T('notifWorkB'));
+  }
   renderPomo();
 }
 function pomoReset(){clearInterval(S.pomo.iv);Object.assign(S.pomo,{running:false,mode:'work',sec:pW(),total:pW(),sets:0,iv:null});renderPomo()}
-function pomoSkip(){if(S.pomo.running){S.pomo.sec=0;pomoTick();}else{const n=pSets();if(S.pomo.mode==='work'){const workMins=Math.round(parseInt($('pWork').value)||25);addPomoXP(workMins);snd('brk');S.pomo.sets++;if(S.pomo.sets%n===0)Object.assign(S.pomo,{mode:'long',sec:pL(),total:pL()});else Object.assign(S.pomo,{mode:'break',sec:pB(),total:pB()});}else{snd('done');Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});}renderPomo();}}
+function pomoSkip(){
+  if(S.pomo.mode==='work'){
+    const elapsed=S.pomo.total-S.pomo.sec;
+    if(S.pomo.running){clearInterval(S.pomo.iv);S.pomo.iv=null;S.pomo.running=false;}
+    _pomoFinishWork(elapsed);
+  }else{
+    if(S.pomo.running){clearInterval(S.pomo.iv);S.pomo.iv=null;S.pomo.running=false;}
+    snd('done');
+    Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});
+    toast(T('pomoWork'));
+  }
+  renderPomo();
+}
 
 /* ═══ STOPWATCH ═══ */
-function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,100);}else clearInterval(S.sw.iv);const t=S.sw.running?'⏸ 停止':'▶ 再開';[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=t});}
+function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,100);}else clearInterval(S.sw.iv);const t=S.sw.running?T('swStop'):T('swResume');[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=t});}
 function swTick(){const n=performance.now();S.sw.ms+=n-S.sw.tick;S.sw.tick=n;const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});}
 function swLap(){if(!S.sw.running&&S.sw.ms===0)return;S.sw.laps.push({lap:S.sw.ms-S.sw.lapBase,total:S.sw.ms});S.sw.lapBase=S.sw.ms;renderLaps();snd('lap');}
-function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent='▶ 開始'});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
+function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
 function renderLaps(){const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');[$('swLaps'),$('swLapsW')].forEach(e=>{if(e){e.innerHTML=h;e.scrollTop=e.scrollHeight;}});}
 function switchTimer(tab){S.timerTab=tab;savUI();const p=tab==='pomo';$('tPomo').classList.toggle('on',p);$('tSw').classList.toggle('on',!p);$('bPomo').classList.toggle('on',p);$('bSw').classList.toggle('on',!p);$('tPomoW').classList.toggle('on',p);$('tSwW').classList.toggle('on',!p);$('bPomoW').classList.toggle('on',p);$('bSwW').classList.toggle('on',!p);}
 function switchTimerBoth(tab){switchTimer(tab);}
@@ -1870,7 +2729,7 @@ function switchTimerBoth(tab){switchTimer(tab);}
 /* ═══ FLOAT WINDOWS ═══ */
 function toggleFW(name){const wo=!S.fw[name];S.fw[name]=wo;_applyFW(name);if(wo){if(!S.dock.collapsed){S.dock.collapsed=true;$('dock').classList.add('dHidden');updateMainInset();_updateCollapseBtn();}}else{const any=Object.values(S.fw).some(v=>v);if(!any&&S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}}if(name==='cal')renderCal();savUI();}
 function closeFW(name){S.fw[name]=false;_applyFW(name);const any=Object.values(S.fw).some(v=>v);if(!any&&S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}savUI();}
-function dockFW(name){S.fw[name]=false;_applyFW(name);const any=Object.values(S.fw).some(v=>v);if(!any&&S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}const msgs={task:'タスクをドックへ',timer:'タイマーをドックへ',cal:'カレンダーを閉じました'};toast(msgs[name]||'閉じました');savUI();}
+function dockFW(name){S.fw[name]=false;_applyFW(name);const any=Object.values(S.fw).some(v=>v);if(!any&&S.dock.collapsed){S.dock.collapsed=false;$('dock').classList.remove('dHidden');updateMainInset();_updateCollapseBtn();}toast({task:T('dockFWTask'),timer:T('dockFWTimer'),cal:T('dockFWCal')}[name]||T('dockFWClose'));savUI();}
 function _applyFW(name){const map={task:'fwTask',timer:'fwTimer',cal:'fwCalendar'};const bm={task:'wtTask',timer:'wtTimer',cal:'wtCal'};const el=$(map[name]);const btn=$(bm[name]);if(el)el.classList.toggle('hidden',!S.fw[name]);if(btn)btn.classList.toggle('on',S.fw[name]);}
 
 document.querySelectorAll('.fw').forEach(win=>{
@@ -1963,10 +2822,24 @@ function applyTheme(){
   applyFont(font,false);
 }
 function setBg(name){S.theme.bg=name;applyTheme();savTh()}
-function applyFont(name,save=true){if(!name)return;S.theme.font=name;const f=FONTS.find(f=>f.v===name);if(f?.gf){const id='gf-'+f.v.replace(/\s/g,'_');if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`;document.head.appendChild(l);}}document.documentElement.style.setProperty('--jp',`'${name}','Noto Sans JP',sans-serif`);$('fPrev').style.fontFamily=`'${name}','Noto Sans JP',sans-serif`;$('fPrev').textContent=`あいうえお ABCDEFG 12:34（${name}）`;document.querySelectorAll('.fpB').forEach(b=>b.classList.toggle('on',b.dataset.f===name));if(save)savTh();}
+function applyFont(name,save=true){if(!name)return;S.theme.font=name;const f=FONTS.find(f=>f.v===name);if(f?.gf){const id='gf-'+f.v.replace(/\s/g,'_');if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`;l.setAttribute('fetchpriority','low');document.head.appendChild(l);}}document.documentElement.style.setProperty('--jp',`'${name}','Noto Sans JP',sans-serif`);$('fPrev').style.fontFamily=`'${name}','Noto Sans JP',sans-serif`;$('fPrev').textContent=`あいうえお ABCDEFG 12:34（${name}）`;document.querySelectorAll('.fpB').forEach(b=>b.classList.toggle('on',b.dataset.f===name));if(save)savTh();}
 function custFont(){const v=$('fIn').value.trim();if(!v)return;const enc=v.replace(/\s+/g,'+');const id='gf-c-'+enc;if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=`https://fonts.googleapis.com/css2?family=${enc}:wght@300;400;700&display=swap`;document.head.appendChild(l);}applyFont(v);$('fIn').value='';toast(`フォント「${v}」を読み込み中…`);}
 function buildUI(){$('swGrid').innerHTML=PRESETS.map(p=>`<div class="swatch" style="background:rgb(${p.r},${p.g},${p.b})" title="${p.l}" onclick="applyAc(${p.r},${p.g},${p.b});savTh()"></div>`).join('');$('fpBtns').innerHTML=FONTS.map(f=>`<button class="fpB" data-f="${f.v}" onclick="applyFont('${f.v}')">${f.l}</button>`).join('');}
+
+/* ═══ THEME ACCORDION ═══ */
+function thToggle(id){
+  const body=document.getElementById(id);
+  const head=body?.previousElementSibling;
+  if(!body||!head)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  head.classList.toggle('open',!isOpen);
+  const arrow=head.querySelector('.thArrow');
+  if(arrow)arrow.textContent=isOpen?'▸':'▾';
+  head.setAttribute('aria-expanded',String(!isOpen));
+}
 function openTheme(){$('thOv').classList.toggle('open')}
+function setPomoStyle(s){S.pomoStyle=s;savUI();renderPomo();document.querySelectorAll('.pomoStyleBtn').forEach(b=>b.classList.toggle('on',b.dataset.style===s));}
 function thOvCk(e){if(e.target===$('thOv'))openTheme()}
 
 /* ═══ DONATE + TOAST ═══ */
@@ -2032,9 +2905,14 @@ function mNav(tab){
   if(tab==='task'){renderTM();}
   if(tab==='more'){
     const tm=S.streak.totalMinutes||0;const info=getLevelInfo(tm);
-    $('mLvlIcon').textContent=info.lv.icon;
+    const s=_calcStreak();const tier=_streakTier(s);
+    const iconEl=$('mLvlIcon');
+    iconEl.textContent=info.lv.icon;
+    iconEl.className=tier===2?'tier-thunder':tier===1?'tier-fire':'';
     $('mLvlName').textContent=`Lv.${LEVELS.indexOf(info.lv)+1} ${info.lv.name}`;
-    $('mStreak').textContent=`🔥 ${_calcStreak()}日連続`;
+    const tierLabel=tier===2?T('tierThunder'):tier===1?T('tierFire'):'';
+    const _slFn=T('streakLabel');const _sl=typeof _slFn==='function'?_slFn(s):`${s}`;
+    $('mStreak').textContent=(tierLabel?tierLabel+' — ':'')+_sl;
   }
   if(tab==='timer'){syncPomoInputsM();}
 }
@@ -2052,8 +2930,8 @@ function _closeCurrentSheet(){
 let _addModeM='now';
 function setModeM(m){_addModeM=m;$('mNowM').classList.toggle('on',m==='now');$('mTimeM').classList.toggle('on',m==='time');$('addTimeM').classList.toggle('hide',m==='now')}
 function addTaskM(){
-  const name=$('addNameM').value.trim();if(!name){toast('タスク名を入力してください');return;}
-  let time=null;if(_addModeM==='time'){time=$('addTimeM').value;if(!time){toast('時間を入力してください');return;}}
+  const name=$('addNameM').value.trim();if(!name){toast(T('taskNameRequired'));return;}
+  let time=null;if(_addModeM==='time'){time=$('addTimeM').value;if(!time){toast(T('timeRequired'));return;}}
   _push({id:Date.now(),time,name,done:false});$('addNameM').value='';if(_addModeM==='time')$('addTimeM').value='';renderTM();
 }
 function renderTM(){
@@ -2093,7 +2971,7 @@ function switchTimerAll(tab){
     _p();
     const{mode,sec,sets,running,total}=S.pomo;const n=pSets();
     const ms=`${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
-    const ml={work:'作業',break:'休憩',long:'長休憩'}[mode];
+    const _mkey={work:'work',break:'brk',long:'longBrk'}[mode]||'work';const ml=T(_mkey);
     if($('pRTM'))$('pRTM').textContent=ms;if($('pRMM'))$('pRMM').textContent=ml;
     const rem=sec/(total||1);
     if($('pArcM'))$('pArcM').setAttribute('stroke-dashoffset',(226.2*(1-rem)).toFixed(3));
@@ -2101,14 +2979,14 @@ function switchTimerAll(tab){
     if($('pRingM'))$('pRingM').classList.toggle('brk',isB);
     const dh=Array.from({length:n},(_,i)=>`<span class="pd${i<sets?' done':i===sets?' cur':''}"></span>`).join('');
     if($('pDotsM'))$('pDotsM').innerHTML=dh;
-    if($('pBtnM'))$('pBtnM').textContent=running?'⏸ 一時停止':'▶ 開始';
+    if($('pBtnM'))$('pBtnM').textContent=running?T('pause'):T('start');
     if($('swDispM'))$('swDispM').textContent=$('swDisp')?.textContent||'00:00:00';
-    if($('swBtnM'))$('swBtnM').textContent=$('swBtn')?.textContent||'▶ 開始';
+    if($('swBtnM'))$('swBtnM').textContent=$('swBtn')?.textContent||T('start');
   };
   swTick=function(){_s();if($('swDispM'))$('swDispM').textContent=$('swDisp')?.textContent||'00:00:00';};
   renderLaps=function(){
     _l();
-    const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');
+    const _lpFn=T('lapLabel');const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>${typeof _lpFn==='function'?_lpFn(i+1):'Lap '+(i+1)}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');
     if($('swLapsM')){$('swLapsM').innerHTML=h;$('swLapsM').scrollTop=$('swLapsM').scrollHeight;}
   };
   renderT=function(){_t();renderTM();};
@@ -2119,8 +2997,8 @@ function cycleCalViewM(){cycleCalView();renderCalM();}
 function calMoveM(d){calMove(d);renderCalM();}
 function renderCalM(){
   const{view,year,month}=S.cal;
-  const MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  if($('calTitleM'))$('calTitleM').textContent=view==='year'?`${year}年`:`${year}年${MONTHS[month]}`;
+  const _mymf=T('yearMonthFormat'),_myf=T('yearFormat'),_mma=T('months');
+  if($('calTitleM'))$('calTitleM').textContent=view==='year'?(typeof _myf==='function'?_myf(year):`${year}`):(typeof _mymf==='function'?_mymf(year,month+1):`${year}/${Array.isArray(_mma)?_mma[month]:month+1}`);
   ['cvYearM','cvMonthM','cvDayM'].forEach(id=>{const v=id.replace('cv','').replace('M','').toLowerCase();$( id)?.classList.toggle('on',v===view);});
   const body=$('calBodyM');if(!body)return;body.innerHTML='';
   if(view==='year')renderCalYear(body,year);
@@ -2141,8 +3019,56 @@ function renderCalM(){
 })();
 
 /* ═══ INIT ═══ */
+
+
+/* ═══ PWA INSTALL PROMPT ═══ */
+let _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_deferredPrompt=e;
+  const b=$('installBanner');if(b){b.style.display='flex';setTimeout(()=>b.style.display='none',15000);}
+});
+function doInstall(){if(_deferredPrompt){_deferredPrompt.prompt();_deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;dismissInstall();});}}
+function dismissInstall(){const b=$('installBanner');if(b)b.style.display='none';}
+window.addEventListener('appinstalled',()=>{toast('✓ '+T('pwaInstall'));_deferredPrompt=null;});
+
+/* ═══ ONLINE COUNTER ═══ */
+window._setOnlineCount = function(n) {
+  const badge  = $('onlineBadge');
+  const numEl  = $('onlineCount');
+  const dotEl  = badge?.querySelector('.onlineDot');
+  if (!badge || !numEl) return;
+
+  // solo = 自分だけ
+  badge.classList.toggle('solo', n <= 1);
+
+  // 数字変化アニメーション
+  const prev = parseInt(numEl.textContent) || 0;
+  if (prev !== n) {
+    numEl.classList.add('changing');
+    setTimeout(() => {
+      numEl.textContent = n;
+      numEl.classList.remove('changing');
+    }, 200);
+  }
+
+  // title tooltip
+  const label = n <= 1
+    ? (I18N[S?.lang||'ja']?.onlineAlone || '今あなただけが使用中')
+    : (typeof (I18N[S?.lang||'ja']?.onlineTip) === 'function'
+        ? I18N[S?.lang||'ja'].onlineTip(n)
+        : (typeof (I18N[S?.lang||'ja']?.onlineTip)==='function'?I18N[S?.lang||'ja'].onlineTip(n):`${n}`));
+  badge.title = label;
+};
+
+/* ═══ SERVICE WORKER (PWA) ═══ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sched-test/sw.js').catch(()=>{});
+  });
+}
+
 function init(){
-  loadS();buildUI();applyTheme();
+  loadS();buildUI();applyTheme();applyLang();
   S.fw={...{task:false,timer:false,cal:false},...S.fw};
   const t=pW();if(S.pomo.total===0){S.pomo.sec=t;S.pomo.total=t;}
   renderPomo();renderT();
@@ -2158,7 +3084,7 @@ function init(){
   $('ytLoopBtn').classList.toggle('on',_ytLoop);
   initStreak();renderCal();
   tick();requestAnimationFrame(_rafTick);
-  setTimeout(showDonate,15000);
+  setTimeout(showDonate,20000);
   setTimeout(_reqNotif, 3000); // Ask for notification permission after a brief delay
 }
 init();
