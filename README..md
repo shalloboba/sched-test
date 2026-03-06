@@ -1,5 +1,6 @@
+# このサイトはすべてAIで作成した自己満アプリです。
+## つまるところ現在の脳腐れZ世代を体感するのと同時に、AIの進化を感じるためのサイトでもあります・・・
 # CHANGELOG
-
 All notable changes to SCHED will be documented in this file.
 
 ---
