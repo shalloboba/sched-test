@@ -286,9 +286,112 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 .lvl-bar{height:100%;background:linear-gradient(90deg,var(--ac),rgba(var(--ar),var(--ag),var(--ab),.6));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
 
 /* ── Sakura Petal Canvas ── */
-#sakuraC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s}
+#sakuraC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.4s}
 body.sakura-bg #sakuraC{opacity:1}
 body.sakura-bg #bgC{opacity:0}
+
+/* ══════════════════════════════════════════
+   SAKURA THEME — 夜桜 · 花見 · 春の宵
+   #f0a0c0 · #e05585 · #240a12 · #c05070
+══════════════════════════════════════════ */
+body.sakura-bg{background:linear-gradient(160deg,#18050c 0%,#240a12 45%,#1a0408 100%)!important}
+body.sakura-bg::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(200,60,100,.007) 3px,rgba(200,60,100,.007) 4px);
+  transform:translateZ(0);
+}
+body.sakura-bg::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 0% 0%,rgba(230,80,130,.06),transparent 60%),
+    radial-gradient(ellipse 50% 35% at 100% 100%,rgba(210,60,110,.07),transparent 60%);
+  transform:translateZ(0);
+}
+/* TOP BAR */
+body.sakura-bg #topbar{
+  background:rgba(22,5,10,.92)!important;border-bottom:1px solid rgba(200,80,120,.18)!important;
+  box-shadow:0 1px 0 rgba(220,100,140,.12),0 8px 32px rgba(0,0,0,.6)!important;
+  position:relative;overflow:visible;
+}
+body.sakura-bg #topbar::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;z-index:10;
+  background:linear-gradient(90deg,transparent,rgba(220,100,140,.0) 6%,rgba(230,120,160,.75) 22%,rgba(255,180,210,1) 50%,rgba(230,120,160,.75) 78%,rgba(220,100,140,.0) 94%,transparent);
+  animation:skBar 5s ease-in-out infinite;
+}
+@keyframes skBar{0%,100%{opacity:.45;transform:scaleX(.85)}50%{opacity:1;transform:scaleX(1)}}
+body.sakura-bg #clockTime{color:#f0a0c0!important;font-weight:300!important;text-shadow:0 0 8px rgba(240,120,160,.8),0 0 24px rgba(220,80,130,.5),0 0 50px rgba(200,60,110,.25)!important}
+body.sakura-bg #clockDate{color:rgba(220,140,170,.5)!important}
+/* DOCK */
+body.sakura-bg #dock{
+  border-top:0!important;background:linear-gradient(180deg,rgba(22,6,12,.96),rgba(16,3,8,.98))!important;
+  box-shadow:0 -2px 0 rgba(220,100,140,.45),0 -1px 0 rgba(240,140,170,.18),0 -24px 60px rgba(180,30,80,.35)!important;overflow:hidden;
+}
+body.sakura-bg #dock::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:200px;pointer-events:none;z-index:0;
+  background:linear-gradient(105deg,rgba(200,50,100,.1),rgba(220,80,130,.04) 40%,transparent 70%);
+  clip-path:polygon(0 0,100% 0,75% 100%,0 100%);
+}
+body.sakura-bg #dockBar{background:linear-gradient(90deg,rgba(180,40,80,.3),rgba(140,20,50,.15),transparent)!important;border-bottom-color:rgba(200,80,120,.18)!important}
+body.sakura-bg .dBarLabel{color:#f0a0c0!important;letter-spacing:5px!important;text-shadow:0 0 8px rgba(240,120,160,.6)!important;font-weight:700!important}
+body.sakura-bg .dGrip{background:rgba(220,100,140,.35)!important}
+body.sakura-bg #dockBar:hover .dGrip{background:rgba(255,160,190,.7)!important;box-shadow:0 0 10px rgba(230,100,140,.5)!important}
+/* TASK ROWS */
+body.sakura-bg .tRow{border-bottom:1px solid rgba(200,60,100,.1)!important;position:relative}
+body.sakura-bg .tRow::before{background:linear-gradient(180deg,#f5a0c0,#e05585)!important}
+body.sakura-bg .tRow:hover{background:rgba(200,60,100,.1)!important}
+body.sakura-bg .tRow.isNow{background:linear-gradient(90deg,rgba(200,50,100,.2),rgba(180,40,80,.1) 60%,transparent)!important;border-left:0!important}
+body.sakura-bg .tRow.isNow::before{transform:scaleY(1)!important;background:linear-gradient(180deg,#ffb8d0,#e05080)!important;box-shadow:0 0 10px rgba(240,100,150,.7)!important}
+body.sakura-bg .tName{color:rgba(255,220,235,.9)!important}
+body.sakura-bg .tTime{color:#f0a0c0!important}
+body.sakura-bg .tRow.isNow .tName{color:#fff!important;font-weight:500!important}
+/* MID */
+body.sakura-bg #curTask{color:#f5e0ea!important;text-shadow:0 0 40px rgba(220,100,150,.3),0 0 80px rgba(200,60,110,.12)!important}
+body.sakura-bg #curTask.empty{color:rgba(200,100,140,.4)!important}
+body.sakura-bg .nowBadge{color:#f0a0c0!important;letter-spacing:7px!important}
+body.sakura-bg .nowDot{background:#f0a0c0!important;box-shadow:0 0 12px rgba(240,140,180,.9)!important}
+body.sakura-bg #midGlow{background:radial-gradient(ellipse 72% 68% at 50% 60%,rgba(200,40,90,.15),rgba(180,30,70,.05),transparent)!important}
+/* BUTTONS */
+body.sakura-bg .wt.on,body.sakura-bg .wt:hover{
+  border-color:rgba(230,110,150,.55)!important;color:#f5b8d0!important;
+  background:rgba(200,50,100,.14)!important;box-shadow:0 0 14px rgba(220,90,130,.28),inset 0 0 8px rgba(200,60,110,.08)!important}
+body.sakura-bg .ib:hover,body.sakura-bg .ib.on{border-color:rgba(230,110,150,.55)!important;color:#f5b8d0!important;box-shadow:0 0 14px rgba(220,90,130,.4)!important}
+body.sakura-bg .bc.p{
+  background:linear-gradient(135deg,#6e0030,#a02050)!important;border-color:rgba(230,110,150,.45)!important;
+  color:#ffb8d0!important;box-shadow:0 0 14px rgba(210,60,110,.28)!important;text-shadow:0 0 8px rgba(255,160,200,.5)!important}
+body.sakura-bg .bc.p:hover{filter:brightness(1.18)!important;box-shadow:0 0 20px rgba(230,80,130,.4)!important}
+body.sakura-bg .bc.g{border-color:rgba(200,80,120,.35)!important;color:rgba(240,160,190,.7)!important}
+body.sakura-bg .bc.g:hover{border-color:rgba(230,110,150,.5)!important;color:#f5b8d0!important;background:rgba(200,50,100,.12)!important}
+/* TIMER */
+body.sakura-bg .timerTabs .ttab{color:rgba(200,100,140,.6)!important}
+body.sakura-bg .timerTabs .ttab.on{color:#f5b8d0!important;background:rgba(200,50,100,.12)!important;text-shadow:0 0 8px rgba(240,130,170,.5)!important}
+body.sakura-bg .ps-time,body.sakura-bg .ps-arc-time,body.sakura-bg .ps-min-time{color:#f5b8d0!important;text-shadow:0 0 18px rgba(240,140,180,.6)!important}
+body.sakura-bg .ps-arc{stroke:#e8789c!important;filter:drop-shadow(0 0 8px rgba(230,100,150,.7))!important}
+body.sakura-bg .ps-arc-fill{stroke:#e8789c!important;filter:drop-shadow(0 0 6px rgba(230,100,150,.6))!important}
+body.sakura-bg .ps-min-fill{background:#e8789c!important}
+body.sakura-bg .tSubLbl{color:rgba(220,140,170,.65)!important;letter-spacing:3px!important}
+/* TASK INPUT */
+body.sakura-bg .ph{background:rgba(22,5,12,.3)!important;border-bottom-color:rgba(200,80,120,.18)!important}
+body.sakura-bg .phLbl{color:rgba(230,140,170,.7)!important;letter-spacing:5px!important}
+body.sakura-bg .addRow{background:rgba(18,4,10,.25)!important;border-bottom-color:rgba(200,70,110,.15)!important}
+body.sakura-bg .nIn{background:rgba(16,3,8,.7)!important;border-color:rgba(200,80,120,.3)!important;color:#f0d0dc!important}
+body.sakura-bg .nIn:focus{border-color:rgba(230,110,150,.5)!important}
+body.sakura-bg .mb.on{background:linear-gradient(135deg,#6e0030,#9e2050)!important;color:#ffb8d0!important}
+body.sakura-bg .bAdd{background:linear-gradient(135deg,#7e1040,#b03060)!important;box-shadow:0 0 10px rgba(200,60,110,.2)!important}
+/* ONLINE BADGE */
+body.sakura-bg #onlineBadge{border-color:rgba(230,110,150,.4)!important;color:rgba(245,180,210,.95)!important;background:rgba(200,50,100,.08)!important}
+body.sakura-bg #onlineBadge .onlineDot{background:#f0a0c0!important;box-shadow:0 0 6px rgba(240,140,180,.8)!important}
+body.sakura-bg #onlineBadge.solo{border-color:rgba(200,100,140,.18)!important;color:rgba(220,140,170,.5)!important;background:rgba(180,40,80,.04)!important}
+/* MOBILE */
+body.sakura-bg #mobileNav{
+  border-top:2px solid rgba(220,100,140,.4)!important;
+  background:linear-gradient(180deg,rgba(22,5,12,.97),rgba(14,3,7,.99))!important;
+  box-shadow:0 -1px 0 rgba(220,100,140,.22),0 -16px 45px rgba(160,20,60,.35)!important;
+}
+body.sakura-bg .mnBtn.on{color:#f5b8d0!important}
+body.sakura-bg .mnBtn.on .mni{filter:drop-shadow(0 0 5px rgba(240,140,180,.8))}
+body.sakura-bg .mSheet{background:linear-gradient(180deg,rgba(22,5,12,.98),rgba(14,3,7,1))!important;border-top:2px solid rgba(220,100,140,.35)!important}
+body.sakura-bg .mSheetTitle{color:#f5b8d0!important;letter-spacing:5px!important;text-shadow:0 0 8px rgba(240,120,160,.4)!important}
+body.sakura-bg #onlineBadgeMobile{border-color:rgba(230,110,150,.4)!important;color:rgba(245,180,210,1)!important;background:rgba(200,50,100,.08)!important}
+body.sakura-bg .onlineDotM{background:#f0a0c0!important;box-shadow:0 0 6px rgba(240,140,180,.9)!important}
 /* ══════════════════════════════════════════
    PERSONA 3 THEME — Dark Hour · Tartarus
    参考UI: 斜めスラッシュ / シアン / 深夜青
@@ -302,22 +405,23 @@ body.sakura-bg #bgC{opacity:0}
 body.persona-bg #personaC{opacity:1}
 body.persona-bg #bgC{opacity:0}
 
-/* ── スキャンライン ── */
+/* ── スキャンライン (enhanced) ── */
 body.persona-bg::before{
   content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,60,140,.016) 3px,rgba(0,60,140,.016) 4px);
-  transform:translateZ(0);animation:p3Scan 10s linear infinite;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,50,120,.022) 2px,rgba(0,50,120,.022) 3px);
+  transform:translateZ(0);animation:p3Scan 8s linear infinite;
 }
-@keyframes p3Scan{0%{background-position:0 0}100%{background-position:0 140px}}
+@keyframes p3Scan{0%{background-position:0 0}100%{background-position:0 100px}}
 
-/* ── P3 斜めスラッシュパターン ── */
+/* ── P3 斜めスラッシュ + ノイズ ── */
 body.persona-bg::after{
   content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
   background:
-    repeating-linear-gradient(-62deg,transparent,transparent 80px,rgba(0,120,220,.018) 80px,rgba(0,120,220,.018) 81px),
-    repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(0,80,180,.015) 60px,rgba(0,80,180,.015) 61px);
-  transform:translateZ(0);
+    repeating-linear-gradient(-62deg,transparent,transparent 90px,rgba(0,130,230,.022) 90px,rgba(0,130,230,.022) 91px),
+    repeating-linear-gradient(28deg,transparent,transparent 110px,rgba(0,90,200,.015) 110px,rgba(0,90,200,.015) 111px);
+  transform:translateZ(0);animation:p3Slash 60s linear infinite;
 }
+@keyframes p3Slash{0%{background-position:0 0,0 0}100%{background-position:200px 0,0 200px}}
 
 /* ━━━━━━━━━━━━━━━━━━
    TOP BAR
@@ -336,7 +440,12 @@ body.persona-bg #topbar::after{
     rgba(0,220,255,.9) 80%,rgba(0,220,255,.0) 96%,transparent 100%);
   animation:p3Bar 4s ease-in-out infinite;
 }
-@keyframes p3Bar{0%,100%{opacity:.5;transform:scaleX(.88)}50%{opacity:1;transform:scaleX(1)}}
+@keyframes p3Bar{
+  0%{opacity:.4;transform:scaleX(.82) translateX(-2%)}
+  45%{opacity:1;transform:scaleX(1) translateX(0)}
+  55%{opacity:1;transform:scaleX(1) translateX(0)}
+  100%{opacity:.4;transform:scaleX(.82) translateX(2%)}
+}
 
 /* ━━━━━━━━━━━━━━━━━━
    CLOCK
@@ -1504,7 +1613,10 @@ input.tIn{font-size:11px;padding:5px 7px}
 }
 #onlineCount.changing{opacity:0}
 .onlineLabel{opacity:.7}
-@keyframes onlineFadeIn{to{opacity:1;transform:scale(1)}}
+/* デスクトップ: scale(0.85)→scale(1) */
+@keyframes onlineFadeIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+/* モバイル: translateY(-50%) を維持したままフェードイン */
+@keyframes onlineFadeInM{from{opacity:0;transform:translateY(-50%) scale(.85)}to{opacity:1;transform:translateY(-50%) scale(1)}}
 @keyframes onlinePulse{
   0%,100%{box-shadow:0 0 4px rgba(72,199,120,.5)}
   50%{box-shadow:0 0 10px rgba(72,199,120,.9),0 0 18px rgba(72,199,120,.3)}
@@ -1512,8 +1624,12 @@ input.tIn{font-size:11px;padding:5px 7px}
 /* モバイルでは小さく右上に表示 */
 @media(max-width:700px){
   #onlineBadge{
-    position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    position:absolute;right:10px;top:50%;
+    /* animationはtransformを上書きするため、モバイル専用animationを使う */
+    transform:translateY(-50%) scale(.85);
+    animation:onlineFadeInM .4s .5s ease forwards;
     padding:3px 8px;font-size:8px;gap:3px;border-radius:99px;
+    opacity:0;
   }
   #onlineBadge .onlineLabel{display:none}
 }
@@ -1606,30 +1722,59 @@ window._acAPI = {
   getProviders: () => { const u=auth.currentUser; return u ? u.providerData.map(p=>p.providerId) : []; },
 };
 
-  // ── セッション固有ID（crypto.randomUUID で衝突回避）──
-  const sessionId = (crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36));
-  const presRef     = ref(db, `presence/${sessionId}`);
-  const presenceRoot = ref(db, 'presence');
-  // ── Firebase接続確認 ──
-  const connectedRef = ref(db, '.info/connected');
-  const _unsubConnected = onValue(connectedRef, (snap) => {
-    if (snap.val() === true) {
-      onDisconnect(presRef).remove();
-      set(presRef, { t: Date.now() });
+  // ══════════════════════════════════════════════════════════════
+  //  PRESENCE SYSTEM — オンライン人数 (完全修正版)
+  //
+  //  設計方針:
+  //  1. セッション固有IDで自分のエントリを識別
+  //  2. スナップショット内に自分のIDが「あるか」で判定し
+  //     フラグのレースコンディションを完全排除
+  //  3. onDisconnect でサーバー側クリーンアップを保証
+  //  4. beforeunload では unsubscribe のみ（set(null) は非同期なので
+  //     onDisconnect に委任。ページクラッシュ時も安全）
+  //  5. Firebase 接続失敗時も表示は "1" のままで安全
+  // ══════════════════════════════════════════════════════════════
+
+  // セッションごとに一意なID
+  const _sessId = (crypto?.randomUUID?.() ?? (Math.random().toString(36).slice(2) + Date.now().toString(36)));
+  const _presRef      = ref(db, 'presence/' + _sessId);
+  const _presRoot     = ref(db, 'presence');
+  const _connRef      = ref(db, '.info/connected');
+
+  // 接続が確立したら presence を書き込み、切断時に自動削除を予約
+  const _unsubConn = onValue(_connRef, (snap) => {
+    if (snap.val() !== true) return;
+    // 1. まず onDisconnect を設定（必ず set より先）
+    onDisconnect(_presRef).remove().catch(() => {});
+    // 2. 存在を書き込む（タイムスタンプ付き）
+    set(_presRef, { t: Date.now() }).catch(() => {});
+  });
+
+  // presence ツリーを監視してオンライン人数を更新
+  const _unsubPres = onValue(_presRoot, (snap) => {
+    const data = snap.exists() ? snap.val() : {};
+    const keys = Object.keys(data);
+    const hasMe = keys.includes(_sessId);
+
+    // 自分のエントリがまだ届いていない場合は +1 してカウントする
+    // （スナップショットベースなのでフラグ不要・レースコンディションなし）
+    const n = Math.max(1, keys.length + (hasMe ? 0 : 1));
+
+    if (typeof window._setOnlineCount === 'function') {
+      window._setOnlineCount(n);
+    } else {
+      window._pendingOnlineCount = n;
     }
   });
-  // ── オンライン人数取得 ──
-  const _unsubPresence = onValue(presenceRoot, (snap) => {
-    const n = snap.exists() ? Object.keys(snap.val()).length : 0;
-    if (typeof window._setOnlineCount === 'function') window._setOnlineCount(n);
-    else window._pendingOnlineCount = n;
-  });
-  // ── ページ離脱時にリスナー解除 + presence削除 ──
-  window.addEventListener('beforeunload', () => {
-    _unsubConnected();
-    _unsubPresence();
-    try { set(presRef, null); } catch {}
-  }, { once: true });
+
+  // ページ離脱: リスナー解除のみ（削除は onDisconnect に委任）
+  // クラッシュ・強制終了でも onDisconnect がサーバー側で確実に実行される
+  const _cleanupPresence = () => {
+    try { _unsubConn(); } catch {}
+    try { _unsubPres(); } catch {}
+  };
+  window.addEventListener('beforeunload', _cleanupPresence, { once: true });
+  window.addEventListener('pagehide',     _cleanupPresence, { once: true });
 </script>
 </head>
 <body>
@@ -1928,9 +2073,9 @@ window._acAPI = {
   <div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('cal')"></div><div class="fwDot m" onclick="dockFW('cal')"></div></div><div class="fwTitle">CALENDAR</div></div>
   <div class="calInner">
     <div class="calViewTabs">
-      <button class="calTab" id="cvYear" onclick="setCalView('year')">年</button>
-      <button class="calTab on" id="cvMonth" onclick="setCalView('month')">月</button>
-      <button class="calTab" id="cvDay" onclick="setCalView('day')">日</button>
+      <button class="calTab" id="cvYear" onclick="setCalView('year')" data-i18n="calYear">年</button>
+      <button class="calTab on" id="cvMonth" onclick="setCalView('month')" data-i18n="calMonth">月</button>
+      <button class="calTab" id="cvDay" onclick="setCalView('day')" data-i18n="calDay">日</button>
     </div>
     <div class="calNav">
       <button class="calNavBtn" onclick="calMove(-1)">‹</button>
@@ -1984,7 +2129,7 @@ window._acAPI = {
   </div>
   <!-- Presets -->
   <div class="bgmSection">
-    <div class="bgmSLbl">プリセット</div>
+    <div class="bgmSLbl" data-i18n="bgmPreset">プリセット</div>
     <div class="bgmBtns">
       <button class="bgmB" data-bgm="white"   onclick="setBgm('white')">⬜ White</button>
       <button class="bgmB" data-bgm="pink"    onclick="setBgm('pink')">🌸 Pink</button>
@@ -2004,8 +2149,8 @@ window._acAPI = {
     <div class="bgmSLbl">YouTube URL</div>
     <div class="bgmYtRow">
       <input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=…">
-      <button class="ytBtn" onclick="playYt()">▶ 再生</button>
-      <button class="ytStop" onclick="stopYt()">■ 停止</button>
+      <button class="ytBtn" onclick="playYt()" data-i18n="bgmPlay">▶ 再生</button>
+      <button class="ytStop" onclick="stopYt()" data-i18n="bgmStop">■ 停止</button>
     </div>
   </div>
   <!-- Vol + close -->
@@ -2131,14 +2276,15 @@ window._acAPI = {
 
     <!-- データリセット -->
     <div style="border-top:1px solid var(--b1);padding-top:14px">
-      <div style="font-family:var(--mono);font-size:7px;letter-spacing:3px;color:rgba(255,71,87,.7);text-transform:uppercase;margin-bottom:8px">⚠ データ管理</div>
+      <div id="resetSectionLabel" style="font-family:var(--mono);font-size:7px;letter-spacing:3px;color:rgba(255,71,87,.7);text-transform:uppercase;margin-bottom:8px" data-i18n="resetSection">⚠ データ管理</div>
       <button onclick="confirmReset()"
         style="width:100%;padding:9px;border-radius:var(--r2);
           border:1px solid rgba(255,71,87,.3);color:rgba(255,71,87,.75);
           font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:1.5px;
           background:rgba(255,71,87,.05);transition:all .15s;text-transform:uppercase;cursor:pointer"
         onmouseover="this.style.background='rgba(255,71,87,.12)';this.style.borderColor='rgba(255,71,87,.6)'"
-        onmouseout="this.style.background='rgba(255,71,87,.05)';this.style.borderColor='rgba(255,71,87,.3)'">
+        onmouseout="this.style.background='rgba(255,71,87,.05)';this.style.borderColor='rgba(255,71,87,.3)'"
+        data-i18n="resetBtn">
         🗑 全データをリセット
       </button>
     </div>
@@ -2154,10 +2300,10 @@ window._acAPI = {
     box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 40px rgba(255,71,87,.1);
     animation:scIn .22s cubic-bezier(.34,1.56,.64,1)">
     <div style="text-align:center;font-size:40px;margin-bottom:12px">⚠️</div>
-    <div style="font-family:var(--ui);font-size:16px;font-weight:900;color:var(--tp);text-align:center;margin-bottom:8px">全データをリセット</div>
+    <div id="resetModalTitle" style="font-family:var(--ui);font-size:16px;font-weight:900;color:var(--tp);text-align:center;margin-bottom:8px" data-i18n="resetTitle">全データをリセット</div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--ts);text-align:center;line-height:1.7;margin-bottom:16px">
-      タスク・連続記録・レベル・カレンダーを含む<br>すべてのローカルデータが削除されます。<br>
-      <span style="color:rgba(255,71,87,.9);font-weight:700">この操作は元に戻せません。</span>
+      <span id="resetModalBody" data-i18n="resetBody">タスク・連続記録・レベル・カレンダーを含む<br>すべてのローカルデータが削除されます。<br></span>
+      <span id="resetModalWarn" style="color:rgba(255,71,87,.9);font-weight:700" data-i18n="resetWarn">この操作は元に戻せません。</span>
     </div>
     <!-- クラウド削除オプション（ログイン中のみ表示） -->
     <div id="resetCloudRow" style="display:none;margin-bottom:14px;padding:10px 12px;
@@ -2165,8 +2311,8 @@ window._acAPI = {
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="resetCloudChk" style="width:15px;height:15px;accent-color:rgba(255,71,87,.9);cursor:pointer;flex-shrink:0">
         <span style="font-family:var(--mono);font-size:9px;color:rgba(255,71,87,.9);line-height:1.5">
-          ☁ クラウドのデータも削除する<br>
-          <span style="color:var(--ts);font-size:8px">（アカウントは削除されません）</span>
+          <span data-i18n="resetCloudLabel">☁ クラウドのデータも削除する</span><br>
+          <span id="resetCloudNote" style="color:var(--ts);font-size:8px" data-i18n="resetCloudNote">（アカウントは削除されません）</span>
         </span>
       </label>
     </div>
@@ -2176,13 +2322,15 @@ window._acAPI = {
           color:var(--ts);font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:1px;
           background:var(--ra);transition:all .15s;text-transform:uppercase;cursor:pointer"
         onmouseover="this.style.color='var(--tp)';this.style.borderColor='var(--b3)'"
-        onmouseout="this.style.color='var(--ts)';this.style.borderColor='var(--b2)'">キャンセル</button>
+        onmouseout="this.style.color='var(--ts)';this.style.borderColor='var(--b2)'"
+        data-i18n="resetCancel">キャンセル</button>
       <button id="resetExecBtn" onclick="doReset()"
         style="flex:1;padding:11px;border-radius:var(--r2);border:1px solid rgba(255,71,87,.5);
           color:#fff;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;
           background:rgba(255,71,87,.85);transition:all .15s;text-transform:uppercase;cursor:pointer"
         onmouseover="this.style.background='rgba(255,71,87,1)';this.style.boxShadow='0 0 20px rgba(255,71,87,.4)'"
-        onmouseout="this.style.background='rgba(255,71,87,.85)';this.style.boxShadow='none'">🗑 実行</button>
+        onmouseout="this.style.background='rgba(255,71,87,.85)';this.style.boxShadow='none'"
+        data-i18n="resetExec">🗑 実行</button>
     </div>
   </div>
 </div>
@@ -2207,44 +2355,44 @@ window._acAPI = {
     <!-- Stats -->
     <div class="strStats">
       <div class="strStat"><div class="val" id="spStreak">0</div><div class="lbl" data-i18n="streakDays">🔥 連続日</div></div>
-      <div class="strStat"><div class="val" id="spMax">0</div><div class="lbl">🏆 最長</div></div>
-      <div class="strStat"><div class="val" id="spTotal">0</div><div class="lbl">📅 累計日</div></div>
-      <div class="strStat"><div class="val" id="spMinutes">0</div><div class="lbl">⏱ 総分数</div></div>
+      <div class="strStat"><div class="val" id="spMax">0</div><div class="lbl" data-i18n="streakMaxLbl">🏆 最長</div></div>
+      <div class="strStat"><div class="val" id="spTotal">0</div><div class="lbl" data-i18n="streakTotalLbl">📅 累計日</div></div>
+      <div class="strStat"><div class="val" id="spMinutes">0</div><div class="lbl" data-i18n="streakMinutes">⏱ 総分数</div></div>
     </div>
     <!-- Streak badge -->
     <div class="strMainBadge">
       <div class="strFlame">🔥</div>
       <div class="strDays" id="strDays">0</div>
-      <div class="strLabel">日連続ログイン</div>
+      <div class="strLabel" data-i18n="streakConLog">日連続ログイン</div>
     </div>
     <!-- Heatmap -->
     <div class="strHeatWrap">
       <div class="strHeatHeader">
-        <div class="strHeatLbl">アクティビティ (過去16週間)</div>
+        <div class="strHeatLbl" data-i18n="heatLabel">アクティビティ (過去16週間)</div>
         <div class="strHeatLegend">
-          <span>少</span>
+          <span data-i18n="heatLow">少</span>
           <span style="width:10px;height:10px;border-radius:2px;background:var(--b1);display:inline-block"></span>
           <span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.25);display:inline-block"></span>
           <span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.55);display:inline-block"></span>
           <span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.85);display:inline-block"></span>
-          <span>多</span>
+          <span data-i18n="heatHigh">多</span>
         </div>
       </div>
       <div class="strHeatBody">
-        <div class="strHeatDays">
+        <div class="strHeatDays" id="strHeatDays">
           <div class="strHeatDay"></div>
-          <div class="strHeatDay">月</div>
+          <div class="strHeatDay" id="heatMon">月</div>
           <div class="strHeatDay"></div>
-          <div class="strHeatDay">水</div>
+          <div class="strHeatDay" id="heatWed">水</div>
           <div class="strHeatDay"></div>
-          <div class="strHeatDay">金</div>
+          <div class="strHeatDay" id="heatFri">金</div>
           <div class="strHeatDay"></div>
         </div>
         <div id="strHeatGrid" class="strHeatGrid"></div>
       </div>
       <div id="strMonthRow" class="strHeatMonths"></div>
     </div>
-    <button class="strCloseBtn" onclick="closeStreak()">閉じる</button>
+    <button class="strCloseBtn" onclick="closeStreak()" data-i18n="streakCloseBtn">閉じる</button>
   </div>
 </div>
 
@@ -2331,9 +2479,9 @@ window._acAPI = {
   <div class="mSheetBody">
     <div class="calInner" style="min-height:0;max-height:calc(80vh - 60px)">
       <div class="calViewTabs">
-        <button class="calTab" id="cvYearM"  onclick="setCalViewM('year')">年</button>
-        <button class="calTab on" id="cvMonthM" onclick="setCalViewM('month')">月</button>
-        <button class="calTab" id="cvDayM"   onclick="setCalViewM('day')">日</button>
+        <button class="calTab" id="cvYearM"  onclick="setCalViewM('year')" data-i18n="calYear">年</button>
+        <button class="calTab on" id="cvMonthM" onclick="setCalViewM('month')" data-i18n="calMonth">月</button>
+        <button class="calTab" id="cvDayM"   onclick="setCalViewM('day')" data-i18n="calDay">日</button>
       </div>
       <div class="calNav">
         <button class="calNavBtn" onclick="calMoveM(-1)">‹</button>
@@ -2348,16 +2496,16 @@ window._acAPI = {
 <!-- MOBILE SHEET: MORE (settings/streak/theme) -->
 <div class="mSheet" id="mSheetMore">
   <div class="mSheetPull"></div>
-  <div class="mSheetHeader"><span class="mSheetTitle">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
+  <div class="mSheetHeader"><span class="mSheetTitle" data-i18n="moreMenu">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()">×</button></div>
   <div class="mSheetBody" style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px">
     <button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
       <span style="font-size:22px">⚡</span><div><div style="font-weight:600" data-i18n="streakTitle">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="streakDays">レベル・ヒートマップ</div></div>
     </button>
     <button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
-      <span style="font-size:22px">◐</span><div><div style="font-weight:600">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">カラー・フォント・背景</div></div>
+      <span style="font-size:22px">◐</span><div><div style="font-weight:600" data-i18n="moreTheme">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreThemeSub">カラー・フォント・背景</div></div>
     </button>
     <button onclick="mSheetClose();openAccount()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
-      <span style="font-size:22px">👤</span><div><div style="font-weight:600">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">ログイン・クラウド保存</div></div>
+      <span style="font-size:22px">👤</span><div><div style="font-weight:600" data-i18n="moreAccount">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreAccountSub">ログイン・クラウド保存</div></div>
     </button>
     <a href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener"
       onclick="mSheetClose()"
@@ -2366,8 +2514,8 @@ window._acAPI = {
         font-family:var(--jp);font-size:15px;text-align:left;text-decoration:none;width:100%">
       <span style="font-size:22px">☕</span>
       <div>
-        <div style="font-weight:600;color:var(--ac)">SCHEDを応援する</div>
-        <div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px">開発継続のため支援をお願いします</div>
+        <div style="font-weight:600;color:var(--ac)" data-i18n="moreDonate">SCHEDを応援する</div>
+        <div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreDonSub">開発継続のため支援をお願いします</div>
       </div>
     </a>
     <div style="padding:10px 0;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
@@ -2396,7 +2544,7 @@ window._acAPI = {
     <div class="spDays" id="spPopDays">1</div>
     <div class="spLabel" id="spPopLabel">1日連続ログイン！</div>
     <div class="spSub" id="spPopSub">毎日続けて目標を達成しよう</div>
-    <button class="spBtn" onclick="closeStreakPop()">やった！</button>
+    <button class="spBtn" onclick="closeStreakPop()" data-i18n="streakPopBtn">やった！</button>
   </div>
 </div>
 
@@ -2519,6 +2667,32 @@ const I18N={
     fszXs:'極小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
     thClose:'閉じる',
     donTitle:'☕ SCHEDを応援する',donSub:'開発継続のため支援をお願いします',donBtn:'サポート',
+    // Streak panel static texts
+    streakConLog:'日連続ログイン',streakPopBtn:'やった！',streakCloseBtn:'閉じる',
+    heatLabel:'アクティビティ (過去16週間)',heatLow:'少',heatHigh:'多',
+    streakMinutes:'⏱ 総分数',streakMaxLbl:'🏆 最長',streakTotalLbl:'📅 累計日',
+    // Calendar view tabs
+    calYear:'年',calMonth:'月',calDay:'日',
+    // BGM panel
+    bgmPreset:'プリセット',bgmPlay:'▶ 再生',bgmStop:'■ 停止',
+    // Mobile more sheet
+    moreMenu:'⚙️ メニュー',moreTheme:'テーマ設定',moreThemeSub:'カラー・フォント・背景',
+    moreAccount:'アカウント',moreAccountSub:'ログイン・クラウド保存',
+    moreDonate:'SCHEDを応援する',moreDonSub:'開発継続のため支援をお願いします',
+    // Reset dialog
+    resetSection:'⚠ データ管理',resetBtn:'🗑 全データをリセット',
+    resetTitle:'全データをリセット',
+    resetBody:'タスク・連続記録・レベル・カレンダーを含む<br>すべてのローカルデータが削除されます。<br>',
+    resetWarn:'この操作は元に戻せません。',
+    resetCloudLabel:'☁ クラウドのデータも削除する',
+    resetCloudNote:'（アカウントは削除されません）',
+    resetCancel:'キャンセル',resetExec:'🗑 実行',
+    // Sync from cloud confirm
+    syncFromCloudConfirm:'クラウドからデータを復元しますか？\nローカルデータが上書きされます。',
+    // No account popup
+    noAccountTitle:'アカウントがありません',
+    noAccountBody:'このメールアドレスは登録されていません。<br>先に新規登録してください。',
+    noAccountRegBtn:'📝 新規登録へ',noAccountClose:'閉じる',
   },
   en:{work:'Work',brk:'Break',longBrk:'Long Break',start:'▶ Start',pause:'⏸ Pause',
     reset:'↺',skip:'⏭',lap:'◎ Lap',taskPh:'Enter task name…',nowBtn:'Now',timeBtn:'Timed',
@@ -2583,6 +2757,25 @@ const I18N={
     fszXs:'XS',fszSm:'S',fszMd:'M',fszLg:'L',fszXl:'XL',
     thClose:'Close',
     donTitle:'☕ Support SCHED',donSub:'Help keep development going',donBtn:'Support',
+    streakConLog:' day streak',streakPopBtn:'Got it!',streakCloseBtn:'Close',
+    heatLabel:'Activity (Past 16 Weeks)',heatLow:'Less',heatHigh:'More',
+    streakMinutes:'⏱ Total min',streakMaxLbl:'🏆 Best',streakTotalLbl:'📅 Total Days',
+    calYear:'Year',calMonth:'Month',calDay:'Day',
+    bgmPreset:'Preset',bgmPlay:'▶ Play',bgmStop:'■ Stop',
+    moreMenu:'⚙️ Menu',moreTheme:'Settings',moreThemeSub:'Color · Font · Background',
+    moreAccount:'Account',moreAccountSub:'Sign in · Cloud Save',
+    moreDonate:'Support SCHED',moreDonSub:'Help keep development going',
+    resetSection:'⚠ Data Management',resetBtn:'🗑 Reset All Data',
+    resetTitle:'Reset All Data',
+    resetBody:'Tasks, streaks, levels, and calendar data<br>will be permanently deleted.<br>',
+    resetWarn:'This action cannot be undone.',
+    resetCloudLabel:'☁ Also delete cloud data',
+    resetCloudNote:'(Your account will not be deleted)',
+    resetCancel:'Cancel',resetExec:'🗑 Reset',
+    syncFromCloudConfirm:'Restore data from cloud?\nLocal data will be overwritten.',
+    noAccountTitle:'No account found',
+    noAccountBody:'This email is not registered.<br>Please sign up first.',
+    noAccountRegBtn:'📝 Sign Up',noAccountClose:'Close',
   },
   zh:{work:'专注',brk:'休息',longBrk:'长休息',start:'▶ 开始',pause:'⏸ 暂停',
     reset:'↺',skip:'⏭',lap:'◎ 计圈',taskPh:'输入任务名称…',nowBtn:'现在',timeBtn:'定时',
@@ -2618,7 +2811,7 @@ const I18N={
     streakSubs:['每天坚持达成目标','继续保持！','坚持就是力量 💪','习惯真棒！','你是最棒的 🌟'],
     xpNextLvl:(cur,next)=>`${cur} / ${next} min → 下一级`,xpMaxLvl:'✨ 最高等级！',
     streakLabel:(n)=>`连续${n}天`,
-    tierFire:'🔥 7天+ 燃烧中！',tierThunder:'⚡ 30天+ 雷电！',
+    tierFire:'🔥 7天+ 燃烧中！',tierThunder:'⚡ 30天+ 雷电！',tierCosmic:'🌌 100天+ 宇宙觉醒！',
     heatTip:(m,d,min,login)=>`${m}/${d} — ${min}分钟${login?'（登录）':''}`,
     lapLabel:(n)=>`第${n}圈`,
     endUnknown:'(未定结束)',
@@ -2638,7 +2831,7 @@ const I18N={
     loopOn:'循环 ON',loopOff:'循环 OFF',timeRequired:'请输入时间',timePastError:'不能设置过去的时间',
     clockDateFmt:null,
     thSecColorLabel:'🎨 颜色',thColorCode:'颜色代码',
-    thSecBgLabel:'🌑 背景',bgDark:'深色',bgAmoled:'AMOLED',bgDim:'暗淡',bgLight:'浅色',bgWhite:'白色',bgSakura:'🌸 樱花',
+    thSecBgLabel:'🌑 背景',bgDark:'深色',bgAmoled:'AMOLED',bgDim:'暗淡',bgLight:'浅色',bgWhite:'白色',bgSakura:'🌸 樱花',bgPersona:'🌙 Persona',
     thSecFontLabel:'🔤 字体',thFontPh:'Google字体名称',thFontApply:'应用',
     thSecLangLabel:'🌐 语言',
     timerStyleLabel:'⏱ 样式',
@@ -2647,6 +2840,25 @@ const I18N={
     fszXs:'极小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
     thClose:'关闭',
     donTitle:'☕ 支持SCHED',donSub:'帮助维持开发',donBtn:'支持',
+    streakConLog:'天连续登录',streakPopBtn:'太棒了！',streakCloseBtn:'关闭',
+    heatLabel:'活动记录（过去16周）',heatLow:'少',heatHigh:'多',
+    streakMinutes:'⏱ 总分钟',streakMaxLbl:'🏆 最长',streakTotalLbl:'📅 累计天',
+    calYear:'年',calMonth:'月',calDay:'日',
+    bgmPreset:'预设',bgmPlay:'▶ 播放',bgmStop:'■ 停止',
+    moreMenu:'⚙️ 菜单',moreTheme:'主题设置',moreThemeSub:'颜色・字体・背景',
+    moreAccount:'账户',moreAccountSub:'登录・云端保存',
+    moreDonate:'支持SCHED',moreDonSub:'帮助维持开发',
+    resetSection:'⚠ 数据管理',resetBtn:'🗑 重置所有数据',
+    resetTitle:'重置所有数据',
+    resetBody:'任务、连续记录、等级、日历数据<br>将被永久删除。<br>',
+    resetWarn:'此操作无法撤销。',
+    resetCloudLabel:'☁ 同时删除云端数据',
+    resetCloudNote:'（不会删除账户）',
+    resetCancel:'取消',resetExec:'🗑 执行',
+    syncFromCloudConfirm:'从云端恢复数据？\n本地数据将被覆盖。',
+    noAccountTitle:'未找到账户',
+    noAccountBody:'此邮箱未注册。<br>请先创建账户。',
+    noAccountRegBtn:'📝 注册',noAccountClose:'关闭',
   },
   ko:{work:'작업',brk:'휴식',longBrk:'긴 휴식',start:'▶ 시작',pause:'⏸ 일시정지',
     reset:'↺',skip:'⏭',lap:'◎ 랩',taskPh:'작업 이름 입력…',nowBtn:'바로',timeBtn:'시간 지정',
@@ -2682,7 +2894,7 @@ const I18N={
     streakSubs:['매일 계속해서 목표를 달성하세요','이 기세로 계속!','지속이 힘 💪','훌륭한 습관!','당신은 최고 🌟'],
     xpNextLvl:(cur,next)=>`${cur} / ${next} min → 다음 레벨`,xpMaxLvl:'✨ 최고 레벨！',
     streakLabel:(n)=>`${n}일 연속`,
-    tierFire:'🔥 7일+ 불꽃！',tierThunder:'⚡ 30일+ 번개！',
+    tierFire:'🔥 7일+ 불꽃！',tierThunder:'⚡ 30일+ 번개！',tierCosmic:'🌌 100일+ 우주 각성！',
     heatTip:(m,d,min,login)=>`${m}/${d} — ${min}분${login?'（로그인）':''}`,
     lapLabel:(n)=>`랩 ${n}`,
     endUnknown:'(종료 미정)',
@@ -2702,7 +2914,7 @@ const I18N={
     loopOn:'루프 ON',loopOff:'루프 OFF',timeRequired:'시간을 입력하세요',timePastError:'과거 시간은 설정할 수 없습니다',
     clockDateFmt:null,
     thSecColorLabel:'🎨 컬러',thColorCode:'색상 코드',
-    thSecBgLabel:'🌑 배경',bgDark:'다크',bgAmoled:'AMOLED',bgDim:'딤',bgLight:'라이트',bgWhite:'화이트',bgSakura:'🌸 사쿠라',
+    thSecBgLabel:'🌑 배경',bgDark:'다크',bgAmoled:'AMOLED',bgDim:'딤',bgLight:'라이트',bgWhite:'화이트',bgSakura:'🌸 사쿠라',bgPersona:'🌙 Persona',
     thSecFontLabel:'🔤 폰트',thFontPh:'Google Fonts 폰트 이름',thFontApply:'적용',
     thSecLangLabel:'🌐 언어',
     timerStyleLabel:'⏱ 타이머 스타일',
@@ -2711,6 +2923,25 @@ const I18N={
     fszXs:'극소',fszSm:'소',fszMd:'중',fszLg:'대',fszXl:'특대',
     thClose:'닫기',
     donTitle:'☕ SCHED 응원하기',donSub:'개발 지속을 위해 지원해 주세요',donBtn:'지원하기',
+    streakConLog:'일 연속 로그인',streakPopBtn:'좋아！',streakCloseBtn:'닫기',
+    heatLabel:'활동 기록（최근 16주）',heatLow:'적음',heatHigh:'많음',
+    streakMinutes:'⏱ 총 분수',streakMaxLbl:'🏆 최장',streakTotalLbl:'📅 누적 일수',
+    calYear:'년',calMonth:'월',calDay:'일',
+    bgmPreset:'프리셋',bgmPlay:'▶ 재생',bgmStop:'■ 정지',
+    moreMenu:'⚙️ 메뉴',moreTheme:'테마 설정',moreThemeSub:'컬러・폰트・배경',
+    moreAccount:'계정',moreAccountSub:'로그인・클라우드 저장',
+    moreDonate:'SCHED 응원하기',moreDonSub:'개발 지속을 위해 지원해 주세요',
+    resetSection:'⚠ 데이터 관리',resetBtn:'🗑 전체 데이터 초기화',
+    resetTitle:'전체 데이터 초기화',
+    resetBody:'작업, 연속 기록, 레벨, 캘린더 데이터가<br>모두 삭제됩니다.<br>',
+    resetWarn:'이 작업은 되돌릴 수 없습니다.',
+    resetCloudLabel:'☁ 클라우드 데이터도 삭제',
+    resetCloudNote:'（계정은 삭제되지 않습니다）',
+    resetCancel:'취소',resetExec:'🗑 실행',
+    syncFromCloudConfirm:'클라우드에서 데이터를 복원하시겠습니까？\n로컬 데이터가 덮어씌워집니다。',
+    noAccountTitle:'계정이 없습니다',
+    noAccountBody:'이 이메일은 등록되지 않았습니다.<br>먼저 회원가입을 해주세요.',
+    noAccountRegBtn:'📝 회원가입',noAccountClose:'닫기',
   },
 };
 const T=k=>{const v=(I18N[S.lang]||I18N.ja)[k];if(v!==undefined)return v;const j=I18N.ja[k];return j!==undefined?j:k;};
@@ -2830,6 +3061,16 @@ function applyLang(){
   if(donSubEl)donSubEl.textContent=T('donSub');
   if(donBtnEl)donBtnEl.textContent=T('donBtn');
   _refreshTCache();
+  // ── Heatmap weekday labels ─────────────────────────────
+  const _wd=T('weekDays');if(Array.isArray(_wd)){
+    const hMon=$('heatMon'),hWed=$('heatWed'),hFri=$('heatFri');
+    if(hMon)hMon.textContent=_wd[1]||'月';
+    if(hWed)hWed.textContent=_wd[3]||'水';
+    if(hFri)hFri.textContent=_wd[5]||'金';
+  }
+  // ── mAccountSub default text (when not logged in) ─────
+  const macSub=$('mAccountSub');
+  if(macSub&&!_acUser)macSub.textContent=T('moreAccountSub');
 }
 
 /* ═══ LEVEL SYSTEM ═══ */
@@ -3162,6 +3403,32 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
     else if(!_af)dr();
   });
 })();
+
+/* ═══ BACKGROUND TIMER RECOVERY ═══ */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  // Pomodoro: recalculate based on wall-clock elapsed
+  if(S.pomo.running&&S.pomo.lastTickTs){
+    const now=Date.now();
+    const elapsed=Math.round((now-S.pomo.lastTickTs)/1000);
+    S.pomo.lastTickTs=now;
+    if(elapsed>0){
+      S.pomo.sec=Math.max(0,S.pomo.sec-elapsed);
+      if(S.pomo.sec===0){
+        clearInterval(S.pomo.iv);S.pomo.iv=null;S.pomo.running=false;
+        if(S.pomo.mode==='work'){_pomoFinishWork(S.pomo.total);}
+        else{snd('done');Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});toast(T('pomoWork'));_notify(T('notifWorkT'),T('notifWorkB'));}
+      }
+      renderPomo();
+    }
+  }
+  // Stopwatch: display is already computed from wall-clock in swTick, just force a render
+  if(S.sw.running){
+    const now=Date.now();
+    S.sw.ms=(S.sw.msOnStart||0)+(now-(S.sw.startWall||now));
+    const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW'),$('swDispM')].forEach(e=>{if(e)e.textContent=f});
+  }
+});
 
 /* ═══ CLOCK ═══ */
 let _lastClockStr='',_lastDateStr='',_lastTickSec=-1;
@@ -3733,7 +4000,7 @@ function _drawPomoStyle(el, style, ms, rem, isB, modeKey, avH, avW){
     </div>`;
   }
 }
-function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running){clearInterval(S.pomo.iv);S.pomo.iv=setInterval(pomoTick,1000);}else{clearInterval(S.pomo.iv);S.pomo.iv=null;}renderPomo();}
+function pomoToggle(){S.pomo.running=!S.pomo.running;if(S.pomo.running){S.pomo.lastTickTs=Date.now();clearInterval(S.pomo.iv);S.pomo.iv=setInterval(pomoTick,1000);}else{clearInterval(S.pomo.iv);S.pomo.iv=null;}renderPomo();}
 /* 作業完了共通処理。earnedSec=実際に経過した秒数 */
 function _pomoFinishWork(earnedSec){
   const earnedMins=Math.max(0,Math.floor(earnedSec/60));
@@ -3753,14 +4020,20 @@ function _pomoFinishWork(earnedSec){
   }
 }
 function pomoTick(){
-  if(S.pomo.sec>0){S.pomo.sec--;renderPomo();return;}
-  if(S.pomo.mode==='work'){
-    _pomoFinishWork(S.pomo.total);
-  }else{
-    snd('done');
-    Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});
-    toast(T('pomoWork'));
-    _notify(T('notifWorkT'),T('notifWorkB'));
+  const now=Date.now();
+  const elapsed=S.pomo.lastTickTs?Math.max(1,Math.round((now-S.pomo.lastTickTs)/1000)):1;
+  S.pomo.lastTickTs=now;
+  const decrement=Math.min(elapsed,S.pomo.sec>0?S.pomo.sec:1);
+  if(S.pomo.sec>0){S.pomo.sec=Math.max(0,S.pomo.sec-elapsed);if(S.pomo.sec>0){renderPomo();return;}}
+  if(S.pomo.sec<=0){
+    if(S.pomo.mode==='work'){
+      _pomoFinishWork(S.pomo.total);
+    }else{
+      snd('done');
+      Object.assign(S.pomo,{mode:'work',sec:pW(),total:pW()});
+      toast(T('pomoWork'));
+      _notify(T('notifWorkT'),T('notifWorkB'));
+    }
   }
   renderPomo();
 }
@@ -3781,9 +4054,8 @@ function pomoSkip(){
 
 /* ═══ STOPWATCH ═══ */
 let _swLastXpMs=0;
-function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=performance.now();S.sw.iv=setInterval(swTick,100);_swLastXpMs=S.sw.ms;}else{clearInterval(S.sw.iv);S.sw.iv=null;}const t=S.sw.running?T('swStop'):T('swResume');[$('swBtn'),$('swBtnW'),$('swBtnM')].forEach(e=>{if(e)e.textContent=t});}
-function swTick(){const n=performance.now();const delta=n-S.sw.tick;S.sw.tick=n;// Cap delta to 500ms to prevent huge jumps after tab restore
-if(delta>0&&delta<500){S.sw.ms+=delta;}const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});const elapsed=S.sw.ms-_swLastXpMs;if(elapsed>=60000){const mins=Math.floor(elapsed/60000);_swLastXpMs+=mins*60000;addPomoXP(mins);}}
+function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.startWall=Date.now();S.sw.msOnStart=S.sw.ms;clearInterval(S.sw.iv);S.sw.iv=setInterval(swTick,100);_swLastXpMs=S.sw.ms;}else{clearInterval(S.sw.iv);S.sw.iv=null;}const t=S.sw.running?T('swStop'):T('swResume');[$('swBtn'),$('swBtnW'),$('swBtnM')].forEach(e=>{if(e)e.textContent=t;});}
+function swTick(){const now=Date.now();S.sw.ms=(S.sw.msOnStart||0)+(now-(S.sw.startWall||now));const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});const elapsed=S.sw.ms-_swLastXpMs;if(elapsed>=60000){const mins=Math.floor(elapsed/60000);_swLastXpMs+=mins*60000;addPomoXP(mins);}}
 function swLap(){if(!S.sw.running&&S.sw.ms===0)return;S.sw.laps.push({lap:S.sw.ms-S.sw.lapBase,total:S.sw.ms});S.sw.lapBase=S.sw.ms;renderLaps();snd('lap');}
 function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW'),$('swDispM')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW'),$('swBtnM')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
 function renderLaps(){const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');[$('swLaps'),$('swLapsW')].forEach(e=>{if(e){e.innerHTML=h;e.scrollTop=e.scrollHeight;}});}
@@ -4003,67 +4275,143 @@ function _startPersona(){
   let mist=mkMist();
   let frame=0;
 
+  // ── Hex grid fragments (P3 UI motif) ──
+  const hexes=Array.from({length:18},(_,i)=>({
+    x:W*(.08+i*.052)+Math.random()*W*.04,
+    y:H*(.1+Math.random()*.8),
+    r:4+Math.random()*12,
+    alpha:Math.random()*.08+.02,
+    pulse:Math.random()*Math.PI*2,
+    pv:Math.random()*.006+.002,
+  }));
+
+  // ── Clock face (centre glow — Memento Mori) ──
+  let clockAngle=0;
+
+  function drawHex(cx,cy,r){
+    ctx.beginPath();
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3-Math.PI/6;
+      i===0?ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a))
+           :ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+    }
+    ctx.closePath();
+  }
+
   function draw(){
     if(!document.body.classList.contains('persona-bg')){_personaAnim=null;return;}
     _personaAnim=requestAnimationFrame(draw);
     frame++;
     ctx.clearRect(0,0,W,H);
+    clockAngle+=0.0005;
 
     // Tartarus mist layer
     ctx.fillStyle=mist;ctx.fillRect(0,0,W,H);
 
-    // ── Coffins ──
+    // ── Hex grid ──
+    if(frame%2===0){
+      for(const h of hexes){
+        h.pulse+=h.pv;
+        const a=h.alpha*(0.5+0.5*Math.sin(h.pulse));
+        ctx.save();ctx.globalAlpha=a;
+        ctx.strokeStyle='rgba(0,200,255,.9)';ctx.lineWidth=.6;
+        ctx.shadowColor='rgba(0,180,255,.4)';ctx.shadowBlur=4;
+        drawHex(h.x,h.y,h.r);ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // ── Coffins (enlarged & more visible) ──
     for(const cd of coffins){
       cd.y+=cd.vy;cd.rot+=cd.rotV;
-      if(cd.y<-cd.h*3){cd.y=H+cd.h;cd.x=Math.random()*W;}
-      const {w,h}=cd;const cut=w*.2;
+      if(cd.y<-cd.h*3){cd.y=H+cd.h*2;cd.x=Math.random()*W;}
+      const {w,h}=cd;const cut=w*.22;
       ctx.save();
       ctx.translate(cd.x,cd.y);ctx.rotate(cd.rot);
-      ctx.globalAlpha=cd.alpha;
-      ctx.strokeStyle='rgba(60,150,255,.85)';
-      ctx.lineWidth=.55;
-      ctx.shadowColor='rgba(40,120,255,.5)';ctx.shadowBlur=5;
+      ctx.globalAlpha=Math.min(cd.alpha*1.6,.18);
+      ctx.strokeStyle='rgba(80,180,255,.95)';
+      ctx.lineWidth=.7;
+      ctx.shadowColor='rgba(40,140,255,.6)';ctx.shadowBlur=8;
       ctx.beginPath();
       ctx.moveTo(-w/2+cut,-h/2);
       ctx.lineTo(w/2-cut,-h/2);
-      ctx.lineTo(w/2,-h/2+cut*1.6);
+      ctx.lineTo(w/2,-h/2+cut*1.5);
       ctx.lineTo(w/2,h/2);
       ctx.lineTo(-w/2,h/2);
-      ctx.lineTo(-w/2,-h/2+cut*1.6);
+      ctx.lineTo(-w/2,-h/2+cut*1.5);
       ctx.closePath();ctx.stroke();
-      // cross
-      ctx.globalAlpha=cd.alpha*.4;ctx.lineWidth=.4;
-      ctx.beginPath();ctx.moveTo(0,-h*.3);ctx.lineTo(0,h*.35);
-      ctx.moveTo(-w*.2,0);ctx.lineTo(w*.2,0);ctx.stroke();
+      // Inner cross
+      ctx.globalAlpha=Math.min(cd.alpha*.9,.1);ctx.lineWidth=.45;
+      ctx.beginPath();ctx.moveTo(0,-h*.32);ctx.lineTo(0,h*.38);
+      ctx.moveTo(-w*.22,0);ctx.lineTo(w*.22,0);ctx.stroke();
       ctx.restore();
     }
 
-    // ── Orbs ──
+    // ── Orbs (improved glow layers) ──
     for(const o of orbs){
       o.x+=o.vx;o.y+=o.vy;o.phase+=o.phV;
-      const pulse=Math.sin(o.phase)*.28+.72;
-      if(o.x<-12)o.x=W+12;else if(o.x>W+12)o.x=-12;
-      if(o.y<-12)o.y=H+12;else if(o.y>H+12)o.y=-12;
+      const pulse=Math.sin(o.phase)*.32+.68;
+      if(o.x<-14)o.x=W+14;else if(o.x>W+14)o.x=-14;
+      if(o.y<-14)o.y=H+14;else if(o.y>H+14)o.y=-14;
       ctx.save();
+      // outer glow
+      ctx.globalAlpha=o.alpha*pulse*.5;
+      const grd=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r*3.5);
+      grd.addColorStop(0,`hsla(${o.hue},95%,70%,.9)`);
+      grd.addColorStop(1,`hsla(${o.hue},85%,55%,0)`);
+      ctx.fillStyle=grd;
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r*3.5,0,6.28);ctx.fill();
+      // core
       ctx.globalAlpha=o.alpha*pulse;
-      ctx.fillStyle=`hsl(${o.hue},80%,65%)`;
-      ctx.shadowColor=`hsl(${o.hue},100%,60%)`;ctx.shadowBlur=11;
+      ctx.fillStyle=`hsl(${o.hue},90%,72%)`;
+      ctx.shadowColor=`hsl(${o.hue},100%,65%)`;ctx.shadowBlur=14;
       ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.28);ctx.fill();
       ctx.restore();
     }
 
-    // ── Moon shards (every 2nd frame) ──
+    // ── Moon shards ──
     if(frame%2===0){
       for(const s of shards){
         s.x+=s.vx;s.y+=s.vy;s.life-=s.decay;
         if(s.life<=0)Object.assign(s,_mkS(W,H),{life:.55+Math.random()*.45});
         ctx.save();
-        ctx.globalAlpha=s.life*.38;
-        ctx.fillStyle=`hsl(${s.hue},65%,75%)`;
-        ctx.shadowColor=`hsl(${s.hue},85%,65%)`;ctx.shadowBlur=3;
+        ctx.globalAlpha=s.life*.42;
+        ctx.fillStyle=`hsl(${s.hue},70%,78%)`;
+        ctx.shadowColor=`hsl(${s.hue},90%,65%)`;ctx.shadowBlur=4;
         ctx.beginPath();ctx.arc(s.x,s.y,s.sz,0,6.28);ctx.fill();
         ctx.restore();
       }
+    }
+
+    // ── Memento Mori clock (subtle, centre) — every 3rd frame ──
+    if(frame%3===0){
+      const cx=W*.5,cy=H*.48,cr=Math.min(W,H)*.055;
+      ctx.save();
+      ctx.globalAlpha=.025+0.01*Math.sin(frame*.018);
+      ctx.strokeStyle='rgba(0,220,255,.8)';
+      ctx.lineWidth=.5;
+      ctx.shadowColor='rgba(0,200,255,.3)';ctx.shadowBlur=6;
+      ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2);ctx.stroke();
+      // Hour ticks
+      for(let i=0;i<12;i++){
+        const a=i*Math.PI/6;
+        const r1=cr*.85,r2=cr*(i%3===0?.68:.78);
+        ctx.beginPath();
+        ctx.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));
+        ctx.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a));
+        ctx.stroke();
+      }
+      // Clock hand (minutes)
+      const mA=clockAngle*60-Math.PI/2;
+      ctx.lineWidth=.7;
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+cr*.72*Math.cos(mA),cy+cr*.72*Math.sin(mA));ctx.stroke();
+      // Hour hand
+      const hA=clockAngle*5-Math.PI/2;
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+cr*.5*Math.cos(hA),cy+cr*.5*Math.sin(hA));ctx.stroke();
+      ctx.restore();
     }
   }
   draw();
@@ -4113,67 +4461,112 @@ function setFontSize(key){
   savTh();
 }
 
-/* ─── Sakura Petal System ─── */
+/* ─── Sakura Petal System (Enhanced 2.0) ─── */
 let _sakuraRaf=null;
-const _PETAL_COLORS=['rgba(255,182,193,','rgba(255,160,180,','rgba(255,200,210,','rgba(240,160,180,','rgba(255,220,230,'];
-function _initSakuraPetals(count){
-  return Array.from({length:count},()=>({
-    x:Math.random()*window.innerWidth,
-    y:Math.random()*window.innerHeight-window.innerHeight,
-    r:Math.random()*4+2,
-    sp:Math.random()*1.2+0.4,
-    sw:Math.random()*2.5-1.25, // sideways drift
+const _PETAL_GRADIENTS=[
+  ['#ffb8d0','#f07098'],['#ffd0e0','#e888a8'],['#ffe0ec','#f0a0c0'],
+  ['#f0c8dc','#d86090'],['#ffc0d8','#e878a0'],['#fff0f4','#f8a0c0'],
+];
+function _mkPetal(W,H,fromTop=false){
+  const col=_PETAL_GRADIENTS[Math.floor(Math.random()*_PETAL_GRADIENTS.length)];
+  return{
+    x:Math.random()*W,
+    y:fromTop ? -Math.random()*60 : Math.random()*H,
+    r:Math.random()*5.5+2.5,
+    sp:Math.random()*0.9+0.3,
+    sw:Math.random()*1.8-0.9,
     rot:Math.random()*Math.PI*2,
-    rotSp:(Math.random()-0.5)*0.06,
-    col:_PETAL_COLORS[Math.floor(Math.random()*_PETAL_COLORS.length)],
-    alpha:Math.random()*0.4+0.4,
-    t:Math.random()*Math.PI*2 // sway phase
-  }));
+    rotSp:(Math.random()-0.5)*0.04,
+    col,
+    alpha:Math.random()*0.35+0.45,
+    t:Math.random()*Math.PI*2,
+    wobble:Math.random()*0.018+0.008,
+    depth:Math.random()*0.5+0.6, // parallax depth (0.6–1.1)
+    type:Math.floor(Math.random()*3),  // 0=oval, 1=teardrop, 2=round
+  };
 }
 let _sakuraPetals=[];
+// Wind gust system
+let _windT=0,_windG=0,_windTarget=0,_windIv=null;
 function _startSakura(){
   if(_sakuraRaf)return;
   const c=$('sakuraC');if(!c)return;
   c.width=window.innerWidth;c.height=window.innerHeight;
-  if(_sakuraPetals.length===0)_sakuraPetals=_initSakuraPetals(80);
+  const ctx=c.getContext('2d',{alpha:true});
+  let W=c.width,H=c.height;
+  if(_sakuraPetals.length===0){
+    _sakuraPetals=Array.from({length:90},()=>_mkPetal(W,H));
+  }
+  // Wind gust: every 4–9s a gust sweeps through
+  if(_windIv)clearInterval(_windIv);
+  _windIv=setInterval(()=>{_windTarget=(Math.random()-0.35)*3.5;},4500+Math.random()*5000);
+
+  function drawPetal(ctx,p){
+    const {r,col,type}=p;
+    const [c1,c2]=col;
+    const grad=ctx.createRadialGradient(0,-r*.3,r*.1,0,0,r*1.1);
+    grad.addColorStop(0,c1+'ee');
+    grad.addColorStop(1,c2+'88');
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    if(type===0){
+      // Oval petal (most common sakura shape)
+      ctx.ellipse(0,0,r*.55,r,0,0,Math.PI*2);
+    } else if(type===1){
+      // Teardrop – pointed at top
+      ctx.moveTo(0,-r);
+      ctx.bezierCurveTo(r*.7,-r*.4, r*.7,r*.5, 0,r);
+      ctx.bezierCurveTo(-r*.7,r*.5,-r*.7,-r*.4, 0,-r);
+    } else {
+      // Round with notch at top (most realistic cherry blossom petal)
+      ctx.moveTo(0,-r*.9);
+      ctx.bezierCurveTo(r*.8,-r*.8, r*.9,r*.3, 0,r);
+      ctx.bezierCurveTo(-r*.9,r*.3,-r*.8,-r*.8, 0,-r*.9);
+    }
+    ctx.fill();
+    // Highlight vein
+    ctx.strokeStyle='rgba(255,255,255,.18)';
+    ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(0,-r*.85);ctx.lineTo(0,r*.7);ctx.stroke();
+  }
+
   function frame(){
     if(!document.body.classList.contains('sakura-bg')){_sakuraRaf=null;return;}
     _sakuraRaf=requestAnimationFrame(frame);
-    const ctx=c.getContext('2d');
-    ctx.clearRect(0,0,c.width,c.height);
+    ctx.clearRect(0,0,W,H);
+    // Smooth wind
+    _windG+=(_windTarget-_windG)*0.012;
     for(const p of _sakuraPetals){
-      p.t+=0.02;
-      p.x+=p.sw+Math.sin(p.t)*0.7;
-      p.y+=p.sp;
-      p.rot+=p.rotSp;
-      if(p.y>c.height+10){p.y=-10;p.x=Math.random()*c.width;}
-      if(p.x>c.width+10)p.x=-10;
-      if(p.x<-10)p.x=c.width+10;
+      p.t+=p.wobble;
+      const windEffect=_windG*p.depth;
+      p.x+=p.sw+Math.sin(p.t)*0.9+windEffect;
+      p.y+=p.sp*p.depth+Math.cos(p.t*0.7)*0.3;
+      p.rot+=p.rotSp+(windEffect*.008);
+      if(p.y>H+16){Object.assign(p,_mkPetal(W,H,true));}
+      if(p.x>W+16)p.x=-16;
+      if(p.x<-16)p.x=W+16;
       ctx.save();
       ctx.translate(p.x,p.y);
       ctx.rotate(p.rot);
-      ctx.globalAlpha=p.alpha;
-      // Draw 5-petal flower
-      ctx.fillStyle=p.col+'0.9)';
-      for(let i=0;i<5;i++){
-        ctx.save();ctx.rotate(i*Math.PI*2/5);
-        ctx.beginPath();ctx.ellipse(0,-p.r,p.r*.6,p.r,0,0,Math.PI*2);
-        ctx.fill();ctx.restore();
-      }
-      // Center dot
-      ctx.fillStyle=p.col+'0.6)';ctx.beginPath();ctx.arc(0,0,p.r*.3,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=p.alpha*p.depth;
+      drawPetal(ctx,p);
       ctx.restore();
     }
   }
   _sakuraRaf=requestAnimationFrame(frame);
+  window._sakuraResize=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight;};
+  window.addEventListener('resize',window._sakuraResize);
 }
 function _stopSakura(){
   if(_sakuraRaf){cancelAnimationFrame(_sakuraRaf);_sakuraRaf=null;}
+  if(_windIv){clearInterval(_windIv);_windIv=null;}
   const c=$('sakuraC');if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+  if(window._sakuraResize){window.removeEventListener('resize',window._sakuraResize);window._sakuraResize=null;}
 }
 (()=>{let _rzT;window.addEventListener('resize',()=>{clearTimeout(_rzT);_rzT=setTimeout(()=>{
+  // _sakuraResize handled inside _startSakura listener
   const c=$('sakuraC');
-  if(c&&document.body.classList.contains('sakura-bg')){c.width=window.innerWidth;c.height=window.innerHeight;}
+  if(c&&document.body.classList.contains('sakura-bg')){/* handled by _sakuraResize */}
   // Clamp FW windows to viewport
   document.querySelectorAll('.fw:not(.hidden)').forEach(win=>{
     const r=win.getBoundingClientRect();
@@ -4502,36 +4895,58 @@ function dismissInstall(){
 window.addEventListener('appinstalled',()=>{toast('✓ '+T('pwaInstall'));_deferredPrompt=null;});
 
 /* ═══ ONLINE COUNTER ═══ */
-window._setOnlineCount = function(n) {
-  // ── Desktop badge ──
-  const badge = $('onlineBadge');
-  const numEl = $('onlineCount');
-  if (badge && numEl) {
+// Firebase RTDB onValue → _setOnlineCount(n) を呼び出すことで更新される
+// Firebase SDK の読み込み前に値が届いた場合は _pendingOnlineCount に格納され
+// ここで即座に適用される
+window._setOnlineCount = (function() {
+  let _lastN = -1;   // 前回値キャッシュ（同じ値での再描画を防ぐ）
+  let _animT = null; // アニメーション中のタイマーID
+
+  function _applyBadge(badge, numEl, n, isMobile) {
+    if (!badge || !numEl) return;
+
+    // ソロ表示切り替え
     badge.classList.toggle('solo', n <= 1);
-    const prev = parseInt(numEl.textContent,10) || 0;
+
+    // 数値変更アニメーション（前回値と異なる場合のみ）
+    const prev = parseInt(numEl.textContent, 10) || 0;
     if (prev !== n) {
       numEl.classList.add('changing');
-      setTimeout(() => { numEl.textContent = n; numEl.classList.remove('changing'); }, 200);
+      // 前のタイマーがあればクリア（高頻度更新時のチラつき防止）
+      if (!isMobile && _animT) { clearTimeout(_animT); _animT = null; }
+      const t = setTimeout(() => {
+        numEl.textContent = n;
+        numEl.classList.remove('changing');
+        if (!isMobile) _animT = null;
+      }, 200);
+      if (!isMobile) _animT = t;
     }
-    const label = n <= 1
-      ? (I18N[S?.lang||'ja']?.onlineAlone || '今あなただけが使用中')
-      : (typeof I18N[S?.lang||'ja']?.onlineTip === 'function'
-          ? I18N[S?.lang||'ja'].onlineTip(n) : `${n}`);
-    badge.title = label;
-  }
-  // ── Mobile badge (同期) ──
-  const badgeM = $('onlineBadgeMobile');
-  const numElM = $('onlineCountM');
-  if (badgeM && numElM) {
-    badgeM.classList.toggle('solo', n <= 1);
-    const prevM = parseInt(numElM.textContent,10) || 0;
-    if (prevM !== n) {
-      numElM.classList.add('changing');
-      setTimeout(() => { numElM.textContent = n; numElM.classList.remove('changing'); }, 200);
+
+    // ツールチップ（デスクトップのみ）
+    if (!isMobile) {
+      const lang = (typeof S !== 'undefined' && S?.lang) || 'ja';
+      const i18n = (typeof I18N !== 'undefined' && I18N[lang]) || {};
+      badge.title = n <= 1
+        ? (i18n.onlineAlone || '今あなただけが使用中')
+        : (typeof i18n.onlineTip === 'function' ? i18n.onlineTip(n) : n + '人がオンライン');
     }
   }
-};
-// pending online count (Firebase moduleより先にJSが実行される場合)
+
+  return function setOnlineCount(n) {
+    // 必ず1以上・整数に正規化
+    n = Math.max(1, Math.round(Number(n) || 1));
+
+    // 同じ値なら DOM 操作をスキップ
+    if (n === _lastN) return;
+    _lastN = n;
+
+    _applyBadge($('onlineBadge'),       $('onlineCount'),  n, false);
+    _applyBadge($('onlineBadgeMobile'), $('onlineCountM'), n, true);
+  };
+})();
+
+// ─── pending check ──────────────────────────────────────────────
+// Firebase module が _setOnlineCount 定義より先に resolve した場合の保険
 if (typeof window._pendingOnlineCount !== 'undefined') {
   window._setOnlineCount(window._pendingOnlineCount);
   delete window._pendingOnlineCount;
@@ -4911,6 +5326,14 @@ async function syncToCloud() {
 async function syncFromCloud() {
   if (!_acUser) { toast('ログインが必要です'); return; }
   if (!navigator.onLine) { toast('⚡ オフライン中です。接続を確認してください'); return; }
+  // ── 確認ダイアログ ──
+  const confirmMsg = T('syncFromCloudConfirm') || (
+    S.lang==='en' ? 'Restore from cloud? Local data will be overwritten.' :
+    S.lang==='zh' ? '从云端恢复？本地数据将被覆盖。' :
+    S.lang==='ko' ? '클라우드에서 복원하시겠습니까？로컬 데이터가 덮어씌워집니다。' :
+    'クラウドからデータを復元しますか？\nローカルデータが上書きされます。'
+  );
+  if(!confirm(confirmMsg)) return;
   const st = $('acDownloadStatus'); st.textContent = '復元中...';
   $('acSyncMsg').className = 'acMsg';
   try {
