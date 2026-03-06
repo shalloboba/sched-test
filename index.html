@@ -1675,7 +1675,7 @@ input.tIn{font-size:11px;padding:5px 7px}
 <!-- Firebase SDK (Realtime Database) -->
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, onDisconnect, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getDatabase, ref, onValue, onDisconnect, set, serverTimestamp as dbServerTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, linkWithCredential, EmailAuthProvider, updatePassword as fbUpdatePassword, updateEmail as fbUpdateEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -1742,23 +1742,28 @@ window._acAPI = {
   const _connRef      = ref(db, '.info/connected');
 
   // 接続が確立したら presence を書き込み、切断時に自動削除を予約
+  let _heartbeatTimer = null;
+  const _writePresence = () => set(_presRef, { t: dbServerTimestamp() }).catch(() => {});
+
   const _unsubConn = onValue(_connRef, (snap) => {
-    if (snap.val() !== true) return;
+    if (snap.val() !== true) {
+      if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
+      return;
+    }
     // 1. まず onDisconnect を設定（必ず set より先）
     onDisconnect(_presRef).remove().catch(() => {});
-    // 2. 存在を書き込む（タイムスタンプ付き）
-    set(_presRef, { t: Date.now() }).catch(() => {});
+    // 2. 存在を書き込む（サーバー時刻 — validationルールと一致させるため必須）
+    _writePresence();
+    // 3. ハートビート: モバイルスリープ等でのゴースト防止
+    if (_heartbeatTimer) clearInterval(_heartbeatTimer);
+    _heartbeatTimer = setInterval(_writePresence, 4000);
   });
 
   // presence ツリーを監視してオンライン人数を更新
+  // serverTimestamp + heartbeat によりゴーストエントリが残らないため
+  // Object.keys().length をそのまま使用する（hasMe補正は不要）
   const _unsubPres = onValue(_presRoot, (snap) => {
-    const data = snap.exists() ? snap.val() : {};
-    const keys = Object.keys(data);
-    const hasMe = keys.includes(_sessId);
-
-    // 自分のエントリがまだ届いていない場合は +1 してカウントする
-    // （スナップショットベースなのでフラグ不要・レースコンディションなし）
-    const n = Math.max(1, keys.length + (hasMe ? 0 : 1));
+    const n = Math.max(1, Object.keys(snap.val() || {}).length);
 
     if (typeof window._setOnlineCount === 'function') {
       window._setOnlineCount(n);
@@ -1770,6 +1775,7 @@ window._acAPI = {
   // ページ離脱: リスナー解除のみ（削除は onDisconnect に委任）
   // クラッシュ・強制終了でも onDisconnect がサーバー側で確実に実行される
   const _cleanupPresence = () => {
+    if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
     try { _unsubConn(); } catch {}
     try { _unsubPres(); } catch {}
   };
