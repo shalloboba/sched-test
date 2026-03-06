@@ -1961,7 +1961,7 @@ window._acAPI = {
   }
 
   // ── Firebase への書き込み ──
-  const _writePresence = () => set(_presRef, { t: dbServerTimestamp() }).catch(() => {});
+  const _writePresence = () => set(_presRef, { t: dbServerTimestamp() }).catch(e => console.error("presence write error:", e));
 
   // ── Firebase 接続監視 ──
   const _unsubConn = onValue(_connRef, (snap) => {
@@ -1978,7 +1978,8 @@ window._acAPI = {
 
   // ── presence ツリー監視 → オンライン人数を更新 ──
   const _unsubPres = onValue(_presRoot, (snap) => {
-    const n = Math.max(1, Object.keys(snap.val() || {}).length);
+    const data = snap.val() || {};
+    const n = Object.keys(data).length;
     if (typeof window._setOnlineCount === 'function') {
       window._setOnlineCount(n);
     } else {
@@ -5635,8 +5636,8 @@ window._setOnlineCount = (function() {
   }
 
   return function setOnlineCount(n) {
-    // 必ず1以上・整数に正規化
-    n = Math.max(1, Math.round(Number(n) || 1));
+    // 整数に正規化（0以上を許容）
+    n = Math.max(0, Math.round(Number(n) || 0));
 
     // 同じ値なら DOM 操作をスキップ
     if (n === _lastN) return;
