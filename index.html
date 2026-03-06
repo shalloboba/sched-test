@@ -114,6 +114,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 /* CANVAS */
 #bgC,#ptC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 #bgC{opacity:.75}#ptC{opacity:.45;z-index:1}
+@media(max-width:768px){#bgC,#ptC{display:none!important}}
 
 /* MAIN */
 #main{position:fixed;z-index:2;inset:0;display:flex;flex-direction:column}
@@ -170,42 +171,34 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 /* ─── TIER EFFECTS — 発光・炎・帯電エフェクト（大きさ変化なし） ─── */
 
 /* tier-sprout: やさしい緑の呼吸発光 */
-.lvl-icon.tier-sprout{animation:sproutGlow 2.2s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(60,220,90,.8)) drop-shadow(0 0 12px rgba(40,180,60,.4))}
+.lvl-icon.tier-sprout{animation:sproutGlow 2.2s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(60,220,90,.8)) drop-shadow(0 0 12px rgba(40,180,60,.4));will-change:transform}
 @keyframes sproutGlow{
   0%,100%{filter:drop-shadow(0 0 4px rgba(60,220,90,.7)) drop-shadow(0 0 10px rgba(40,180,60,.4))}
   50%{filter:drop-shadow(0 0 8px rgba(80,255,110,1)) drop-shadow(0 0 18px rgba(40,200,60,.7)) drop-shadow(0 0 30px rgba(20,160,40,.3))}
 }
 
-/* tier-fire: Duolingo風 炎が揺れて燃える（上方向に揺らぎ） */
-.lvl-icon.tier-fire{animation:fireBlaze .6s ease-in-out infinite}
+/* tier-fire: 炎が揺れる（transform/opacityのみ→GPUコンポジット可能） */
+.lvl-icon.tier-fire{animation:fireBlaze 1.8s ease-in-out infinite;will-change:transform}
 @keyframes fireBlaze{
-  0%  {filter:drop-shadow(0 2px 4px rgba(255,80,0,.9))  drop-shadow(0 -2px 8px rgba(255,180,0,.7))  drop-shadow(0 -6px 14px rgba(255,120,0,.4));  transform:translateY(0)    skewX(0deg)}
-  20% {filter:drop-shadow(0 3px 6px rgba(255,60,0,1))   drop-shadow(0 -4px 14px rgba(255,220,0,.9)) drop-shadow(0 -10px 24px rgba(255,80,0,.5));  transform:translateY(-1px) skewX(-1.5deg)}
-  40% {filter:drop-shadow(0 1px 4px rgba(255,100,0,.8)) drop-shadow(0 -2px 10px rgba(255,160,0,.7)) drop-shadow(0 -8px 18px rgba(255,60,0,.4));   transform:translateY(0.5px) skewX(1deg)}
-  60% {filter:drop-shadow(0 2px 7px rgba(255,50,0,1))   drop-shadow(0 -5px 16px rgba(255,230,80,.9))drop-shadow(0 -12px 28px rgba(255,90,0,.6));  transform:translateY(-1.5px) skewX(-1deg)}
-  80% {filter:drop-shadow(0 1px 5px rgba(255,80,20,.9)) drop-shadow(0 -3px 12px rgba(255,180,0,.8)) drop-shadow(0 -9px 20px rgba(255,60,0,.4));  transform:translateY(0px)  skewX(0.5deg)}
-  100%{filter:drop-shadow(0 2px 4px rgba(255,80,0,.9))  drop-shadow(0 -2px 8px rgba(255,180,0,.7))  drop-shadow(0 -6px 14px rgba(255,120,0,.4));  transform:translateY(0)    skewX(0deg)}
+  0%  {transform:translateY(0) scale(1);opacity:1}
+  35% {transform:translateY(-2px) scale(1.05);opacity:.92}
+  65% {transform:translateY(1px) scale(.97);opacity:.96}
+  100%{transform:translateY(0) scale(1);opacity:1}
 }
 
 /* tier-thunder: 帯電→放電をリアルに再現 */
-.lvl-icon.tier-thunder{animation:thunderCharge .9s ease-in-out infinite}
+.lvl-icon.tier-thunder{animation:thunderCharge 1.5s ease-in-out infinite}
 @keyframes thunderCharge{
-  /* チャージ中: 青白く静かに帯電 */
-  0%  {filter:drop-shadow(0 0 3px rgba(140,200,255,.6))  drop-shadow(0 0 8px rgba(80,140,255,.3));  transform:skewX(0deg)}
-  30% {filter:drop-shadow(0 0 5px rgba(160,220,255,.8))  drop-shadow(0 0 12px rgba(100,160,255,.5)); transform:skewX(0deg)}
-  /* 放電1: 一瞬フラッシュ */
-  55% {filter:drop-shadow(0 0 2px rgba(100,180,255,.5))  drop-shadow(0 0 6px rgba(60,120,255,.3));  transform:skewX(0deg)}
-  60% {filter:drop-shadow(0 0 18px rgba(220,240,255,1))  drop-shadow(0 0 36px rgba(120,200,255,1))  drop-shadow(0 0 60px rgba(80,140,255,.8));transform:skewX(-5deg)}
-  65% {filter:drop-shadow(0 0 4px rgba(140,200,255,.6))  drop-shadow(0 0 10px rgba(80,140,255,.4)); transform:skewX(3deg)}
-  /* 放電2: 二度目の強閃光 */
-  72% {filter:drop-shadow(0 0 22px rgba(255,255,255,1))   drop-shadow(0 0 44px rgba(160,220,255,1))  drop-shadow(0 0 80px rgba(80,160,255,.9));transform:skewX(-3deg)}
-  78% {filter:drop-shadow(0 0 6px rgba(160,210,255,.7))   drop-shadow(0 0 14px rgba(80,140,255,.5)); transform:skewX(1deg)}
-  /* 再チャージ */
-  100%{filter:drop-shadow(0 0 3px rgba(140,200,255,.6))  drop-shadow(0 0 8px rgba(80,140,255,.3));  transform:skewX(0deg)}
+  0%  {filter:drop-shadow(0 0 3px rgba(140,200,255,.5))  drop-shadow(0 0 8px rgba(80,140,255,.25))}
+  40% {filter:drop-shadow(0 0 5px rgba(160,220,255,.7))  drop-shadow(0 0 12px rgba(100,160,255,.4))}
+  /* 放電: フラッシュを1回に減らし強度を下げる */
+  62% {filter:drop-shadow(0 0 12px rgba(200,230,255,.9)) drop-shadow(0 0 24px rgba(120,190,255,.7))}
+  70% {filter:drop-shadow(0 0 4px rgba(140,200,255,.5))  drop-shadow(0 0 10px rgba(80,140,255,.3))}
+  100%{filter:drop-shadow(0 0 3px rgba(140,200,255,.5))  drop-shadow(0 0 8px rgba(80,140,255,.25))}
 }
 
 /* tier-crystal: キラキラ虹色スパークル（サイズ変化なし） */
-.lvl-icon.tier-crystal{animation:crystalSparkle 2.4s ease-in-out infinite}
+.lvl-icon.tier-crystal{animation:crystalSparkle 2.4s ease-in-out infinite;will-change:transform}
 @keyframes crystalSparkle{
   0%  {filter:drop-shadow(0 0 6px rgba(180,255,255,.9))  drop-shadow(0 0 14px rgba(120,200,255,.6))}
   14% {filter:drop-shadow(0 0 8px rgba(255,180,255,1))   drop-shadow(0 0 20px rgba(200,100,255,.7))}
@@ -218,7 +211,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 }
 
 /* tier-rainbow: 激しいレインボースパークル */
-.lvl-icon.tier-rainbow{animation:rainbowSpark 1s linear infinite}
+.lvl-icon.tier-rainbow{animation:rainbowSpark 1s linear infinite;will-change:transform}
 @keyframes rainbowSpark{
   0%  {filter:drop-shadow(0 0 10px rgba(255,60,60,1))   drop-shadow(0 0 22px rgba(255,0,0,.8))   drop-shadow(2px -2px 6px rgba(255,255,0,.6))}
   16% {filter:drop-shadow(0 0 10px rgba(255,180,0,1))   drop-shadow(0 0 22px rgba(255,100,0,.8)) drop-shadow(-2px -2px 6px rgba(255,60,0,.5))}
@@ -230,7 +223,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 }
 
 /* tier-comet: 流れ星のような光の尾を引く発光 */
-.lvl-icon.tier-comet{animation:cometTrail 1.2s cubic-bezier(.4,0,.2,1) infinite}
+.lvl-icon.tier-comet{animation:cometTrail 1.2s cubic-bezier(.4,0,.2,1) infinite;will-change:transform}
 @keyframes cometTrail{
   0%,100%{filter:drop-shadow(0 0 8px rgba(255,220,80,1))  drop-shadow(0 0 20px rgba(255,140,0,.8))  drop-shadow(0 0 38px rgba(180,60,0,.4))}
   30%{filter:drop-shadow(-4px 4px 10px rgba(255,240,120,1)) drop-shadow(-8px 8px 22px rgba(255,160,0,.9)) drop-shadow(-14px 14px 40px rgba(220,80,0,.5))}
@@ -239,7 +232,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 }
 
 /* tier-cosmic: 宇宙的な紫オーラが脈打つ */
-.lvl-icon.tier-cosmic{animation:cosmicAura 2s ease-in-out infinite}
+.lvl-icon.tier-cosmic{animation:cosmicAura 2s ease-in-out infinite;will-change:transform}
 @keyframes cosmicAura{
   0%,100%{filter:drop-shadow(0 0 8px rgba(160,100,255,.9))  drop-shadow(0 0 20px rgba(80,140,255,.6))  drop-shadow(0 0 40px rgba(180,60,200,.3))}
   25%{filter:drop-shadow(0 0 12px rgba(200,140,255,1))  drop-shadow(0 0 28px rgba(120,180,255,.9)) drop-shadow(0 0 55px rgba(220,100,240,.5))}
@@ -248,7 +241,7 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 }
 
 /* tier-transcendent: 黄金の聖なる輝き */
-.lvl-icon.tier-transcendent{animation:goldenAura 1.4s ease-in-out infinite}
+.lvl-icon.tier-transcendent{animation:goldenAura 1.4s ease-in-out infinite;will-change:transform}
 @keyframes goldenAura{
   0%,100%{filter:drop-shadow(0 0 10px rgba(255,220,80,1))  drop-shadow(0 0 24px rgba(255,160,0,.9)) drop-shadow(0 0 50px rgba(220,80,0,.5))}
   35%{filter:drop-shadow(0 0 16px rgba(255,255,180,1))  drop-shadow(0 0 38px rgba(255,200,40,1))  drop-shadow(0 0 75px rgba(255,120,0,.7))}
@@ -256,14 +249,13 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 }
 
 /* tier-eternal: 究極の白金発光 + 虹色フリッカー */
-.lvl-icon.tier-eternal{animation:eternalFlare .8s ease-in-out infinite}
+.lvl-icon.tier-eternal{animation:eternalFlare 1.6s ease-in-out infinite;will-change:transform}
 @keyframes eternalFlare{
-  0%  {filter:drop-shadow(0 0 14px rgba(255,200,100,1))  drop-shadow(0 0 32px rgba(255,100,0,.9))   drop-shadow(0 0 62px rgba(180,0,100,.6))}
-  20% {filter:drop-shadow(0 0 24px rgba(255,255,255,1))   drop-shadow(0 0 56px rgba(200,160,255,1))  drop-shadow(0 0 100px rgba(80,200,255,.8))}
-  40% {filter:drop-shadow(0 0 16px rgba(255,180,60,1))   drop-shadow(0 0 38px rgba(255,80,0,.9))    drop-shadow(0 0 72px rgba(200,0,80,.6))}
-  60% {filter:drop-shadow(0 0 28px rgba(255,255,255,1))   drop-shadow(0 0 64px rgba(180,240,255,1))  drop-shadow(0 0 110px rgba(160,80,255,.9))}
-  80% {filter:drop-shadow(0 0 16px rgba(255,160,40,1))   drop-shadow(0 0 34px rgba(255,60,0,.9))    drop-shadow(0 0 66px rgba(160,0,80,.6))}
-  100%{filter:drop-shadow(0 0 14px rgba(255,200,100,1))  drop-shadow(0 0 32px rgba(255,100,0,.9))   drop-shadow(0 0 62px rgba(180,0,100,.6))}
+  0%  {filter:drop-shadow(0 0 8px rgba(255,200,100,.9))  drop-shadow(0 0 18px rgba(255,100,0,.7))}
+  25% {filter:drop-shadow(0 0 14px rgba(255,240,180,.9)) drop-shadow(0 0 30px rgba(200,140,255,.7))}
+  50% {filter:drop-shadow(0 0 10px rgba(255,180,60,.9))  drop-shadow(0 0 22px rgba(255,80,0,.7))}
+  75% {filter:drop-shadow(0 0 16px rgba(220,220,255,.9)) drop-shadow(0 0 34px rgba(160,200,255,.7))}
+  100%{filter:drop-shadow(0 0 8px rgba(255,200,100,.9))  drop-shadow(0 0 18px rgba(255,100,0,.7))}
 }
 
 /* STREAK BADGE — base */
@@ -273,23 +265,23 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 #streakBadge:hover{border-color:rgba(var(--ar),var(--ag),var(--ab),.35);color:var(--ac);background:rgba(var(--ar),var(--ag),var(--ab),.08);transform:translateY(-1px)}
 #streakBadge.active{border-color:rgba(255,180,50,.5);color:rgba(255,180,50,1);background:rgba(255,180,50,.08);box-shadow:0 0 12px rgba(255,180,50,.15)}
 #streakBadge[data-tier="1"]{border-color:rgba(80,200,80,.7);color:rgba(120,240,120,1);background:rgba(60,180,60,.1);box-shadow:0 0 12px rgba(60,200,60,.25),inset 0 1px 0 rgba(120,255,100,.15)}
-#streakBadge[data-tier="1"] .streak-icon{animation:sproutGlow 2.2s ease-in-out infinite}
+#streakBadge[data-tier="1"] .streak-icon{animation:sproutGlow 2.2s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="2"]{border-color:rgba(255,100,20,.7);color:rgba(255,160,60,1);background:rgba(255,80,0,.1);box-shadow:0 0 18px rgba(255,80,0,.3),0 0 36px rgba(200,40,0,.15),inset 0 1px 0 rgba(255,180,60,.1)}
-#streakBadge[data-tier="2"] .streak-icon{animation:fireBlaze .6s ease-in-out infinite}
+#streakBadge[data-tier="2"] .streak-icon{animation:fireBlaze 1.8s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="3"]{border-color:rgba(100,160,255,.8);color:rgba(180,220,255,1);background:rgba(80,140,255,.12);box-shadow:0 0 20px rgba(80,140,255,.4),0 0 40px rgba(60,100,255,.2),inset 0 1px 0 rgba(160,200,255,.15)}
-#streakBadge[data-tier="3"] .streak-icon{animation:thunderCharge .9s ease-in-out infinite}
+#streakBadge[data-tier="3"] .streak-icon{animation:thunderCharge 1.5s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="4"]{border-color:rgba(160,240,240,.8);color:rgba(210,255,255,1);background:rgba(100,220,220,.1);box-shadow:0 0 22px rgba(100,220,220,.35),0 0 44px rgba(80,180,220,.18)}
-#streakBadge[data-tier="4"] .streak-icon{animation:crystalSparkle 2.4s ease-in-out infinite}
+#streakBadge[data-tier="4"] .streak-icon{animation:crystalSparkle 2.4s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="5"]{border-color:rgba(255,180,255,.8);color:rgba(255,230,255,1);background:rgba(180,100,200,.1);box-shadow:0 0 22px rgba(200,80,255,.35),0 0 44px rgba(100,100,255,.2),0 0 66px rgba(255,80,200,.12)}
-#streakBadge[data-tier="5"] .streak-icon{animation:rainbowSpark 1s linear infinite}
+#streakBadge[data-tier="5"] .streak-icon{animation:rainbowSpark 1s linear infinite;will-change:transform}
 #streakBadge[data-tier="6"]{border-color:rgba(255,210,80,.8);color:rgba(255,240,160,1);background:rgba(200,140,0,.12);box-shadow:0 0 24px rgba(255,180,0,.4),0 0 48px rgba(200,100,0,.22)}
-#streakBadge[data-tier="6"] .streak-icon{animation:cometTrail 1.2s cubic-bezier(.4,0,.2,1) infinite}
+#streakBadge[data-tier="6"] .streak-icon{animation:cometTrail 1.2s cubic-bezier(.4,0,.2,1) infinite;will-change:transform}
 #streakBadge[data-tier="7"]{border-color:rgba(180,120,255,.8);color:rgba(220,180,255,1);background:rgba(120,80,200,.12);box-shadow:0 0 24px rgba(150,100,255,.45),0 0 50px rgba(80,150,255,.25),0 0 80px rgba(255,100,220,.12)}
-#streakBadge[data-tier="7"] .streak-icon{animation:cosmicAura 2s ease-in-out infinite}
+#streakBadge[data-tier="7"] .streak-icon{animation:cosmicAura 2s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="8"]{border-color:rgba(255,255,180,.9);color:rgba(255,255,230,1);background:rgba(200,180,0,.15);box-shadow:0 0 28px rgba(255,220,0,.55),0 0 56px rgba(255,160,0,.35),0 0 90px rgba(255,80,0,.2)}
-#streakBadge[data-tier="8"] .streak-icon{animation:goldenAura 1.4s ease-in-out infinite}
+#streakBadge[data-tier="8"] .streak-icon{animation:goldenAura 1.4s ease-in-out infinite;will-change:transform}
 #streakBadge[data-tier="9"]{border-color:rgba(255,255,255,.95);color:#fff;background:rgba(200,180,255,.15);box-shadow:0 0 32px rgba(255,255,255,.6),0 0 64px rgba(200,180,255,.45),0 0 100px rgba(100,200,255,.3),0 0 150px rgba(255,150,200,.18)}
-#streakBadge[data-tier="9"] .streak-icon{animation:eternalFlare .8s ease-in-out infinite}
+#streakBadge[data-tier="9"] .streak-icon{animation:eternalFlare 1.6s ease-in-out infinite;will-change:transform}
 .streak-icon{display:inline-block;transition:all .3s}
 #streakNum{font-weight:500;font-size:10px}
 .lvl-bar-wrap{width:32px;height:3px;background:var(--b2);border-radius:2px;overflow:hidden}
@@ -620,6 +612,7 @@ body{font-size:var(--fs-base);zoom:var(--ui-scale)}
 /* MID */
 #mid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;position:relative;overflow:hidden}
 #midGlow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 50% 50% at 50% 55%,rgba(var(--ar),var(--ag),var(--ab),.06),transparent);animation:glow 7s ease-in-out infinite}
+@media(max-width:768px){#midGlow{animation:none!important;opacity:.4}}
 @keyframes glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
 @keyframes celebGlow{0%,100%{opacity:.7}50%{opacity:1;transform:scale(1.1)}}
 #main.allDone #midGlow{animation:celebGlow 2s ease-in-out infinite;background:radial-gradient(ellipse 70% 70% at 50% 52%,var(--ac2),transparent)}
@@ -630,7 +623,7 @@ body{font-size:var(--fs-base);zoom:var(--ui-scale)}
 .nowDot{width:5px;height:5px;border-radius:50%;background:var(--ac);
   box-shadow:0 0 6px var(--ac),0 0 14px rgba(var(--ar),var(--ag),var(--ab),.4);
   animation:dp 2.4s ease-in-out infinite}
-@keyframes dp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:.2}}
+@keyframes dp{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.5);opacity:.4}}
 #curTask{font-family:var(--ui);font-size:clamp(18px,3.4vw,46px);font-weight:700;text-align:center;
   line-height:1.1;color:var(--tp);
   max-width:860px;word-break:break-word;
@@ -990,15 +983,15 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 .strLvlCard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac0),transparent);pointer-events:none}
 .strLvlIcon{font-size:32px;flex-shrink:0;display:inline-block}
 .strLvlIcon.tier-sprout{animation:sproutGlow 2.2s ease-in-out infinite}
-.strLvlIcon.tier-fire{animation:fireBlaze .6s ease-in-out infinite}
-.strLvlIcon.tier-thunder{animation:thunderCharge .9s ease-in-out infinite}
+.strLvlIcon.tier-fire{animation:fireBlaze 1.8s ease-in-out infinite;will-change:transform}
+.strLvlIcon.tier-thunder{animation:thunderCharge 1.5s ease-in-out infinite}
 .strLvlIcon.tier-crystal{animation:crystalSparkle 2.4s ease-in-out infinite}
 .strLvlIcon.tier-rainbow{animation:rainbowSpark 1s linear infinite}
 .strLvlIcon.tier-comet{animation:cometTrail 1.2s cubic-bezier(.4,0,.2,1) infinite}
 .strLvlIcon.tier-cosmic{animation:cosmicAura 2s ease-in-out infinite}
 .strLvlIcon.tier-transcendent{animation:goldenAura 1.4s ease-in-out infinite}
-.strLvlIcon.tier-eternal{animation:eternalFlare .8s ease-in-out infinite}
-@keyframes flicker{0%{transform:scale(1)}100%{transform:scale(1.1) rotate(3deg)}}
+.strLvlIcon.tier-eternal{animation:eternalFlare 1.6s ease-in-out infinite}
+
 .strLvlInfo{flex:1;min-width:0}
 .strLvlName{font-family:var(--ui);font-size:18px;font-weight:900;color:var(--tp);letter-spacing:-.5px}
 .strLvlNum{font-family:var(--mono);font-size:9px;color:var(--ac);letter-spacing:3px;margin-top:1px;text-transform:uppercase}
@@ -1043,7 +1036,7 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 .strMainBadge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px;
   border-radius:var(--r);background:var(--ac0);border:1px solid var(--acb);position:relative;overflow:hidden}
 .strMainBadge::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--ac2),transparent 70%);pointer-events:none}
-.strFlame{font-size:36px;animation:flicker 1.5s ease-in-out infinite alternate}
+.strFlame{font-size:36px}
 .strDays{font-family:var(--mono);font-size:36px;font-weight:400;color:var(--ac);line-height:1;text-shadow:0 0 20px var(--ac4)}
 .strLabel{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--ts);text-transform:uppercase}
 .strCloseBtn{width:100%;padding:8px;border-radius:var(--r2);border:1px solid var(--b2);
@@ -1469,6 +1462,21 @@ input.tIn{font-size:11px;padding:5px 7px}
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
   .tier-fire,.tier-thunder{animation:none!important;filter:none!important}
 }
+/* モバイル端末: filterアニメーションを無効化してGPU負荷を解消 */
+@media (max-width:768px) and (hover:none) {
+  /* filterをアニメーションするとモバイルでガタつくため静的にする */
+  .lvl-icon, .streak-icon, .strLvlIcon {
+    animation:mobileIconPulse 2.4s ease-in-out infinite!important;
+    will-change:transform;
+    filter:none!important;
+  }
+  /* nowDot もゆっくりに */
+  .nowDot{animation-duration:3.5s!important}
+}
+@keyframes mobileIconPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.08);opacity:.85}
+}
 #streakPanel,#thPanel{content-visibility:auto;contain-intrinsic-size:0 600px}
 /* ══════════════════════════════════════════
    ONLINE BADGE
@@ -1697,7 +1705,7 @@ window._acAPI = {
           <div id="acRegMsg" class="acMsg"></div>
           <button class="acBtn primary" id="acRegBtn" onclick="acRegister()">アカウント作成</button>
           <div class="acDivider">または</div>
-          <button class="acBtn secondary" onclick="acGoogleLogin()">🔑 Googleで登録</button>
+          <button class="acBtn secondary" onclick="acGoogleLogin(true)">🔑 Googleで登録</button>
         </div>
       </div>
     </div>
@@ -3063,16 +3071,18 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
   resize();
   let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
+  // モバイルでは波アニメーションを無効化（チカチカ防止）
+  if(_mob()){c.style.display='none';return;}
   function dr(){
     cx.clearRect(0,0,W,H);
     const playing=_isPlaying();
     const target=playing?(.4+.6*Math.abs(Math.sin(t*2.7))*.7):0;
     _waveEnergy+=( target-_waveEnergy)*0.06;
-    const e=_waveEnergy,light=isLight(),mob=_mob();
+    const e=_waveEnergy,light=isLight();
     const baseAlpha=light?.32:.035;
-    const waves=mob?2:4,step=mob?10:4;
+    const waves=4,step=4;
     for(let i=0;i<waves;i++){
-      const base=H*(.15+i*.22*(4/waves));
+      const base=H*(.15+i*.22);
       const amp=22+e*60;
       const y=base+Math.sin(t*.35+i*2.1)*H*.035;
       const g=cx.createLinearGradient(0,y-80,0,y+80);
@@ -3098,7 +3108,9 @@ function _isPlaying(){return S.ytP&&(()=>{try{return S.ytP.getPlayerState()===1}
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
   resize();
   let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
-  const cnt=_mob()?12:28;
+  // モバイルではパーティクルも無効化（モヤモヤ・チカチカ防止）
+  if(_mob()){c.style.display='none';return;}
+  const cnt=28;
   const ps=[];
   for(let i=0;i<cnt;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
   function dr(){
@@ -3172,7 +3184,17 @@ function _allTodayTasks(){
 function _invalidateTaskCache(){_taskCache=null;_taskCacheKey='';}
 function _mkT(nId,tId,mode){
   const name=$(nId).value.trim();if(!name){toast(T('taskNameRequired'));return null}
-  let time=null;if(mode==='time'){time=$(tId).value;if(!time){toast(T('timeRequired'));return null}}
+  let time=null;
+  if(mode==='time'){
+    time=$(tId).value;
+    if(!time){toast(T('timeRequired'));return null}
+    // 今日のタスクで過去の時刻はブロック
+    const now=new Date();
+    const[h,m]=time.split(':').map(Number);
+    const taskSec=h*3600+m*60;
+    const nowSec=now.getHours()*3600+now.getMinutes()*60;
+    if(taskSec<nowSec){toast(T('timePastError'));return null}
+  }
   return{id:Date.now(),time,name,done:false};
 }
 function addTask(){const t=_mkT('addName','addTime',S.addMode);if(!t)return;_push(t);$('addName').value='';if(S.addMode==='time')$('addTime').value='';}
@@ -3728,7 +3750,7 @@ function swToggle(){S.sw.running=!S.sw.running;if(S.sw.running){S.sw.tick=perfor
 function swTick(){const n=performance.now();const delta=n-S.sw.tick;S.sw.tick=n;// Cap delta to 500ms to prevent huge jumps after tab restore
 if(delta>0&&delta<500){S.sw.ms+=delta;}const f=fmtMs(S.sw.ms);[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent=f});const elapsed=S.sw.ms-_swLastXpMs;if(elapsed>=60000){const mins=Math.floor(elapsed/60000);_swLastXpMs+=mins*60000;addPomoXP(mins);}}
 function swLap(){if(!S.sw.running&&S.sw.ms===0)return;S.sw.laps.push({lap:S.sw.ms-S.sw.lapBase,total:S.sw.ms});S.sw.lapBase=S.sw.ms;renderLaps();snd('lap');}
-function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
+function swReset(){clearInterval(S.sw.iv);Object.assign(S.sw,{running:false,ms:0,tick:0,laps:[],lapBase:0,iv:null});[$('swDisp'),$('swDispW'),$('swDispM')].forEach(e=>{if(e)e.textContent='00:00:00'});[$('swBtn'),$('swBtnW'),$('swBtnM')].forEach(e=>{if(e)e.textContent=T('swStart2')});[$('swLaps'),$('swLapsW')].forEach(e=>{if(e)e.innerHTML=''});}
 function renderLaps(){const h=S.sw.laps.map((l,i)=>`<div class="swLR"><span>Lap ${i+1}</span><span>${fmtMs(l.lap)}</span><span>${fmtMs(l.total)}</span></div>`).join('');[$('swLaps'),$('swLapsW')].forEach(e=>{if(e){e.innerHTML=h;e.scrollTop=e.scrollHeight;}});}
 function switchTimer(tab){S.timerTab=tab;savUI();const p=tab==='pomo';$('tPomo').classList.toggle('on',p);$('tSw').classList.toggle('on',!p);$('bPomo').classList.toggle('on',p);$('bSw').classList.toggle('on',!p);$('tPomoW').classList.toggle('on',p);$('tSwW').classList.toggle('on',!p);$('bPomoW').classList.toggle('on',p);$('bSwW').classList.toggle('on',!p);}
 /* ═══ FLOAT WINDOWS ═══ */
@@ -4552,6 +4574,37 @@ function _acMsg(id, type, text) {
   el.className = 'acMsg ' + (type === 'ok' ? 'ok' : 'err');
   el.textContent = text;
 }
+// ─── アカウント未登録ポップアップ ───────────────────────────
+function _showNoAccountPopup() {
+  const existing = document.getElementById('_noAccountDlg');
+  if (existing) existing.remove();
+  const dlg = document.createElement('div');
+  dlg.id = '_noAccountDlg';
+  dlg.style.cssText = `
+    position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  `;
+  dlg.innerHTML = `
+    <div style="background:var(--sf);border:1px solid rgba(255,71,87,.35);border-radius:18px;padding:32px 28px;max-width:320px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.75),0 0 0 1px rgba(255,71,87,.15)">
+      <div style="font-size:32px;margin-bottom:14px">🔒</div>
+      <div style="font-family:var(--ui);font-size:15px;font-weight:700;color:var(--tp);margin-bottom:10px">アカウントがありません</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:24px;line-height:1.7">
+        このメールアドレスは登録されていません。<br>
+        先に新規登録してください。
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="(()=>{document.getElementById('_noAccountDlg').remove();openAccount();acSwitchTab('register');})()" style="padding:11px 16px;border-radius:10px;border:1px solid var(--ac);background:var(--ac0);color:var(--ac);font-family:var(--ui);font-size:13px;cursor:pointer;font-weight:700">
+          📝 新規登録へ
+        </button>
+        <button onclick="document.getElementById('_noAccountDlg').remove()" style="padding:9px 16px;border-radius:10px;border:none;background:none;color:var(--ts);font-family:var(--ui);font-size:12px;cursor:pointer">
+          閉じる
+        </button>
+      </div>
+    </div>
+  `;
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.remove(); });
+  document.body.appendChild(dlg);
+}
 function _acErrMsg(code) {
   const m = {
     'auth/invalid-email':        'メールアドレスの形式が不正です',
@@ -4573,13 +4626,23 @@ async function acLogin() {
   if (!email || !pass) { _acMsg('acLoginMsg','err','メールとパスワードを入力してください'); return; }
   const btn = $('acLoginBtn'); btn.disabled = true; btn.textContent = '処理中...';
   try {
-    await window._acAPI.login(email, pass);
+    const loginUser = await window._acAPI.login(email, pass);
     toast('✓ ログインしました');
     closeAccount();
     // ログイン後: ローカルデータが存在する場合は上書き確認ダイアログを表示
-    _promptSyncChoice();
+    _promptSyncChoice(loginUser.uid);
   }
-  catch (e) { _acMsg('acLoginMsg','err', _acErrMsg(e.code)); }
+  catch (e) {
+    // アカウントが存在しない場合: 入力をクリアしてポップアップ表示
+    if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+      $('acLoginEmail').value = '';
+      $('acLoginPass').value = '';
+      _acMsg('acLoginMsg','err','');
+      _showNoAccountPopup();
+    } else {
+      _acMsg('acLoginMsg','err', _acErrMsg(e.code));
+    }
+  }
   finally   { btn.disabled = false; btn.textContent = 'ログイン'; }
 }
 async function acRegister() {
@@ -4607,33 +4670,67 @@ async function acRegister() {
   catch (e) { _acMsg('acRegMsg','err', _acErrMsg(e.code)); }
   finally   { btn.disabled = false; btn.textContent = 'アカウント作成'; }
 }
-async function acGoogleLogin() {
+async function acGoogleLogin(isRegister) {
   if (!window._acAPI) { toast('Firebase未設定'); return; }
   try {
-    await window._acAPI.googleLogin();
-    toast('✓ Googleでログインしました');
+    const user = await window._acAPI.googleLogin();
+    // Firestoreにアプリ登録データが存在するか確認（tasks/streakがあれば登録済み）
+    // download()はFirestoreドキュメントが存在すればdata()を、なければnullを返す
+    // tasks または streak が存在 → 登録済みユーザーと判断
+    let isRegistered = false;
+    try {
+      const cloudData = await window._acAPI.download(user.uid);
+      isRegistered = !!(cloudData && (
+        Array.isArray(cloudData.tasks) ||
+        (cloudData.streak && typeof cloudData.streak === 'object')
+      ));
+    } catch(fetchErr) {
+      // ネットワークエラー等はスルーして登録済みとして扱う（誤ブロック防止）
+      isRegistered = true;
+    }
+    if (!isRegister && !isRegistered) {
+      // 未登録ユーザー: サインアウトしてポップアップ表示
+      await window._acAPI.signOut();
+      _showNoAccountPopup();
+      return;
+    }
+    // Googleで登録の場合: Firestoreに初期データを書き込んで登録済みにする
+    if (isRegister) {
+      try {
+        await window._acAPI.upload(user.uid, {
+          tasks: S.tasks, calTasks: S.calTasks, streak: S.streak,
+          theme: S.theme, fw: S.fw, dock: S.dock,
+          timerTab: S.timerTab, pomoStyle: S.pomoStyle, lang: S.lang
+        });
+        toast('🎉 Googleアカウントで登録しました！');
+      } catch(e) { toast('✓ Googleで登録しました'); }
+    } else {
+      toast('✓ Googleでログインしました');
+    }
     closeAccount();
     // ログイン後: ローカルデータが存在する場合は上書き確認ダイアログを表示
-    _promptSyncChoice();
+    _promptSyncChoice(user.uid);
   }
   catch (e) { if (e.code !== 'auth/popup-closed-by-user') toast('エラー: ' + _acErrMsg(e.code)); }
 }
 // ─── ログイン後の同期選択ダイアログ ───────────────────────────
 // ローカルにデータがある場合、ユーザーに3択を提示して上書きを防ぐ
-async function _promptSyncChoice() {
-  if (!_acUser || !window._acAPI) return;
+async function _promptSyncChoice(uid) {
+  // uid が渡されない場合は _acUser から取得（後方互換）
+  const resolvedUid = uid || _acUser?.uid;
+  if (!resolvedUid || !window._acAPI) return;
 
   // ローカルにタスクまたはストリークデータがあるか確認
   const hasLocal = (S.tasks && S.tasks.length > 0) ||
-                   (S.streak && (S.streak.count > 0 || S.streak.best > 0));
+                   (S.streak && (S.streak.total > 0 || S.streak.max > 0));
 
   // クラウドにデータがあるか確認
   let hasCloud = false;
   try {
-    const cloudData = await window._acAPI.download(_acUser.uid);
+    const cloudData = await window._acAPI.download(resolvedUid);
     hasCloud = !!(cloudData && (
       (cloudData.tasks && cloudData.tasks.length > 0) ||
-      (cloudData.streak && (cloudData.streak.count > 0 || cloudData.streak.best > 0))
+      (cloudData.streak && (cloudData.streak.total > 0 || cloudData.streak.max > 0))
     ));
   } catch(e) { return; }
 
@@ -4643,7 +4740,7 @@ async function _promptSyncChoice() {
   // ローカルのみ → 自動でクラウドに保存
   if (hasLocal && !hasCloud) {
     try {
-      await window._acAPI.upload(_acUser.uid, {
+      await window._acAPI.upload(resolvedUid, {
         tasks: S.tasks, calTasks: S.calTasks, streak: S.streak,
         theme: S.theme, fw: S.fw, dock: S.dock,
         timerTab: S.timerTab, pomoStyle: S.pomoStyle, lang: S.lang
