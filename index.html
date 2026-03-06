@@ -128,13 +128,11 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
   box-shadow:0 1px 0 rgba(255,255,255,.05),0 4px 32px rgba(0,0,0,.5)}
 .hL{position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;gap:4px;align-items:center}
 .hR{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;gap:4px;align-items:center}
-#clockTime{font-family:var(--mono);font-size:clamp(20px,3.2vw,42px);font-weight:300;letter-spacing:-1px;line-height:1;color:var(--ac);
-  text-shadow:0 0 28px rgba(var(--ar),var(--ag),var(--ab),.35),0 0 60px rgba(var(--ar),var(--ag),var(--ab),.15);
-  transition:color .4s,text-shadow .4s;cursor:default}
-#clockDate{font-family:var(--mono);font-size:7.5px;letter-spacing:3.5px;color:var(--ts);text-transform:uppercase;margin-top:3px;opacity:.4;
-  transition:opacity .3s}
-.clock-wrap{display:flex;flex-direction:column;align-items:center}
+.clock-wrap{display:flex;flex-direction:column;align-items:center;cursor:default}
 .clock-wrap:hover #clockDate{opacity:.75}
+#clockTime{font-family:var(--mono);font-size:clamp(20px,3.2vw,42px);font-weight:300;letter-spacing:-.5px;line-height:1;color:var(--ac);text-shadow:0 0 28px rgba(var(--ar),var(--ag),var(--ab),.35),0 0 60px rgba(var(--ar),var(--ag),var(--ab),.15);transition:color .4s,text-shadow .4s;cursor:default}
+#clockSec{opacity:.35}
+#clockDate{font-family:var(--mono);font-size:7.5px;letter-spacing:3.5px;color:var(--ts);text-transform:uppercase;margin-top:3px;opacity:.4;transition:opacity .3s}
 .ib{width:30px;height:30px;border-radius:9px;border:1px solid rgba(255,255,255,.08);
   background:rgba(255,255,255,.03);
   display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);font-size:13px;
@@ -343,11 +341,8 @@ body.persona-bg #topbar::after{
 /* ━━━━━━━━━━━━━━━━━━
    CLOCK
 ━━━━━━━━━━━━━━━━━━ */
-body.persona-bg #clockTime{
-  color:#7df4ff!important;font-weight:300!important;letter-spacing:3px!important;
-  text-shadow:0 0 6px rgba(100,240,255,1),0 0 22px rgba(40,180,255,.9),0 0 55px rgba(0,120,220,.55),0 0 100px rgba(0,60,180,.25)!important;
-}
-body.persona-bg #clockDate{color:rgba(100,210,255,.6)!important;letter-spacing:6px!important;font-size:8px!important}
+body.persona-bg #clockTime{color:#7df4ff!important;font-weight:300!important;text-shadow:0 0 6px rgba(100,240,255,1),0 0 22px rgba(40,180,255,.9),0 0 55px rgba(0,120,220,.55)!important}
+body.persona-bg #clockDate{color:rgba(100,210,255,.5)!important}
 
 /* ━━━━━━━━━━━━━━━━━━
    DOCK — P3 SELECT MENU
@@ -1276,8 +1271,8 @@ input.tIn{font-size:11px;padding:5px 7px}
   #onlineBadgeMobile{display:flex}
   /* Topbar: just clock centered */
   #topbar{padding:10px 14px 8px}
-  #clockTime{font-size:clamp(32px,8vw,52px)}
-  #clockDate{font-size:10px;letter-spacing:3px}
+  #clockTime{font-size:clamp(28px,7vw,44px)}
+  #clockDate{font-size:9px;letter-spacing:.16em}
   /* Mid: push up from mobile nav */
   #main{bottom:calc(52px + env(safe-area-inset-bottom,0px))!important;inset:0;position:fixed!important}
   #main > section#mid{padding:12px 16px}
@@ -1335,8 +1330,8 @@ input.tIn{font-size:11px;padding:5px 7px}
    RESPONSIVE — SMALL PHONE (≤480px)
 ══════════════════════════════════════════ */
 @media(max-width:480px){
-  #clockTime{font-size:clamp(28px,9vw,46px)}
-  #clockDate{font-size:9px;letter-spacing:2px}
+  #clockTime{font-size:clamp(26px,8.5vw,42px)}
+  #clockDate{font-size:8px;letter-spacing:.12em}
   .calYearGrid{grid-template-columns:repeat(2,1fr)}
   .strHeatGrid{grid-template-rows:repeat(7,10px);gap:2px}
   .strHeatCell{width:10px;height:10px}
@@ -1433,11 +1428,7 @@ input.tIn{font-size:11px;padding:5px 7px}
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 #curTask.empty{background:none;-webkit-text-fill-color:var(--ts)}
-#clockTime{
-  background:linear-gradient(135deg,var(--ac) 30%,rgba(var(--ar),var(--ag),var(--ab),.55) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 22px rgba(var(--ar),var(--ag),var(--ab),.45));
-}
+
 .strTitle{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;
   padding:18px 18px 0;
   background:linear-gradient(135deg,var(--tp),var(--ac));
@@ -1569,7 +1560,7 @@ input.tIn{font-size:11px;padding:5px 7px}
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, onDisconnect, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, linkWithCredential, EmailAuthProvider, updatePassword as fbUpdatePassword, updateEmail as fbUpdateEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -1600,6 +1591,19 @@ window._acAPI = {
   signOut:     ()      => fbSignOut(auth),
   upload:      async (uid,data) => setDoc(doc(fdb,'users',uid),{...data,updatedAt:serverTimestamp()},{merge:true}),
   download:    async (uid)      => { const s=await getDoc(doc(fdb,'users',uid)); return s.exists()?s.data():null; },
+  // 表示名の更新
+  updateDisplayName: async (name) => { const u=auth.currentUser; if(!u)throw new Error('not logged in'); await updateProfile(u,{displayName:name}); return u; },
+  // GoogleアカウントにEmail/Passwordを紐付け（メールログインも可能にする）
+  linkEmail: async (email, password) => {
+    const u = auth.currentUser; if(!u) throw new Error('not logged in');
+    const cred = EmailAuthProvider.credential(email, password);
+    const result = await linkWithCredential(u, cred);
+    return result.user;
+  },
+  // パスワード変更（既にメール認証が紐付いている場合）
+  updatePassword: async (newPass) => { const u=auth.currentUser; if(!u)throw new Error('not logged in'); await fbUpdatePassword(u,newPass); },
+  // 現在ユーザーのプロバイダ一覧（google.com / password など）
+  getProviders: () => { const u=auth.currentUser; return u ? u.providerData.map(p=>p.providerId) : []; },
 };
 
   // ── セッション固有ID（crypto.randomUUID で衝突回避）──
@@ -1674,6 +1678,37 @@ window._acAPI = {
           <span class="acSyncVal" id="acDownloadStatus">復元する</span>
         </div>
         <div id="acSyncMsg" class="acMsg"></div>
+
+        <!-- 表示名変更 -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">👤 表示名</div>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="acNewName" placeholder="新しい表示名"
+              style="flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
+                     font-family:var(--jp);font-size:12px;padding:6px 8px;color:var(--tp);
+                     -webkit-text-fill-color:var(--tp)"
+              onkeydown="if(event.key==='Enter')acUpdateName()">
+            <button class="acBtn primary" onclick="acUpdateName()"
+              style="padding:6px 12px;font-size:10px;flex-shrink:0">変更</button>
+          </div>
+          <div id="acNameMsg" class="acMsg" style="margin-top:4px"></div>
+        </div>
+
+        <!-- Googleのみユーザー向け: パスワード設定 -->
+        <div id="acLinkEmailSection" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">🔑 パスワードを設定する</div>
+          <div style="font-family:var(--jp);font-size:11px;color:var(--ts);margin-bottom:8px">
+            Googleアカウントのメール（<span id="acLinkEmailLabel" style="color:var(--ac)"></span>）でもログインできます
+          </div>
+          <div class="acField"><label>パスワード（6文字以上）</label>
+            <input type="password" id="acLinkPass" placeholder="••••••••" autocomplete="new-password"
+              style="-webkit-text-fill-color:var(--tp)"
+              onkeydown="if(event.key==='Enter')acLinkEmailPassword()">
+          </div>
+          <div id="acLinkMsg" class="acMsg"></div>
+          <button class="acBtn primary" onclick="acLinkEmailPassword()">設定する</button>
+        </div>
+
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)">
           <button class="acBtn secondary" onclick="acSignOut()">サインアウト</button>
           <div style="margin-top:8px">
@@ -3139,16 +3174,16 @@ function _refreshTCache(){
 function tick(){
   const n=new Date();
   const ts=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
-  const clockEl=$('clockTime');
   if(ts!==_lastClockStr){
-    if(clockEl){
-      clockEl.textContent=ts;
-    }
+    const el=$('clockTime');if(el)el.textContent=ts;
     _lastClockStr=ts;
   }
   const _wdArr=T('weekDays');const _wd=Array.isArray(_wdArr)?_wdArr:['日','月','火','水','木','金','土'];
   const dsf=`${_wd[n.getDay()]} ${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`;
-  if(dsf!==_lastDateStr){const e=$('clockDate');if(e)e.textContent=dsf;_lastDateStr=dsf;}
+  if(dsf!==_lastDateStr){
+    const el=$('clockDate');if(el)el.textContent=dsf;
+    _lastDateStr=dsf;
+  }
   const sec=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
   if(sec!==_lastTickSec){_lastTickSec=sec;refreshCur(n);refreshCDs(n);}
   tickTimeTracking();
@@ -4547,6 +4582,15 @@ window._onAuthChange = function(user) {
     if ($('acEmail'))       $('acEmail').textContent       = user.email || '';
     if ($('acAvatar'))      $('acAvatar').textContent      = (user.displayName || user.email || '?')[0].toUpperCase();
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
+    // 表示名入力欄に現在の名前をプリセット
+    if ($('acNewName')) $('acNewName').value = user.displayName || '';
+    // GoogleのみログインならEmail/パスワード設定欄を表示
+    const _providers = user.providerData.map(p => p.providerId);
+    const _isGoogleOnly = _providers.includes('google.com') && !_providers.includes('password');
+    const _linkSec = $('acLinkEmailSection');
+    if (_linkSec) _linkSec.style.display = _isGoogleOnly ? 'block' : 'none';
+    if (_isGoogleOnly && $('acLinkEmail') && !$('acLinkEmail').value) $('acLinkEmail').value = user.email || '';
+    if (_isGoogleOnly && $('acLinkEmailLabel')) $('acLinkEmailLabel').textContent = user.email || '';
   } else {
     if (btn) btn.classList.remove('logged-in');
     const loggedEl = $('acLoggedIn'); if (loggedEl) loggedEl.style.display = 'none';
@@ -4571,6 +4615,7 @@ function acSwitchTab(t) {
 }
 function _acMsg(id, type, text) {
   const el = $(id); if (!el) return;
+  if (!type) { el.className = 'acMsg'; el.textContent = ''; return; }
   el.className = 'acMsg ' + (type === 'ok' ? 'ok' : 'err');
   el.textContent = text;
 }
@@ -4797,6 +4842,50 @@ async function _promptSyncChoice(uid) {
     </div>
   `;
   document.body.appendChild(dlg);
+}
+
+// ── 表示名変更 ──────────────────────────────────────────────
+async function acUpdateName() {
+  if (!_acUser || !window._acAPI) return;
+  const name = $('acNewName').value.trim();
+  if (!name) { _acMsg('acNameMsg','err','表示名を入力してください'); return; }
+  try {
+    await window._acAPI.updateDisplayName(name);
+    try { await window._acAPI.upload(_acUser.uid, { displayName: name }); } catch(e) {}
+    _acMsg('acNameMsg','ok','表示名を変更しました ✓');
+    if ($('acDisplayName')) $('acDisplayName').textContent = name;
+    if ($('acAvatar'))      $('acAvatar').textContent      = name[0].toUpperCase();
+    if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
+    setTimeout(() => _acMsg('acNameMsg','',''), 3000);
+  } catch(e) {
+    _acMsg('acNameMsg','err', _acErrMsg(e.code) || '変更に失敗しました');
+  }
+}
+
+// ── GoogleアカウントにEmail/Password紐付け ───────────────────
+async function acLinkEmailPassword() {
+  if (!_acUser || !window._acAPI) return;
+  const email = _acUser.email;  // Googleアカウントのメールをそのまま使用
+  const pass  = $('acLinkPass').value;
+  if (!email) { _acMsg('acLinkMsg','err','メールアドレスが取得できません'); return; }
+  if (!pass || pass.length < 6) { _acMsg('acLinkMsg','err','パスワードは6文字以上で入力してください'); return; }
+  const btn = document.querySelector('#acLinkEmailSection .acBtn.primary');
+  if (btn) { btn.disabled = true; btn.textContent = '処理中...'; }
+  try {
+    await window._acAPI.linkEmail(email, pass);
+    _acMsg('acLinkMsg','ok','設定完了！メール/パスワードでもログインできます ✓');
+    if ($('acLinkPass')) $('acLinkPass').value = '';
+    setTimeout(() => { const s=$('acLinkEmailSection'); if(s)s.style.display='none'; }, 2500);
+  } catch(e) {
+    const msg = e.code === 'auth/email-already-in-use'
+      ? 'このメールアドレスは既に別アカウントで使われています'
+      : e.code === 'auth/provider-already-linked'
+      ? '既にパスワードが設定されています'
+      : (_acErrMsg(e.code) || '設定に失敗しました');
+    _acMsg('acLinkMsg','err', msg);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '設定する'; }
+  }
 }
 
 async function acSignOut() {
