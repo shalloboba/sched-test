@@ -5,7 +5,7 @@
   ================================================================
   - コードに変更を加えるたびに v0.0.1 ずつバージョンを上げること
   - 大型変更はユーザーが明示したときのみマイナー/メジャーを上げる
-    例: 小変更 v1.0.3 → v1.0.4 / 大変更 v1.0.x → v1.1.0
+    例: 小変更 v1.0.4 → v1.0.5 / 大変更 v1.0.x → v1.1.0
   - バージョンを変えたら必ず以下2箇所のHTMLも同時に更新すること:
       1. id="appVersion" のテキスト (ドックバー表示)
       2. mSheetMore 内の version テキスト (スマホメニュー表示)
@@ -2202,7 +2202,7 @@ window._acAPI = {
 <!-- DOCK -->
 <div id="dock" class="pos-bottom">
   <div id="dockBar">
-    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.0.3</span>
+    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.0.4</span>
     <div class="dGrip"></div>
     <div class="dRight">
       <button class="dActB" id="dCollapseBtn" onclick="toggleDock()">▼</button>
@@ -2817,7 +2817,7 @@ window._acAPI = {
           <div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.0.3</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.0.4</div>
     </div>
   </div>
 </div>
@@ -3971,7 +3971,6 @@ function tick(){
     _lastDateStr=dsf;
     _streakCache={key:'',val:0};
     _invalidateTaskCache();
-    S.streak.lastPopDate='';
     initStreak();
     renderT();
     renderCal();
