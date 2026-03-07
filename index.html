@@ -1987,6 +1987,43 @@ input.tIn{font-size:11px;padding:5px 7px}
 .acMsg.err{display:block;color:rgba(255,71,87,1);background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2)}
 #ibAccount.logged-in{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
 @media(max-width:768px){#accountPanel{width:100%;border-radius:18px 18px 0 0;margin:auto 0 0}#accountOv{align-items:flex-end}}
+
+/* ── VERSION CHANGELOG POPUP ── */
+#changelogOv{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;
+  align-items:center;justify-content:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#changelogOv.open{display:flex}
+#changelogPanel{background:var(--sf);border:1px solid var(--b2);border-radius:var(--r3);
+  padding:28px 26px 24px;width:460px;max-width:calc(100vw - 32px);max-height:85vh;overflow-y:auto;
+  display:flex;flex-direction:column;gap:16px;
+  box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.06);
+  animation:scIn .28s cubic-bezier(.34,1.56,.64,1)}
+.clHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.clTitleWrap{display:flex;flex-direction:column;gap:3px}
+.clSuperTitle{font-family:var(--mono);font-size:8px;letter-spacing:3px;color:var(--ts);text-transform:uppercase;opacity:.7}
+.clTitle{font-family:var(--ui);font-size:22px;font-weight:900;color:var(--ac);
+  text-shadow:0 0 28px var(--ac4);letter-spacing:-0.5px;line-height:1}
+.clVersion{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+  border-radius:99px;background:var(--ac0);border:1px solid var(--acb);
+  font-family:var(--mono);font-size:10px;color:var(--ac);font-weight:500;letter-spacing:1px}
+.clClose{width:30px;height:30px;border-radius:9px;border:1px solid var(--b2);background:var(--b1);
+  color:var(--ts);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s}
+.clClose:hover{border-color:var(--b3);color:var(--tp);background:var(--b2)}
+.clGroup{display:flex;flex-direction:column;gap:6px}
+.clGroupLabel{font-family:var(--mono);font-size:8px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--ts);opacity:.6;margin-bottom:2px}
+.clItem{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:var(--ra);border:1px solid var(--b1);border-radius:var(--r2)}
+.clItemIcon{font-size:15px;flex-shrink:0;line-height:1.3}
+.clItemText{font-family:var(--jp);font-size:13px;color:var(--tp);line-height:1.55;flex:1}
+.clItemSub{font-family:var(--mono);font-size:9px;color:var(--ts);margin-top:2px}
+.clOkBtn{width:100%;padding:12px;border-radius:var(--r2);background:var(--ac);
+  border:none;color:var(--bg);font-family:var(--ui);font-size:13px;font-weight:900;
+  cursor:pointer;letter-spacing:1px;transition:filter .15s}
+.clOkBtn:hover{filter:brightness(1.15)}
+.clOkBtn:active{filter:brightness(.9)}
+@media(max-width:768px){#changelogPanel{border-radius:18px 18px 0 0;width:100%;margin:auto 0 0}
+  #changelogOv{align-items:flex-end}}
 </style>
 <!-- Firebase SDK (Realtime Database) -->
 <script type="module">
@@ -2498,6 +2535,24 @@ window._acAPI = {
   </div>
 </div>
 
+<!-- VERSION CHANGELOG POPUP -->
+<div id="changelogOv" onclick="if(event.target===this)closeChangelog()">
+  <div id="changelogPanel">
+    <div class="clHeader">
+      <div class="clTitleWrap">
+        <div class="clSuperTitle">🎉 アップデート</div>
+        <div class="clTitle">What's New</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <button class="clClose" onclick="closeChangelog()">×</button>
+        <div class="clVersion" id="clVersionBadge">v1.4.2</div>
+      </div>
+    </div>
+    <div id="clBody"></div>
+    <button class="clOkBtn" onclick="closeChangelog()">OK、わかった！</button>
+  </div>
+</div>
+
 <div id="main">
   <header id="topbar">
     <div class="hL">
@@ -2549,7 +2604,7 @@ window._acAPI = {
 <!-- DOCK -->
 <div id="dock" class="pos-bottom">
   <div id="dockBar">
-    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.4.1</span>
+    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.4.2</span>
     <div class="dGrip"></div>
     <div class="dRight">
       <button class="dActB" id="dCollapseBtn" onclick="toggleDock()">▼</button>
@@ -3199,7 +3254,7 @@ window._acAPI = {
           <div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.4.1</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.4.2</div>
     </div>
   </div>
 </div>
@@ -6035,7 +6090,8 @@ function _syncOverlayOpen(){
   const any=$('thOv').classList.contains('open')
     || $('streakOv').classList.contains('open')
     || $('resetOv')?.style.display==='flex'
-    || $('accountOv')?.classList.contains('open');
+    || $('accountOv')?.classList.contains('open')
+    || $('changelogOv')?.classList.contains('open');
   document.body.classList.toggle('overlay-open', !!any);
 }
 function openTheme(){
@@ -6195,6 +6251,7 @@ document.addEventListener('keydown',e=>{
     if($('thOv').classList.contains('open')){openTheme();return;}
     if($('streakOv').classList.contains('open')){closeStreak();return;}
     if($('accountOv')?.classList.contains('open')){closeAccount();return;}
+    if($('changelogOv')?.classList.contains('open')){closeChangelog();return;}
   }
 });
 $('addName').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
@@ -6798,6 +6855,92 @@ if (typeof window._pendingAuthUser !== 'undefined') {
 function openAccount()  { $('accountOv').classList.add('open');    _syncOverlayOpen(); }
 function closeAccount() { $('accountOv').classList.remove('open'); _syncOverlayOpen(); }
 function acOvCk(e)      { if (e.target === $('accountOv')) closeAccount(); }
+
+// ═══════════════════════════════════════════════════
+// VERSION CHANGELOG POPUP
+// バージョンが変わったときに更新内容を表示する
+// ═══════════════════════════════════════════════════
+const _CURRENT_VERSION = 'v1.4.2';
+
+// ── 変更履歴データ ──
+// 新バージョンをリリースするたびにここに追記する
+const _CHANGELOG = {
+  'v1.4.2': {
+    groups: [
+      {
+        label: 'ユーザー機能',
+        items: [
+          { icon: '⋮', text: 'ユーザーごとに「⋮」ボタンを追加', sub: 'オンラインリストで他ユーザーのプロフィールを開けるようになりました' },
+          { icon: '📝', text: '自己紹介を設定できるように', sub: 'アカウント設定から自己紹介（100文字）を書いてプロフィールに表示できます' },
+          { icon: '👤', text: 'プロフィールに自己紹介を表示', sub: '他ユーザーのプロフィールポップアップに自己紹介が表示されます' },
+        ]
+      },
+      {
+        label: 'アカウント設定',
+        items: [
+          { icon: '🔒', text: 'パスワード変更機能を追加', sub: 'メール/パスワードでログイン中のユーザーはアカウント設定から変更できます' },
+          { icon: '✏️', text: '名前変更ボタンのサイズを調整', sub: 'より押しやすいレイアウトに変更しました' },
+        ]
+      },
+    ]
+  },
+  'v1.4.1': {
+    groups: [
+      {
+        label: '改善',
+        items: [
+          { icon: '🌐', text: 'オンラインシートの表示改善', sub: 'ユーザーリストのUIを整理しました' },
+        ]
+      }
+    ]
+  },
+};
+
+function _buildChangelogHTML(version) {
+  const cl = _CHANGELOG[version];
+  if (!cl) return '<div style="font-family:var(--jp);font-size:13px;color:var(--ts);padding:8px 0">このバージョンの変更内容はありません。</div>';
+  let html = '';
+  (cl.groups || []).forEach(g => {
+    html += `<div class="clGroup">`;
+    if (g.label) html += `<div class="clGroupLabel">${g.label}</div>`;
+    (g.items || []).forEach(item => {
+      html += `<div class="clItem">
+        <div class="clItemIcon">${item.icon}</div>
+        <div><div class="clItemText">${item.text}</div>${item.sub ? `<div class="clItemSub">${item.sub}</div>` : ''}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  return html;
+}
+
+function openChangelog(version) {
+  const v = version || _CURRENT_VERSION;
+  if ($('clVersionBadge')) $('clVersionBadge').textContent = v;
+  if ($('clBody')) $('clBody').innerHTML = _buildChangelogHTML(v);
+  $('changelogOv').classList.add('open');
+  _syncOverlayOpen();
+}
+
+function closeChangelog() {
+  $('changelogOv').classList.remove('open');
+  _syncOverlayOpen();
+}
+
+// ── 起動時チェック: バージョンが変わっていたら表示 ──
+(function _checkVersionUpdate() {
+  const _KEY = '_sched_last_ver';
+  let lastVer = '';
+  try { lastVer = localStorage.getItem(_KEY) || ''; } catch {}
+  if (lastVer !== _CURRENT_VERSION) {
+    try { localStorage.setItem(_KEY, _CURRENT_VERSION); } catch {}
+    // 初回起動（lastVerが空）はポップアップを出さない
+    if (lastVer) {
+      // DOMが安定してから表示（init()完了後）
+      setTimeout(() => openChangelog(_CURRENT_VERSION), 1200);
+    }
+  }
+})();
 function acSwitchTab(t) {
   $('acTabLogin').classList.toggle('on', t === 'login');
   $('acTabRegister').classList.toggle('on', t === 'register');
