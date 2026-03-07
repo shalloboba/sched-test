@@ -1,4 +1,4 @@
-const CACHE_NAME = "sched-v20260306";
+const CACHE_NAME = "sched-v1.4.2";
 
 const urlsToCache = [
   "/sched-test/index.html",
@@ -64,5 +64,6 @@ self.addEventListener("fetch", event => {
     )
   );
 });
+
 
 
