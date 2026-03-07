@@ -1897,6 +1897,11 @@ input.tIn{font-size:11px;padding:5px 7px}
 .onlinePopupNameText{font-family:var(--mono);font-size:10px;color:var(--tp);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
 .onlinePopupNameText.self{color:var(--ac)}
 .onlinePopupYou{font-family:var(--mono);font-size:8px;color:var(--ac);opacity:.7;letter-spacing:1px;flex-shrink:0}
+/* ── オンラインポップアップ / シート アバター ── */
+.onlinePopupAvatar{width:18px;height:18px;border-radius:50%;flex-shrink:0;overflow:hidden;background:var(--ac2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--bg);font-family:var(--ui)}
+.onlinePopupAvatar img{width:100%;height:100%;object-fit:cover;display:block}
+.onlineSheetAvatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;overflow:hidden;background:var(--ac2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--bg);font-family:var(--ui)}
+.onlineSheetAvatar img{width:100%;height:100%;object-fit:cover;display:block}
 /* モバイルシート専用スタイル */
 .onlineSheetSummary{display:flex;gap:10px;margin-bottom:16px}
 .onlineSheetSummaryCard{flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r);padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -2028,7 +2033,16 @@ window._acAPI = {
   // アバター削除（StorageからもAuth profileからも削除）
   deleteAvatar: async (uid) => {
     try { await deleteObject(storRef(stor, `avatars/${uid}`)); } catch {}
-    if (auth.currentUser) await updateProfile(auth.currentUser, { photoURL: null });
+    if (auth.currentUser) {
+      // Firebase Auth では photoURL: null が反映されない場合があるため "" で明示的にクリア
+      await updateProfile(auth.currentUser, { photoURL: '' });
+      // reload() でサーバーから再取得してIndexedDB永続化を確実に
+      try { await auth.currentUser.reload(); } catch {}
+      // localStorage キャッシュも削除
+      try { localStorage.removeItem('_sched_av_' + uid); } catch {}
+      // _acUser の参照を即時反映
+      if (window._acUser) window._acUser = auth.currentUser;
+    }
   },
   // アバター画像アップロード（Canvas で 128×128 JPEG に圧縮してから保存）
   uploadAvatar: async (uid, file) => {
@@ -2037,24 +2051,52 @@ window._acAPI = {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        URL.revokeObjectURL(url);
-        const s = Math.min(img.width, img.height);
-        const sx = (img.width  - s) / 2, sy = (img.height - s) / 2;
+        // naturalWidth が 0 の場合はフォーマット非対応
+        if (!img.naturalWidth || !img.naturalHeight) {
+          URL.revokeObjectURL(url);
+          rej(new Error('image format not supported'));
+          return;
+        }
+        const s = Math.min(img.naturalWidth, img.naturalHeight);
+        const sx = (img.naturalWidth  - s) / 2, sy = (img.naturalHeight - s) / 2;
         const c = document.createElement('canvas'); c.width = MAX; c.height = MAX;
-        c.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, MAX, MAX);
-        c.toBlob(b => b ? res(b) : rej(new Error('canvas toBlob failed')), 'image/jpeg', 0.72);
+        const ctx = c.getContext('2d');
+        if (!ctx) { URL.revokeObjectURL(url); rej(new Error('canvas not available')); return; }
+        ctx.drawImage(img, sx, sy, s, s, 0, 0, MAX, MAX);
+        // revokeObjectURL は toBlob 完了後に呼ぶ（描画中に解放しない）
+        c.toBlob(b => {
+          URL.revokeObjectURL(url);
+          b ? res(b) : rej(new Error('canvas toBlob failed'));
+        }, 'image/jpeg', 0.85);
       };
-      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image load failed')); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('画像を読み込めませんでした。対応形式: JPEG, PNG, GIF, WebP')); };
       img.src = url;
     });
     const r = storRef(stor, `avatars/${uid}`);
     await uploadBytes(r, blob, { contentType: 'image/jpeg', cacheControl: 'public,max-age=31536000' });
     const photoURL = await getDownloadURL(r);
+    // ① Firebase Auth プロフィールを更新
     await updateProfile(auth.currentUser, { photoURL });
+    // ② reload() でサーバーからプロフィールを再取得 → IndexedDB 永続化を確実に
+    try { await auth.currentUser.reload(); } catch {}
+    // ③ localStorage にもキャッシュ（Firebase Auth の永続化が失敗した場合のフォールバック）
+    try { localStorage.setItem('_sched_av_' + uid, photoURL); } catch {}
+    // ④ window._acUser を最新の auth.currentUser に同期（reload() 後の参照を取得）
+    if (window._acUser) window._acUser = auth.currentUser;
     return photoURL;
   },
   // 現在ユーザーのプロバイダ一覧（google.com / password など）
   getProviders: () => { const u=auth.currentUser; return u ? u.providerData.map(p=>p.providerId) : []; },
+  // localStorage キャッシュから photoURL を Firebase Auth に再設定（リロード後の復元用）
+  _restorePhoto: async (photoURL) => {
+    const u = auth.currentUser;
+    if (!u || u.photoURL) return; // 既に設定済みなら不要
+    try {
+      await updateProfile(u, { photoURL });
+      try { await u.reload(); } catch {}
+      if (window._acUser) window._acUser = auth.currentUser;
+    } catch {}
+  },
 };
 
   // ══════════════════════════════════════════════════════════════
@@ -2111,6 +2153,8 @@ window._acAPI = {
       payload.name = window._acUser.displayName
         || window._acUser.email?.split('@')[0]
         || 'User';
+      // アバター画像URL（設定されている場合のみ）
+      if (window._acUser.photoURL) payload.photoURL = window._acUser.photoURL;
     }
     return set(_presRef, payload).catch(e => console.error("presence write error:", e));
   };
@@ -2119,8 +2163,8 @@ window._acAPI = {
   Object.defineProperty(window, '_isPrimaryTab', { get: () => _isPrimary });
 
   // ── オンラインカウント更新（共通処理）──
-  function _applyOnlineCount(n, loggedIn, guest, names) {
-    window._onlineDetail = { total: n, loggedIn, guest, names: names || [] };
+  function _applyOnlineCount(n, loggedIn, guest, names, photoURLs) {
+    window._onlineDetail = { total: n, loggedIn, guest, names: names || [], photoURLs: photoURLs || {} };
     if (typeof window._setOnlineCount === 'function') {
       window._setOnlineCount(n);
     } else {
@@ -2158,9 +2202,11 @@ window._acAPI = {
       const guest = n - loggedIn;
       // ログイン済みユーザーの名前一覧（重複除去）
       const names = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
-      _applyOnlineCount(n, loggedIn, guest, names);
+      // アバターURL map: uid → photoURL
+      const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
+      _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
       // 他タブにもカウント＋名前リストをブロードキャスト
-      if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names }); } catch {} }
+      if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs }); } catch {} }
     });
   }
 
@@ -2188,8 +2234,9 @@ window._acAPI = {
                 const loggedIn = loggedEntries.length;
                 const guest = n - loggedIn;
                 const names = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
-                _applyOnlineCount(n, loggedIn, guest, names);
-                if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names }); } catch {} }
+                const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
+                _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
+                if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs }); } catch {} }
               });
             }
           }
@@ -2197,8 +2244,8 @@ window._acAPI = {
       } else if (e.data?.type === 'ONLINE_COUNT') {
         // プライマリからオンラインカウントを受け取る（非プライマリ用）
         if (!_isPrimary) {
-          const { n, loggedIn, guest, names } = e.data;
-          _applyOnlineCount(n, loggedIn, guest, names);
+          const { n, loggedIn, guest, names, photoURLs } = e.data;
+          _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
         }
       }
     };
@@ -2390,7 +2437,7 @@ window._acAPI = {
       </div>
       <button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)">♪</button>
       <button class="ib" onclick="openTheme()" title="テーマ">◐</button>
-      <button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント (クラウド同期)"><span id="ibAccountEmoji">👤</span><img id="ibAccountImg" alt="avatar" style="display:none;width:22px;height:22px;border-radius:50%;object-fit:cover"></button>
+      <button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント (クラウド同期)" style="overflow:hidden;padding:0"><span id="ibAccountEmoji" style="pointer-events:none">👤</span><img id="ibAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"></button>
       <button class="ib" onclick="showDonate()" title="サポート">♥</button>
     </div>
   </header>
@@ -2405,7 +2452,7 @@ window._acAPI = {
 <!-- DOCK -->
 <div id="dock" class="pos-bottom">
   <div id="dockBar">
-    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.3.7</span>
+    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.3.9</span>
     <div class="dGrip"></div>
     <div class="dRight">
       <button class="dActB" id="dCollapseBtn" onclick="toggleDock()">▼</button>
@@ -3055,7 +3102,7 @@ window._acAPI = {
           <div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.3.7</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.3.9</div>
     </div>
   </div>
 </div>
@@ -6235,7 +6282,6 @@ window.addEventListener('appinstalled',()=>{toast('✓ '+T('pwaInstall'));_defer
 // ここで即座に適用される
 window._setOnlineCount = (function() {
   let _lastN = -1;   // 前回値キャッシュ（同じ値での再描画を防ぐ）
-  let _animT = null; // アニメーション中のタイマーID
 
   function _applyBadge(badge, numEl, n, isMobile) {
     if (!badge || !numEl) return;
@@ -6244,15 +6290,18 @@ window._setOnlineCount = (function() {
     badge.classList.toggle('solo', n <= 1);
 
     // 数値変更アニメーション（前回値と異なる場合のみ）
+    // 注意: _animT を要素ごとに独立させることで、デスクトップ/モバイル両方が
+    //       正しく更新されるバグを修正（共有タイマーだと後続呼び出しが前の
+    //       タイマーをキャンセルし、最初の要素の数値が消えてしまう問題）
     const prev = parseInt(numEl.textContent, 10) || 0;
     if (prev !== n) {
       numEl.classList.add('changing');
-      // 前のタイマーがあればクリア（高頻度更新時のチラつき防止）
-      if (_animT) { clearTimeout(_animT); _animT = null; }
-      _animT = setTimeout(() => {
+      // 要素ごとのタイマーを使用（window.setTimeout で独立管理）
+      if (numEl._animT) { clearTimeout(numEl._animT); }
+      numEl._animT = setTimeout(() => {
         numEl.textContent = n;
         numEl.classList.remove('changing');
-        _animT = null;
+        numEl._animT = null;
       }, 200);
     }
 
@@ -6308,12 +6357,22 @@ function _buildPopupHTML(d) {
     const selfName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
     const labelYou  = lang === 'en' ? 'you' : lang === 'zh' ? '你' : lang === 'ko' ? '나' : 'あなた';
     const labelOnline = lang === 'en' ? 'Now online' : lang === 'zh' ? '当前在线' : lang === 'ko' ? '접속 중' : 'オンライン中';
+    const photoURLs = d.photoURLs || {};
     html += `<div class="onlinePopupNames">`;
     html += `<div class="onlinePopupNamesLabel">${labelOnline}</div>`;
     names.forEach(name => {
       const isSelf = name === selfName;
+      // アバター: 自分のアイコンは window._acUser.photoURL、他者は presenceのphotoURLs から逆引き
+      let avatarHTML = '';
+      const selfPhoto = isSelf ? (window._acUser.photoURL || null) : null;
+      // photoURLs は uid→URL だが name→URL の逆引きはできないので自分以外は頭文字表示
+      if (selfPhoto) {
+        avatarHTML = `<div class="onlinePopupAvatar"><img src="${_escapeHTML(selfPhoto)}" alt="" onerror="this.parentElement.textContent='${_escapeHTML(name[0]||'?').toUpperCase()}'"></div>`;
+      } else {
+        avatarHTML = `<div class="onlinePopupAvatar">${_escapeHTML((name[0]||'?').toUpperCase())}</div>`;
+      }
       html += `<div class="onlinePopupNameRow">
-        <span class="onlinePopupDot logged" style="flex-shrink:0"></span>
+        ${avatarHTML}
         <span class="onlinePopupNameText${isSelf ? ' self' : ''}">${_escapeHTML(name)}</span>
         ${isSelf ? `<span class="onlinePopupYou">${labelYou}</span>` : ''}
       </div>`;
@@ -6353,13 +6412,21 @@ function _buildSheetHTML(d) {
   const names = d.names || [];
   if (window._acUser && names.length > 0) {
     const selfName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
+    const photoURLs = d.photoURLs || {};
     // 自分を先頭に並べる
     const sorted = [...names].sort((a, b) => (a === selfName ? -1 : b === selfName ? 1 : 0));
     html += `<div class="onlineSheetDivider">${labelOnline}</div>`;
     sorted.forEach(name => {
       const isSelf = name === selfName;
+      const selfPhoto = isSelf ? (window._acUser.photoURL || null) : null;
+      let avatarHTML = '';
+      if (selfPhoto) {
+        avatarHTML = `<div class="onlineSheetAvatar"><img src="${_escapeHTML(selfPhoto)}" alt="" onerror="this.parentElement.textContent='${_escapeHTML((name[0]||'?').toUpperCase())}'"></div>`;
+      } else {
+        avatarHTML = `<div class="onlineSheetAvatar">${_escapeHTML((name[0]||'?').toUpperCase())}</div>`;
+      }
       html += `<div class="onlineSheetNameRow${isSelf ? ' self' : ''}">
-        <span class="onlineSheetDot"></span>
+        ${avatarHTML}
         <span class="onlineSheetName${isSelf ? ' self' : ''}">${_escapeHTML(name)}</span>
         ${isSelf ? `<span class="onlineSheetYouBadge">${labelYou}</span>` : ''}
       </div>`;
@@ -6470,8 +6537,21 @@ window._onAuthChange = function(user) {
     const name = user.displayName || user.email?.split('@')[0] || 'User';
     if ($('acDisplayName')) $('acDisplayName').textContent = name;
     if ($('acEmail'))       $('acEmail').textContent       = user.email || '';
-    // アバター・全箇所アイコン一括更新（アカウントパネル + トップバー + スマホメニュー）
-    _updateAllAvatarUI(user.photoURL || null);
+    // アバター: Firebase Auth の photoURL を使用。なければ localStorage キャッシュで補完
+    let resolvedPhotoURL = user.photoURL || null;
+    if (!resolvedPhotoURL) {
+      try {
+        const cached = localStorage.getItem('_sched_av_' + user.uid);
+        if (cached) {
+          resolvedPhotoURL = cached;
+          // Firebase Auth にも再設定（非同期・エラー無視）
+          if (window._acAPI && window._acAPI._restorePhoto) {
+            window._acAPI._restorePhoto(cached);
+          }
+        }
+      } catch {}
+    }
+    _updateAllAvatarUI(resolvedPhotoURL);
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
     // 表示名入力欄に現在の名前をプリセット
     if ($('acNewName')) $('acNewName').value = user.displayName || '';
@@ -6769,16 +6849,22 @@ function _updateAllAvatarUI(photoURL) {
   const delBtn = $('acAvatarDelBtn');
   if (delBtn) delBtn.style.display = photoURL ? 'flex' : 'none';
 
-  // ② トップバー ibAccount ボタン
+  // ② トップバー ibAccount ボタン — onload後に切替（ブランクフラッシュ防止）
   const ibEmoji = $('ibAccountEmoji');
   const ibImg   = $('ibAccountImg');
   if (ibEmoji && ibImg) {
     if (photoURL) {
+      // 先に新URLをセットし、ロード完了後に表示切替
+      ibImg.onload  = () => { ibImg.style.display = 'block'; ibEmoji.style.display = 'none'; };
+      ibImg.onerror = () => { ibImg.style.display = 'none';  ibEmoji.style.display = ''; ibImg.onload = null; };
       ibImg.src = photoURL;
-      ibImg.onerror = () => { ibImg.style.display='none'; ibEmoji.style.display=''; };
-      ibImg.style.display = 'block';
-      ibEmoji.style.display = 'none';
+      // すでにキャッシュ済みなら onload が即時に呼ばれる場合もあるので complete チェック
+      if (ibImg.complete && ibImg.naturalWidth) {
+        ibImg.style.display = 'block'; ibEmoji.style.display = 'none';
+      }
     } else {
+      ibImg.onload = ibImg.onerror = null;
+      ibImg.src = '';
       ibImg.style.display = 'none';
       ibEmoji.style.display = '';
     }
@@ -6789,11 +6875,15 @@ function _updateAllAvatarUI(photoURL) {
   const mImg   = $('mAccountImg');
   if (mEmoji && mImg) {
     if (photoURL) {
+      mImg.onload  = () => { mImg.style.display = 'block'; mEmoji.style.display = 'none'; };
+      mImg.onerror = () => { mImg.style.display = 'none';  mEmoji.style.display = ''; mImg.onload = null; };
       mImg.src = photoURL;
-      mImg.onerror = () => { mImg.style.display='none'; mEmoji.style.display=''; };
-      mImg.style.display = 'block';
-      mEmoji.style.display = 'none';
+      if (mImg.complete && mImg.naturalWidth) {
+        mImg.style.display = 'block'; mEmoji.style.display = 'none';
+      }
     } else {
+      mImg.onload = mImg.onerror = null;
+      mImg.src = '';
       mImg.style.display = 'none';
       mEmoji.style.display = '';
     }
@@ -6807,9 +6897,15 @@ async function acDeleteAvatarUI() {
   if (btn) { btn.disabled = true; btn.textContent = '…'; }
   try {
     await window._acAPI.deleteAvatar(_acUser.uid);
-    // Firestoreからも photoURL を削除
-    try { await window._acAPI.upload(_acUser.uid, { photoURL: null }); } catch {}
+    // Firestoreからも photoURL を削除（空文字で上書き）
+    try { await window._acAPI.upload(_acUser.uid, { photoURL: '' }); } catch {}
+    // _acUser を最新状態に同期してから UI 更新
+    _acUser = window._acUser;
     _updateAllAvatarUI(null);
+    // presence も再書き込み（photoURL なし）
+    if (typeof window._writePresence === 'function' && window._isPrimaryTab) {
+      window._writePresence();
+    }
     _acMsg('acAvatarMsg','ok','✓ アイコンを削除しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
@@ -6866,8 +6962,13 @@ async function acAvatarChange(event) {
   if (avatarEl) avatarEl.innerHTML = '<span style="font-size:10px;opacity:.6">…</span>';
   try {
     const photoURL = await window._acAPI.uploadAvatar(_acUser.uid, file);
+    _acUser = window._acUser; // uploadAvatar 内で同期済みの auth.currentUser を取得
     _updateAllAvatarUI(photoURL);
     try { await window._acAPI.upload(_acUser.uid, { photoURL }); } catch {}
+    // presence を再書き込み（photoURL 付き）
+    if (typeof window._writePresence === 'function' && window._isPrimaryTab) {
+      window._writePresence();
+    }
     _acMsg('acAvatarMsg','ok','✓ アイコンを更新しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
