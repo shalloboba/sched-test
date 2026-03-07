@@ -1351,7 +1351,10 @@ body.overlay-open #dockShowBtn{opacity:0!important;pointer-events:none!important
 /* 右下通知スタック */
 #notifStack{position:fixed;bottom:14px;right:14px;z-index:200;
   display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;
-  align-items:flex-end}
+  max-width:min(320px,calc(100vw - 28px));align-items:flex-end}
+@media(max-width:768px){
+  #notifStack{bottom:calc(56px + env(safe-area-inset-bottom,0px) + 8px);right:10px;left:10px;max-width:100%;align-items:stretch}
+}
 .notifCard{
   pointer-events:auto;
   background:rgba(8,8,18,.30);border:0.5px solid rgba(255,255,255,.18);
@@ -1911,8 +1914,10 @@ input.tIn{font-size:11px;padding:5px 7px}
 .onlineSheetDivider{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--ts);text-transform:uppercase;margin-bottom:10px;opacity:.6}
 .onlineSheetNameRow{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--ra);border:1px solid var(--b1);border-radius:var(--r2);margin-bottom:6px;transition:border-color .18s}
 .onlineSheetNameRow.self{border-color:var(--acb);background:var(--ac0)}
+.onlineSheetNameRow.tappable{cursor:pointer}
+.onlineSheetNameRow.tappable:active{background:var(--ac0);border-color:var(--acb)}
 .onlineSheetTapHint{font-family:var(--mono);font-size:14px;color:var(--ts);opacity:.5;flex-shrink:0;margin-left:auto}
-.onlineSheetNameRow:not(.self):hover .onlineSheetTapHint{opacity:1;color:var(--ac)}
+.onlineSheetNameRow.tappable:hover .onlineSheetTapHint,.onlineSheetNameRow.tappable:active .onlineSheetTapHint{opacity:1;color:var(--ac)}
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 .onlineSheetDot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--ac);box-shadow:0 0 7px var(--ac4)}
 .onlineSheetName{font-family:var(--mono);font-size:13px;color:var(--tp);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2120,6 +2125,25 @@ window._acAPI = {
   //  4. onDisconnect でサーバー側クリーンアップを保証
   //  5. ゴースト防止ハートビート (4秒) + 60秒 TTL での自動削除も維持
   //  6. Firebase 未接続時も表示は "1" のままで安全
+  //
+  //  ★ Firebase RTDB Security Rules（推奨設定）★
+  //  Firebase Console > Realtime Database > Rules に以下を設定してください:
+  //  {
+  //    "rules": {
+  //      "presence": {
+  //        "$tabId": {
+  //          ".read":  "auth != null || true",
+  //          ".write": "true",
+  //          ".validate": "newData.hasChildren(['t'])
+  //                        && (!newData.hasChild('name') || newData.child('name').isString()
+  //                            && newData.child('name').val().length <= 40)
+  //                        && (!newData.hasChild('photoURL') || newData.child('photoURL').isString()
+  //                            && newData.child('photoURL').val().beginsWith('https://')
+  //                            && newData.child('photoURL').val().length <= 500)"
+  //        }
+  //      }
+  //    }
+  //  }
   // ══════════════════════════════════════════════════════════════
 
   // ── タブ固有ID & ブラウザ共有キー ──
@@ -2135,6 +2159,44 @@ window._acAPI = {
   // ── BroadcastChannel (タブ間通信) ──
   let _bc = null;
   try { _bc = new BroadcastChannel(_BCAST_CH); } catch {}
+
+  // ── 荒らし・スパム対策: sanitize 関数 ──────────────────────────
+  const _MAX_NAME_LEN   = 40;   // 表示名の最大文字数
+  const _MAX_MINUTES    = 99999; // 作業時間の上限（約1666時間）
+  const _MAX_STREAK     = 3650;  // ストリークの上限（約10年）
+  const _MAX_LEVEL_IDX  = 19;    // レベルインデックスの上限
+  const _MAX_GUESTS     = 15;    // ゲスト表示上限（水増し対策）
+
+  // 安全な photoURL か判定（https:// のみ許可）
+  function _safePhotoURL(url) {
+    if (!url || typeof url !== 'string') return '';
+    const u = url.trim();
+    // https:// のみ許可。data:, javascript:, http: など全て除外
+    if (!u.startsWith('https://')) return '';
+    // 極端に長いURLは除外（CDN URLは通常300文字以内）
+    if (u.length > 500) return '';
+    return u;
+  }
+
+  // presence エントリを 1 件サニタイズして返す
+  function _sanitizeEntry(v) {
+    if (!v || typeof v !== 'object') return null;
+    const name = typeof v.name === 'string'
+      ? v.name.replace(/[<>"'&]/g, '').slice(0, _MAX_NAME_LEN).trim() || 'User'
+      : 'User';
+    const photoURL = _safePhotoURL(v.photoURL);
+    const totalMinutes = Math.min(Math.max(0, Number(v.totalMinutes) || 0), _MAX_MINUTES);
+    const streak       = Math.min(Math.max(0, Number(v.streak)       || 0), _MAX_STREAK);
+    const levelIdx     = Math.min(Math.max(0, Number(v.levelIdx)     || 0), _MAX_LEVEL_IDX);
+    // levelIcon/levelName は HTML タグを完全除去
+    const levelIcon = typeof v.levelIcon === 'string'
+      ? v.levelIcon.replace(/<[^>]*>/g, '').slice(0, 4) || '🌱'
+      : '🌱';
+    const levelName = typeof v.levelName === 'string'
+      ? v.levelName.replace(/[<>"'&]/g, '').slice(0, 30).trim() || 'Seedling'
+      : 'Seedling';
+    return { uid: v.uid || null, name, photoURL, totalMinutes, streak, levelIdx, levelIcon, levelName };
+  }
 
   // 自分がプライマリか（Firebase へ書き込む担当か）
   let _isPrimary = false;
@@ -2157,21 +2219,23 @@ window._acAPI = {
   const _writePresence = () => {
     const payload = { t: dbServerTimestamp() };
     if (window._acUser?.uid) {
-      payload.uid  = window._acUser.uid;
-      payload.name = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
-      // photoURL: Firebase Auth → localStorage キャッシュ の順でフォールバック
-      // （Cloudinary URL は Auth に反映されない場合があるため localStorage も確認）
-      const photoURL = window._acUser.photoURL
+      payload.uid = window._acUser.uid;
+      // 送信前に name をサニタイズ（長文・HTML 荒らし対策）
+      const rawName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
+      payload.name = rawName.replace(/[<>"'&]/g, '').slice(0, _MAX_NAME_LEN).trim() || 'User';
+      // photoURL: https:// のみ送信（javascript: / data: / http: を拒否）
+      const rawURL = window._acUser.photoURL
         || (() => { try { return localStorage.getItem('_sched_av_' + window._acUser.uid) || ''; } catch { return ''; } })();
-      if (photoURL) payload.photoURL = photoURL;
+      const safeURL = _safePhotoURL(rawURL);
+      if (safeURL) payload.photoURL = safeURL;
       // ユーザー統計（タップ時プロフィール表示用）
       if (typeof window._getMyPresenceStats === 'function') {
         const stats = window._getMyPresenceStats();
-        payload.totalMinutes = stats.totalMinutes || 0;
-        payload.streak       = stats.streak       || 0;
-        payload.levelIdx     = stats.levelIdx     || 0;
-        payload.levelIcon    = stats.levelIcon    || '🌱';
-        payload.levelName    = stats.levelName    || 'Seedling';
+        payload.totalMinutes = Math.min(Math.max(0, stats.totalMinutes || 0), _MAX_MINUTES);
+        payload.streak       = Math.min(Math.max(0, stats.streak       || 0), _MAX_STREAK);
+        payload.levelIdx     = Math.min(Math.max(0, stats.levelIdx     || 0), _MAX_LEVEL_IDX);
+        payload.levelIcon    = typeof stats.levelIcon === 'string' ? stats.levelIcon.replace(/<[^>]*>/g,'').slice(0,4) || '🌱' : '🌱';
+        payload.levelName    = typeof stats.levelName === 'string' ? stats.levelName.replace(/[<>"'&]/g,'').slice(0,30).trim() || 'Seedling' : 'Seedling';
       }
     }
     return set(_presRef, payload).catch(e => console.error("presence write error:", e));
@@ -2213,20 +2277,22 @@ window._acAPI = {
   if (_isPrimary) {
     _unsubPres = onValue(_presRoot, (snap) => {
       const data = snap.val() || {};
-      const entries = Object.values(data);
-      const loggedEntries = entries.filter(v => v && v.uid);
+      const rawEntries = Object.values(data).map(_sanitizeEntry).filter(Boolean);
+      const loggedEntries = rawEntries.filter(v => v.uid);
       // 同一 uid（複数端末・タブ）は1人にカウント
       const loggedIn  = new Set(loggedEntries.map(v => v.uid)).size;
-      const guest     = entries.length - loggedEntries.length;
+      // ゲスト水増し対策: 表示上限を _MAX_GUESTS に制限
+      const guestRaw  = rawEntries.length - loggedEntries.length;
+      const guest     = Math.min(guestRaw, _MAX_GUESTS);
       const n         = loggedIn + guest;
-      const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
+      const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name])).values()];
       const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
       // uid → 全データ（プロフィール表示用）
       const users     = Object.fromEntries(
         [...new Map(loggedEntries.map(v => [v.uid, v])).values()].map(v => [v.uid, {
-          name: v.name || 'User', photoURL: v.photoURL || '',
-          totalMinutes: v.totalMinutes || 0, streak: v.streak || 0,
-          levelIdx: v.levelIdx || 0, levelIcon: v.levelIcon || '🌱', levelName: v.levelName || 'Seedling'
+          name: v.name, photoURL: v.photoURL,
+          totalMinutes: v.totalMinutes, streak: v.streak,
+          levelIdx: v.levelIdx, levelIcon: v.levelIcon, levelName: v.levelName
         }])
       );
       _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users);
@@ -2252,18 +2318,19 @@ window._acAPI = {
             if (!_unsubPres) {
               _unsubPres = onValue(_presRoot, (snap) => {
                 const data = snap.val() || {};
-                const entries = Object.values(data);
-                const loggedEntries = entries.filter(v => v && v.uid);
+                const rawEntries = Object.values(data).map(_sanitizeEntry).filter(Boolean);
+                const loggedEntries = rawEntries.filter(v => v.uid);
                 const loggedIn  = new Set(loggedEntries.map(v => v.uid)).size;
-                const guest     = entries.length - loggedEntries.length;
+                const guestRaw  = rawEntries.length - loggedEntries.length;
+                const guest     = Math.min(guestRaw, _MAX_GUESTS);
                 const n         = loggedIn + guest;
-                const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
+                const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name])).values()];
                 const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
                 const users     = Object.fromEntries(
                   [...new Map(loggedEntries.map(v => [v.uid, v])).values()].map(v => [v.uid, {
-                    name: v.name || 'User', photoURL: v.photoURL || '',
-                    totalMinutes: v.totalMinutes || 0, streak: v.streak || 0,
-                    levelIdx: v.levelIdx || 0, levelIcon: v.levelIcon || '🌱', levelName: v.levelName || 'Seedling'
+                    name: v.name, photoURL: v.photoURL,
+                    totalMinutes: v.totalMinutes, streak: v.streak,
+                    levelIdx: v.levelIdx, levelIcon: v.levelIcon, levelName: v.levelName
                   }])
                 );
                 _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users);
@@ -3851,7 +3918,31 @@ function loadS(){
   try{const v=localStorage.getItem(SK.th);if(v)Object.assign(S.theme,JSON.parse(v))}catch{}
   try{const v=localStorage.getItem(SK.ui);if(v){const u=JSON.parse(v);if(u.fw)S.fw=u.fw;if(u.dock)Object.assign(S.dock,u.dock);if(u.timerTab)S.timerTab=u.timerTab;if(u.pomoStyle)S.pomoStyle=u.pomoStyle;if(u.lang)S.lang=u.lang;}}catch{}
   try{const v=localStorage.getItem(SK.ct);if(v)S.calTasks=JSON.parse(v)}catch{}
-  try{const v=localStorage.getItem(SK.str);if(v)Object.assign(S.streak,JSON.parse(v))}catch{}
+  try{
+    const v=localStorage.getItem(SK.str);
+    if(v){
+      const raw=JSON.parse(v);
+      Object.assign(S.streak, raw);
+      // ── streak 整合性チェック（localStorage直書き改ざん防止）──
+      const today = todayKey ? todayKey() : new Date().toISOString().slice(0,10);
+      // dates: 文字列配列のみ許可・未来日付・重複を除去・上限3650日
+      if(!Array.isArray(S.streak.dates)) S.streak.dates=[];
+      S.streak.dates = [...new Set(
+        S.streak.dates.filter(d => typeof d==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= today)
+      )].slice(-3650);
+      // dailyMinutes: 各日の値を 0〜960 に制限・未来日付を除去
+      if(typeof S.streak.dailyMinutes !== 'object' || Array.isArray(S.streak.dailyMinutes))
+        S.streak.dailyMinutes={};
+      for(const [k,v2] of Object.entries(S.streak.dailyMinutes)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(k) || k > today){ delete S.streak.dailyMinutes[k]; continue; }
+        S.streak.dailyMinutes[k] = Math.min(Math.max(0, Number(v2)||0), 960);
+      }
+      // totalMinutes は dailyMinutes の合計から再計算（直書き改ざんを無効化）
+      S.streak.totalMinutes = Object.values(S.streak.dailyMinutes).reduce((a,b)=>a+(Number(b)||0),0);
+      // max は 0〜3650 の整数
+      S.streak.max = Math.min(Math.max(0, Math.floor(Number(S.streak.max)||0)), 3650);
+    }
+  }catch{}
 }
 function _lsUsageBytes(){
   // 全 localStorage キーのバイト数を概算
@@ -3903,7 +3994,13 @@ function _pruneCalTasks(){
   return pruned;
 }
 function savCT(){_pruneCalTasks();_lsSave(SK.ct,S.calTasks);_scheduleCloudSync()}
-function savStr(){_lsSave(SK.str,S.streak);_scheduleCloudSync()}
+function savStr(){
+  // 保存前に totalMinutes を dailyMinutes から再計算（コンソール書き換え防止）
+  if(typeof S.streak.dailyMinutes === 'object' && !Array.isArray(S.streak.dailyMinutes)){
+    S.streak.totalMinutes = Object.values(S.streak.dailyMinutes).reduce((a,b)=>a+(Number(b)||0),0);
+  }
+  _lsSave(SK.str,S.streak);_scheduleCloudSync();
+}
 
 let _cloudSyncTimer = null;
 let _cloudDirty     = false;
@@ -4071,11 +4168,16 @@ document.addEventListener('visibilitychange',()=>{
 });
 // Also track pomodoro completions as bonus XP
 function addPomoXP(mins){
-  const k=todayKey();
-  S.streak.dailyMinutes=S.streak.dailyMinutes||{};
-  S.streak.dailyMinutes[k]=(S.streak.dailyMinutes[k]||0)+mins;
-  S.streak.totalMinutes=(S.streak.totalMinutes||0)+mins;
-  savStr();updateLevelUI();
+  // 1回の上限: 120分（正規のポモドーロは最大でも60〜90分）
+  const safeMins = Math.min(Math.max(0, Math.floor(Number(mins) || 0)), 120);
+  if (safeMins <= 0) return;
+  const k = todayKey();
+  S.streak.dailyMinutes = S.streak.dailyMinutes || {};
+  // 1日の上限: 960分（16時間）
+  S.streak.dailyMinutes[k] = Math.min((S.streak.dailyMinutes[k] || 0) + safeMins, 960);
+  // totalMinutes は dailyMinutes の合計から再計算（localStorage直書き改ざん防止）
+  S.streak.totalMinutes = Object.values(S.streak.dailyMinutes).reduce((a, b) => a + (Number(b) || 0), 0);
+  savStr(); updateLevelUI();
 }
 
 /* ═══ UI SOUNDS — High Quality Web Audio Synthesis ═══ */
@@ -6276,6 +6378,15 @@ function renderCalM(){
 (()=>{
   let _sy=0,_sh=false;
   document.querySelectorAll('.mSheet').forEach(sheet=>{
+    // onlineSheet は closeOnlineSheet() で個別管理するためスワイプ対象外
+    if(sheet.id==='onlineSheet'){
+      sheet.addEventListener('touchstart',e=>{_sy=e.touches[0].clientY;_sh=false;},{passive:true});
+      sheet.addEventListener('touchmove',e=>{
+        const dy=e.touches[0].clientY-_sy;
+        if(dy>60&&!_sh){_sh=true;closeOnlineSheet();}
+      },{passive:true});
+      return;
+    }
     sheet.addEventListener('touchstart',e=>{_sy=e.touches[0].clientY;_sh=false;},{passive:true});
     sheet.addEventListener('touchmove',e=>{
       const dy=e.touches[0].clientY-_sy;
@@ -6366,7 +6477,7 @@ if (typeof window._pendingOnlineCount !== 'undefined') {
 }
 
 // ─── オンライン詳細ポップアップ ────────────────────────────────
-window._onlineDetail = { total: 0, loggedIn: 0, guest: 0, names: [] };
+window._onlineDetail = { total: 0, loggedIn: 0, guest: 0, names: [], photoURLs: {}, users: {} };
 let _onlinePopupOpen = false;
 
 function _buildPopupHTML(d) {
@@ -6382,28 +6493,31 @@ function _buildPopupHTML(d) {
            + `<div class="onlinePopupRow"><span class="onlinePopupDot guest"></span><span class="onlinePopupLabel">${labelGuest}</span><span>${d.guest}${unit}</span></div>`;
 
   // ── ログイン中ユーザーのみ名前リストを表示 ──
+  const users = d.users || {};
   const names = d.names || [];
   if (window._acUser && names.length > 0) {
+    const selfUid  = window._acUser.uid;
     const selfName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
-    const labelYou  = lang === 'en' ? 'you' : lang === 'zh' ? '你' : lang === 'ko' ? '나' : 'あなた';
+    const labelYou    = lang === 'en' ? 'you' : lang === 'zh' ? '你' : lang === 'ko' ? '나' : 'あなた';
     const labelOnline = lang === 'en' ? 'Now online' : lang === 'zh' ? '当前在线' : lang === 'ko' ? '접속 중' : 'オンライン中';
-    const photoURLs = d.photoURLs || {};
+    // users マップを uid→data で直接反復（名前衝突の回避）
+    const userList = Object.entries(users).map(([uid, u]) => ({ uid, ...u }));
+    // 自分を先頭に
+    userList.sort((a, b) => (a.uid === selfUid ? -1 : b.uid === selfUid ? 1 : 0));
     html += `<div class="onlinePopupNames">`;
     html += `<div class="onlinePopupNamesLabel">${labelOnline}</div>`;
-    names.forEach(name => {
-      const isSelf = name === selfName;
-      // アバター: 自分のアイコンは window._acUser.photoURL、他者は presenceのphotoURLs から逆引き
-      let avatarHTML = '';
-      const selfPhoto = isSelf ? (window._acUser.photoURL || null) : null;
-      // photoURLs は uid→URL だが name→URL の逆引きはできないので自分以外は頭文字表示
-      if (selfPhoto) {
-        avatarHTML = `<div class="onlinePopupAvatar"><img src="${_escapeHTML(selfPhoto)}" alt="" onerror="this.parentElement.textContent='${_escapeHTML(name[0]||'?').toUpperCase()}'"></div>`;
-      } else {
-        avatarHTML = `<div class="onlinePopupAvatar">${_escapeHTML((name[0]||'?').toUpperCase())}</div>`;
-      }
+    userList.forEach(u => {
+      const isSelf = u.uid === selfUid;
+      const photo = isSelf
+        ? (window._acUser.photoURL || (() => { try { return localStorage.getItem('_sched_av_' + selfUid) || ''; } catch { return ''; } })())
+        : (u.photoURL || '');
+      const initial = (u.name[0] || '?').toUpperCase();
+      const avatarInner = photo
+        ? `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'">`
+        : initial;
       html += `<div class="onlinePopupNameRow">
-        ${avatarHTML}
-        <span class="onlinePopupNameText${isSelf ? ' self' : ''}">${_escapeHTML(name)}</span>
+        <div class="onlinePopupAvatar">${avatarInner}</div>
+        <span class="onlinePopupNameText${isSelf ? ' self' : ''}">${_escapeHTML(u.name)}</span>
         ${isSelf ? `<span class="onlinePopupYou">${labelYou}</span>` : ''}
       </div>`;
     });
@@ -6424,7 +6538,7 @@ function _buildSheetHTML(d) {
   const labelYou     = lang === 'en' ? 'you'        : lang === 'zh' ? '你'      : lang === 'ko' ? '나'      : 'あなた';
   const labelLogin   = lang === 'en' ? 'Log in to see who\'s here' : lang === 'zh' ? '登录后可查看在线用户' : lang === 'ko' ? '로그인하면 접속 중인 사람을 볼 수 있어요' : 'ログインすると、今いる人を確認できます';
   const labelGuests  = lang === 'en' ? `+ ${d.guest} guest(s)` : lang === 'ko' ? `+ 게스트 ${d.guest}명` : `+ ゲスト ${d.guest}人が閲覧中`;
-  const labelTap     = lang === 'en' ? 'Tap to view profile' : lang === 'ko' ? '프로필 보기' : 'タップでプロフィール表示';
+  const labelTap     = lang === 'en' ? 'Tap to view profile' : lang === 'ko' ? '프로필 보기' : 'タップでプロフィール';
 
   let html = `<div class="onlineSheetSummary">
     <div class="onlineSheetSummaryCard">
@@ -6440,34 +6554,31 @@ function _buildSheetHTML(d) {
   const names = d.names || [];
   const users = d.users || {};
 
-  if (window._acUser && names.length > 0) {
-    const selfName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
-    // 自分を先頭に並べる
-    const sorted = [...names].sort((a, b) => (a === selfName ? -1 : b === selfName ? 1 : 0));
+  if (window._acUser && Object.keys(users).length > 0) {
+    const selfUid = window._acUser.uid;
+    const userList = Object.entries(users).map(([uid, u]) => ({ uid, ...u }));
+    userList.sort((a, b) => (a.uid === selfUid ? -1 : b.uid === selfUid ? 1 : 0));
     html += `<div class="onlineSheetDivider">${labelOnline}</div>`;
-    sorted.forEach(name => {
-      const isSelf = name === selfName;
-      // uid を名前から逆引き（users マップ活用）
-      const uid = Object.keys(users).find(k => users[k].name === name) || '';
-      const udata = users[uid] || {};
-      // アバター: 自分は localStorage も確認、他者は presence の photoURL
-      const myPhoto = isSelf
-        ? (window._acUser.photoURL || (() => { try { return localStorage.getItem('_sched_av_' + window._acUser.uid) || ''; } catch { return ''; } })())
-        : (udata.photoURL || '');
-      const avatarInner = myPhoto
-        ? `<img src="${_escapeHTML(myPhoto)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='${_escapeHTML((name[0]||'?').toUpperCase())}';">`
-        : _escapeHTML((name[0]||'?').toUpperCase());
-      const clickAttr = !isSelf && uid ? `onclick="showUserProfile('${_escapeHTML(uid)}')" title="${labelTap}" style="cursor:pointer"` : '';
-      html += `<div class="onlineSheetNameRow${isSelf ? ' self' : ''}" ${clickAttr}>
+    userList.forEach(u => {
+      const isSelf = u.uid === selfUid;
+      const photo = isSelf
+        ? (window._acUser.photoURL || (() => { try { return localStorage.getItem('_sched_av_' + selfUid) || ''; } catch { return ''; } })())
+        : (u.photoURL || '');
+      const initial = (u.name[0] || '?').toUpperCase();
+      const avatarInner = photo
+        ? `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'">`
+        : initial;
+      const tapable = !isSelf;
+      html += `<div class="onlineSheetNameRow${isSelf ? ' self' : ''}${tapable ? ' tappable' : ''}" ${tapable ? `data-uid="${u.uid}" title="${labelTap}"` : ''}>
         <div class="onlineSheetAvatar">${avatarInner}</div>
-        <span class="onlineSheetName${isSelf ? ' self' : ''}">${_escapeHTML(name)}</span>
+        <span class="onlineSheetName${isSelf ? ' self' : ''}">${_escapeHTML(u.name)}</span>
         ${isSelf ? `<span class="onlineSheetYouBadge">${labelYou}</span>` : `<span class="onlineSheetTapHint">›</span>`}
       </div>`;
     });
     if (d.guest > 0) html += `<div class="onlineSheetGuestNote">👤 ${labelGuests}</div>`;
   } else if (!window._acUser) {
     html += `<div class="onlineSheetEmpty">🔒 ${labelLogin}</div>`;
-  } else if (names.length === 0 && d.loggedIn === 0) {
+  } else {
     const labelAlone = lang === 'en' ? 'Just you right now' : lang === 'zh' ? '目前只有你' : lang === 'ko' ? '지금은 혼자 사용 중' : '今はあなただけです';
     html += `<div class="onlineSheetEmpty">${labelAlone}</div>`;
   }
@@ -6477,11 +6588,19 @@ function _buildSheetHTML(d) {
 function openOnlineSheet() {
   const body = $('onlineSheetBody');
   if (!body) return;
-  // 最新データで描画（スマホでも必ずリフレッシュ）
-  body.innerHTML = _buildSheetHTML(window._onlineDetail || { total:1, loggedIn:0, guest:1, names:[], photoURLs:{}, users:{} });
+  const detail = window._onlineDetail || { total:1, loggedIn:0, guest:1, names:[], photoURLs:{}, users:{} };
+  body.innerHTML = _buildSheetHTML(detail);
+
+  // イベント委任: data-uid を持つ行タップでプロフィール表示
+  // （innerHTML 置換後も機能するよう body 要素にリスナーを付け直す）
+  body.onclick = (e) => {
+    const row = e.target.closest('[data-uid]');
+    if (row) showUserProfile(row.dataset.uid);
+  };
+
   const ov = $('onlineSheetOv');
   const sh = $('onlineSheet');
-  if (ov) { ov.style.display = 'block'; }
+  if (ov) ov.style.display = 'block';
   requestAnimationFrame(() => { if (sh) sh.classList.add('open'); });
 }
 
@@ -6511,32 +6630,37 @@ function showUserProfile(uid) {
 
   const pop = document.createElement('div');
   pop.id = '_userProfilePop';
-  pop.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)';
-  pop.innerHTML = `
-    <div style="background:var(--sf);border:1px solid var(--b2);border-radius:18px 18px 0 0;width:100%;max-width:420px;padding:24px 20px 32px;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1)">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
-        <div style="width:52px;height:52px;border-radius:50%;background:var(--ac2);flex-shrink:0;overflow:hidden;position:relative">${photoHTML}${fallbackHTML}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:var(--ui);font-size:15px;font-weight:800;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escapeHTML(u.name)}</div>
-          <div style="font-family:var(--mono);font-size:10px;color:var(--ac);margin-top:2px">${_escapeHTML(u.levelIcon)} ${_escapeHTML(u.levelName)} · Lv.${(u.levelIdx||0)+1}</div>
-        </div>
+  pop.style.cssText = 'position:fixed;inset:0;z-index:50000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'background:var(--sf);border:1px solid var(--b2);border-radius:18px 18px 0 0;width:100%;max-width:420px;padding:24px 20px 32px;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1)';
+  inner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--ac2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--bg);font-family:var(--ui)">${photoHTML}${fallbackHTML}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--ui);font-size:15px;font-weight:800;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escapeHTML(u.name)}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--ac);margin-top:2px">${_escapeHTML(u.levelIcon)} ${_escapeHTML(u.levelName)} · Lv.${(u.levelIdx||0)+1}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
-          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ac)">${(u.levelIdx||0)+1}</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelLevel}</div>
-        </div>
-        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
-          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${timeStr}</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelWork}</div>
-        </div>
-        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
-          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${u.streak||0}<span style="font-size:10px">${labelDay}</span></div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelStreak}</div>
-        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ac)">${(u.levelIdx||0)+1}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelLevel}</div>
       </div>
-      <button onclick="document.getElementById('_userProfilePop').remove()" style="width:100%;padding:11px;border-radius:10px;background:var(--b1);border:1px solid var(--b2);color:var(--ts);font-family:var(--mono);font-size:11px;cursor:pointer">${labelClose}</button>
+      <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${timeStr}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelWork}</div>
+      </div>
+      <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${u.streak||0}<span style="font-size:10px">${labelDay}</span></div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelStreak}</div>
+      </div>
     </div>`;
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = labelClose;
+  closeBtn.style.cssText = 'width:100%;padding:11px;border-radius:10px;background:var(--b1);border:1px solid var(--b2);color:var(--ts);font-family:var(--mono);font-size:11px;cursor:pointer';
+  closeBtn.addEventListener('click', () => pop.remove());
+  inner.appendChild(closeBtn);
+  pop.appendChild(inner);
   pop.addEventListener('click', e => { if (e.target === pop) pop.remove(); });
   document.body.appendChild(pop);
 }
@@ -6545,6 +6669,8 @@ function closeOnlineSheet() {
   const ov = $('onlineSheetOv');
   if (sh) sh.classList.remove('open');
   if (ov) setTimeout(() => { if (!$('onlineSheet')?.classList.contains('open')) ov.style.display = 'none'; }, 420);
+  // プロフィールポップアップも閉じる
+  document.getElementById('_userProfilePop')?.remove();
 }
 
 function toggleOnlinePopup() {
@@ -6607,9 +6733,7 @@ window.addStreakDays = function(n){
   S.streak.max=Math.max(S.streak.max||0,streak);_streakCache={key:'',val:0};
   savStr();updateStreakBadge();updateLevelUI();
 };
-window.addXP = function(mins){
-  addPomoXP(mins);
-};
+// window.addXP は外部から呼ばれる必要がないため非公開
 
 /* ═══ ACCOUNT JS ═══ */
 let _acUser = null;
@@ -6657,7 +6781,7 @@ window._onAuthChange = function(user) {
     if (btn) btn.classList.remove('logged-in');
     const loggedEl = $('acLoggedIn'); if (loggedEl) loggedEl.style.display = 'none';
     const guestEl  = $('acGuest');    if (guestEl)  guestEl.style.display  = 'block';
-    if ($('mAccountSub'))   $('mAccountSub').textContent   = 'ログイン・クラウド保存';
+    if ($('mAccountSub')) $('mAccountSub').textContent = (typeof T === 'function' ? T('moreAccountSub') : null) || 'ログイン・クラウド保存';
     _updateAllAvatarUI(null); // アイコンをリセット
     if (_cloudSyncTimer) { clearTimeout(_cloudSyncTimer); _cloudSyncTimer = null; }
     // サインアウト後: presenceをゲスト扱いに即更新（uid/nameのゴースト防止）
@@ -6973,7 +7097,9 @@ async function acDeleteAvatarUI() {
   if (btn) { btn.disabled = true; btn.textContent = '…'; }
   try {
     await window._acAPI.deleteAvatar(_acUser.uid);
-    _acUser = window._acUser;
+    // window._acUser はモジュール内の onAuthStateChanged で更新されるが
+    // deleteAvatar は Auth の reload を行うため即時反映されない場合がある
+    // → 明示的に null を渡して UI をクリアする
     _updateAllAvatarUI(null);
     if (typeof window._writePresence === 'function' && window._isPrimaryTab) window._writePresence();
     _acMsg('acAvatarMsg','ok','✓ アイコンを削除しました');
@@ -7042,17 +7168,16 @@ async function acAvatarChange(event) {
     const photoURL = await window._acAPI.uploadAvatar(uid, file);
     URL.revokeObjectURL(localURL);
     _updateAllAvatarUI(photoURL);
-    _avatarUploading = false;
     if (typeof window._writePresence === 'function' && window._isPrimaryTab) window._writePresence();
     _acMsg('acAvatarMsg','ok','✓ アイコンを更新しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
     URL.revokeObjectURL(localURL);
-    _avatarUploading = false;
     _updateAllAvatarUI(prevPhotoURL);
     console.error('[Avatar Upload Error]', e.message);
     _acMsg('acAvatarMsg','err','アップロード失敗: ' + (e.message || '再試行してください'));
   } finally {
+    _avatarUploading = false;
     if ($('acAvatarInput')) $('acAvatarInput').value = '';
   }
 }
@@ -7110,12 +7235,12 @@ async function syncToCloud() {
   if (!navigator.onLine) { toast('⚡ オフライン中です。接続を確認してください'); return; }
   if (_cloudSyncTimer) { clearTimeout(_cloudSyncTimer); _cloudSyncTimer = null; }
   const st = $('acUploadStatus'); if (st) st.textContent = '保存中...';
-  $('acSyncMsg').className = 'acMsg';
+  const sm = $('acSyncMsg'); if (sm) sm.className = 'acMsg';
   _cloudDirty = true;
   await _doCloudSync();
   if (!_cloudDirty) {
     _acMsg('acSyncMsg','ok','✓ '+new Date().toLocaleTimeString('ja-JP')+' に保存しました');
-    setTimeout(()=>{ $('acSyncMsg').className='acMsg'; if(st)st.textContent='今すぐ同期'; }, 4000);
+    setTimeout(() => { const s2=$('acSyncMsg'); if(s2)s2.className='acMsg'; if(st)st.textContent='今すぐ同期'; }, 4000);
   } else {
     if (st) st.textContent = '今すぐ同期';
     _acMsg('acSyncMsg','err','保存に失敗しました');
@@ -7131,12 +7256,14 @@ async function syncFromCloud() {
     S.lang==='ko' ? '클라우드에서 복원하시겠습니까？로컬 데이터가 덮어씌워집니다。' :
     'クラウドからデータを復元しますか？\nローカルデータが上書きされます。'
   );
-  if(!confirm(confirmMsg)) return;
-  const st = $('acDownloadStatus'); st.textContent = '復元中...';
-  $('acSyncMsg').className = 'acMsg';
+  if (!confirm(confirmMsg)) return;
+  const st = $('acDownloadStatus');
+  const sm = $('acSyncMsg');
+  if (st) st.textContent = '復元中...';
+  if (sm) sm.className = 'acMsg';
   try {
     const data = await window._acAPI.download(_acUser.uid);
-    if (!data) { _acMsg('acSyncMsg','err','クラウドにデータが見つかりません'); st.textContent='復元する'; return; }
+    if (!data) { _acMsg('acSyncMsg','err','クラウドにデータが見つかりません'); if (st) st.textContent='復元する'; return; }
     if (data.tasks)    { S.tasks    = data.tasks;    savT(); }
     if (data.calTasks) { S.calTasks = data.calTasks; savCT(); }
     if (data.streak)   { Object.assign(S.streak, data.streak); savStr(); }
@@ -7148,11 +7275,14 @@ async function syncFromCloud() {
     if (data.pomoStyle){ S.pomoStyle = data.pomoStyle; setPomoStyle(data.pomoStyle); }
     savUI();
     _invalidateTaskCache(); renderT(); renderCal(); updateStreakBadge(); updateLevelUI();
-    st.textContent = '復元する';
+    if (st) st.textContent = '復元する';
     _acMsg('acSyncMsg','ok','✓ クラウドからデータを復元しました');
-    setTimeout(()=>{ $('acSyncMsg').className='acMsg'; }, 4000);
+    setTimeout(() => { const s2 = $('acSyncMsg'); if (s2) s2.className = 'acMsg'; }, 4000);
     toast('✓ クラウドからデータを復元しました');
-  } catch(e) { st.textContent='復元する'; _acMsg('acSyncMsg','err','復元失敗: '+e.message); }
+  } catch(e) {
+    if (st) st.textContent = '復元する';
+    _acMsg('acSyncMsg','err','復元失敗: ' + e.message);
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -7187,7 +7317,10 @@ async function syncFromCloud() {
 // ── presence 統計エクスポート（Firebase モジュールから参照）──────
 // _writePresence が window 経由で呼び出すため window に公開する
 window._getMyPresenceStats = () => {
-  const tm = S?.streak?.totalMinutes || 0;
+  // totalMinutes は dailyMinutes の合計から再計算（S.streak.totalMinutes の直書きを無視）
+  const dm = (S?.streak?.dailyMinutes && typeof S.streak.dailyMinutes === 'object')
+    ? S.streak.dailyMinutes : {};
+  const tm = Object.values(dm).reduce((a, b) => a + (Number(b) || 0), 0);
   const streak = (typeof _calcStreak === 'function') ? _calcStreak() : 0;
   const info = (typeof getLevelInfo === 'function') ? getLevelInfo(tm) : null;
   return {
@@ -7237,9 +7370,11 @@ window._getMyPresenceStats = () => {
     setTimeout(_showNextPromo, next);
   }
 
-  // ── 起動時: 4〜8秒後にまず1件表示（UIが落ち着いてから）──
+  // ── 起動時: Auth解決を待ってから表示（4〜8秒後、ログイン済みならスキップ）──
   setTimeout(() => {
-    if (window._acUser) return; // その間にログインしていたらスキップ
+    // Firebase module (defer) は通常2〜3秒で onAuthStateChanged が発火する
+    // window._acUser が null のまま（未ログイン確定）のときのみ表示
+    if (window._acUser) return;
     const p = PROMOS[Math.floor(Math.random() * PROMOS.length)];
     _shown.add(p.id);
     _pushNotif(p.id, p.icon, p.title, p.sub, _makeActionHTML(), '', 12000);
