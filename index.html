@@ -5,7 +5,7 @@
   ================================================================
   - コードに変更を加えるたびに v0.0.1 ずつバージョンを上げること
   - 大型変更はユーザーが明示したときのみマイナー/メジャーを上げる
-    例: 小変更 v1.0.6 → v1.0.7 / 大変更 v1.0.x → v1.1.0
+    例: 小変更 v1.0.6 → v1.0.7 / 大変更 v1.0.x → v1.1.1
   - バージョンを変えたら必ず以下2箇所のHTMLも同時に更新すること:
       1. id="appVersion" のテキスト (ドックバー表示)
       2. mSheetMore 内の version テキスト (スマホメニュー表示)
@@ -79,6 +79,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- YouTube リソース事前接続 (BGM読み込み高速化) -->
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://img.youtube.com">
+<link rel="dns-prefetch" href="https://www.youtube.com">
+<link rel="dns-prefetch" href="https://img.youtube.com">
+<link rel="dns-prefetch" href="https://i.ytimg.com">
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800;900&family=Noto+Sans+JP:wght@400;700&display=swap&subset=latin,japanese">
 
@@ -117,7 +123,9 @@ html{height:100%}body{height:100%;overflow:hidden}
 button,label,.bc,.ib,.dGrip,.dActB,.bgOpt,.scaleBtn,
 .ttab,.mb,.bAdd,.mnBtn,.mSheetTitle,.dBarLabel,
 #dockBar,.snap,.fw [data-d]{user-select:none;-webkit-user-select:none}
-body{font-family:var(--jp);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;font-synthesis:weight style}
+body{font-family:var(--jp);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;font-synthesis:weight style;
+  background-image:radial-gradient(ellipse 80% 60% at 20% 80%, rgba(var(--ar),var(--ag),var(--ab),.08) 0%, transparent 70%),
+                   radial-gradient(ellipse 60% 50% at 80% 20%, rgba(var(--ar),var(--ag),var(--ab),.05) 0%, transparent 60%);}
 button{font-family:var(--ui);cursor:pointer;border:none;outline:none;background:none;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-color:var(--tp)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
@@ -127,7 +135,8 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 /* CANVAS */
 #bgC,#ptC{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 #bgC{opacity:.75}#ptC{opacity:.45;z-index:1}
-@media(max-width:768px){#bgC,#ptC{display:none!important}}
+/* モバイルでもキャンバスを表示（ガラス透過のため必要） */
+@media(max-width:768px){#bgC{opacity:.6}#ptC{opacity:.35}}
 
 /* MAIN */
 #main{position:fixed;z-index:2;inset:0;display:flex;flex-direction:column}
@@ -135,10 +144,10 @@ input{font-family:var(--mono);outline:none;color:var(--tp);-webkit-text-fill-col
 /* TOPBAR */
 #topbar{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 20px;gap:20px;position:relative;
   height:52px;
-  background:rgba(4,4,12,.85);border-bottom:1px solid rgba(255,255,255,.06);
-  backdrop-filter:blur(60px) saturate(2.4);-webkit-backdrop-filter:blur(60px) saturate(2.4);
+  background:rgba(8,8,18,.25);border-bottom:0.5px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
   z-index:5;
-  box-shadow:0 1px 0 rgba(255,255,255,.05),0 4px 32px rgba(0,0,0,.5)}
+  box-shadow:0 0.5px 0 rgba(255,255,255,.18),0 1px 16px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.1)}
 .hL{position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;gap:4px;align-items:center}
 .hR{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;gap:4px;align-items:center}
 .clock-wrap{display:flex;flex-direction:column;align-items:center;cursor:default;flex-shrink:0}
@@ -714,10 +723,18 @@ body.persona-bg #streakBadge.active{
 /* Scroll containers: avoid layout thrash */
 #tScroll,#tScrollM,#tScrollW{contain:strict;will-change:scroll-position}
 .calGrid{contain:layout style}
+/* glass要素にはcontainを付けない (backdrop-filterと干渉するため) */
+#notifStack{pointer-events:none}
+/* モバイル: 不要なアニメーションを無効化してパフォーマンス向上 */
+@media(max-width:768px){
+  #midGlow{animation:none!important;will-change:auto}
+  .lvl-icon[class*="tier-"]{animation-duration:3s!important}
+}
 
-/* ── UI Scale CSS variable ── */
+/* UI Scale: bodyにzoomを適用するとbackdrop-filterが壊れるため
+   代わりに#mainとfixed要素にtransformを使用 */
 :root{--ui-scale:1}
-body{zoom:var(--ui-scale)}
+/* body{zoom} は削除 — glass要素のbackdrop-filterと干渉するため */
 
 .scaleBtn{padding:4px 9px;border-radius:6px;border:1px solid var(--b2);font-family:var(--mono);font-size:9px;color:var(--ts);cursor:pointer;transition:all .15s;background:var(--ra)}
 .scaleBtn.on{border-color:var(--ac);color:var(--ac);background:var(--ac0)}
@@ -759,20 +776,21 @@ body{zoom:var(--ui-scale)}
 
 /* DOCK */
 #dock{position:fixed;z-index:20;
-  background:rgba(4,4,12,.9);backdrop-filter:blur(60px) saturate(2.5);-webkit-backdrop-filter:blur(60px) saturate(2.5);
+  background:rgba(8,8,18,.22);
+  backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
   overflow:hidden;
   left:0;right:0;bottom:0;height:220px;
-  border-top:1px solid rgba(255,255,255,.07);
-  border-radius:18px 18px 0 0;
+  border-top:0.5px solid rgba(255,255,255,.2);
+  border-radius:24px 24px 0 0;
   display:flex;flex-direction:column;transition:transform var(--tr);
-  box-shadow:0 -1px 0 rgba(255,255,255,.06),0 -24px 80px rgba(0,0,0,.7),
-    inset 0 1px 0 rgba(255,255,255,.06);
+  box-shadow:0 -0.5px 0 rgba(255,255,255,.2),0 -8px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.16);
   will-change:transform}
 #dock.dHidden{transform:translateY(100%);pointer-events:none}
 #dockBar{flex-shrink:0;height:34px;display:flex;align-items:center;padding:0 14px;gap:8px;
-  border-bottom:1px solid rgba(255,255,255,.05);position:relative;cursor:ns-resize;user-select:none;
+  border-bottom:0.5px solid rgba(255,255,255,.1);position:relative;cursor:ns-resize;user-select:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,transparent 100%);
   transition:background .2s}
-#dockBar:hover{background:rgba(255,255,255,.02)}
+#dockBar:hover{background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.02) 100%)}
 .dGrip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:28px;height:2px;border-radius:99px;background:rgba(255,255,255,.12);pointer-events:none;
   transition:background .2s,width .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
@@ -944,10 +962,13 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 .bc:active{transform:scale(.93) translateY(0)!important;transition-duration:.08s}
 
 /* FLOATING WINDOWS */
-.fw{position:fixed;z-index:50;background:var(--gl);border:1px solid var(--b2);border-radius:var(--r);
-  backdrop-filter:blur(48px) saturate(2);
-  box-shadow:0 40px 100px rgba(0,0,0,.65),0 8px 28px rgba(0,0,0,.4),
-    inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(255,255,255,.02);
+.fw{position:fixed;z-index:50;
+  background:rgba(8,8,18,.22);
+  border:0.5px solid rgba(255,255,255,.2);border-radius:var(--r);
+  backdrop-filter:blur(28px) saturate(200%);
+  -webkit-backdrop-filter:blur(28px) saturate(200%);
+  box-shadow:0 20px 60px rgba(0,0,0,.32),0 4px 14px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.2),0 0 0 0.5px rgba(255,255,255,.08);
   display:flex;flex-direction:column;overflow:hidden;
   transition:opacity .3s,transform .32s cubic-bezier(.34,1.56,.64,1);will-change:transform}
 .fw.hidden{opacity:0;pointer-events:none;transform:scale(.88) translateY(16px)}
@@ -960,7 +981,8 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 .fw .rsw{position:absolute;bottom:0;left:0;width:8px;height:8px;cursor:sw-resize;z-index:6}
 .fw .rse{position:absolute;bottom:0;right:0;width:8px;height:8px;cursor:se-resize;z-index:6}
 .fwTb{height:34px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 12px;
-  border-bottom:1px solid rgba(255,255,255,.06);cursor:grab}
+  border-bottom:1px solid rgba(255,255,255,.08);cursor:grab;
+  background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.01) 100%)}
 .fwTb:active{cursor:grabbing}
 .fwDots{display:flex;gap:6px;flex-shrink:0}
 .fwDot{width:11px;height:11px;border-radius:50%;cursor:pointer;
@@ -977,10 +999,11 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 ══════════════════════════════════════════ */
 #bgmPanel{
   position:fixed;z-index:60;bottom:70px;left:50%;transform:translateX(-50%);
-  background:var(--gl);
-  border:1px solid var(--b2);border-radius:var(--r3);
-  backdrop-filter:blur(36px) saturate(1.5);
-  box-shadow:var(--shadow-lg);
+  background:rgba(8,8,18,.30);
+  border:0.5px solid rgba(255,255,255,.2);border-radius:var(--r3);
+  backdrop-filter:blur(28px) saturate(200%);
+  -webkit-backdrop-filter:blur(28px) saturate(200%);
+  box-shadow:0 20px 56px rgba(0,0,0,.32),0 4px 14px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.18);
   padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;
   min-width:520px;max-width:680px;
   transition:opacity .2s,transform .2s;
@@ -1014,6 +1037,13 @@ input.nIn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,
 .bgmBtns{display:flex;gap:4px;flex-wrap:wrap}
 /* Ambient Mixer */
 .ambientGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+/* Quick Mix preset grid */
+.ambPresetGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.ambPreset{padding:5px 4px;border-radius:7px;border:1px solid var(--b2);
+  font-family:var(--mono);font-size:8.5px;background:var(--ra);color:var(--ts);cursor:pointer;
+  transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.2px}
+.ambPreset.on{border-color:var(--ac);color:var(--ac);background:var(--ac0);box-shadow:0 0 8px var(--ac2)}
+.ambPreset:hover:not(.on){border-color:var(--b3);color:var(--tp);background:var(--b1)}
 .ambItem{display:flex;flex-direction:column;align-items:center;gap:3px}
 .ambBtn{width:100%;padding:5px 4px;border-radius:7px;border:1px solid var(--b2);
   font-size:14px;background:var(--ra);color:var(--ts);cursor:pointer;
@@ -1319,10 +1349,12 @@ body.overlay-open #dockShowBtn{opacity:0!important;pointer-events:none!important
   align-items:flex-end}
 .notifCard{
   pointer-events:auto;
-  background:var(--gl);border:1px solid var(--b2);
+  background:rgba(8,8,18,.30);border:0.5px solid rgba(255,255,255,.18);
   border-radius:var(--r);padding:10px 14px;
   display:flex;align-items:center;gap:10px;
-  backdrop-filter:blur(20px);box-shadow:var(--shadow);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 8px 32px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);
   animation:notifIn .3s cubic-bezier(.34,1.56,.64,1);
   transition:opacity .4s,transform .4s;
   min-width:200px;max-width:300px;
@@ -1342,10 +1374,12 @@ body.overlay-open #dockShowBtn{opacity:0!important;pointer-events:none!important
 .snap{position:fixed;z-index:99;background:var(--ac);opacity:0;pointer-events:none;transition:opacity .15s;border-radius:2px}
 #sT{top:0;left:0;right:0;height:2px}#sB{bottom:0;left:0;right:0;height:2px}#sL{top:0;bottom:0;left:0;width:2px}#sR{top:0;bottom:0;right:0;width:2px}.snap.show{opacity:.6}
 #toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(40px);
-  background:rgba(20,20,35,.95);border:1px solid var(--b3);color:var(--tp);
+  background:rgba(8,8,18,.32);border:0.5px solid rgba(255,255,255,.18);color:var(--tp);
   font-family:var(--mono);font-size:10px;font-weight:500;padding:8px 20px;border-radius:99px;
   z-index:900;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .28s;
-  letter-spacing:1px;box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);pointer-events:none;opacity:0;white-space:nowrap;backdrop-filter:blur(20px)}
+  letter-spacing:1px;box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.12);
+  pointer-events:none;opacity:0;white-space:nowrap;
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* ══════════════════════════════════════════
@@ -1389,10 +1423,11 @@ input.tIn{font-size:11px;padding:5px 7px}
    MOBILE BOTTOM NAV
 ══════════════════════════════════════════ */
 #mobileNav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:25;
-  background:var(--gl);border-top:1px solid var(--b1);backdrop-filter:blur(40px) saturate(1.9);
+  background:rgba(8,8,18,.22);border-top:0.5px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
   padding:6px 0 env(safe-area-inset-bottom,6px);
   grid-template-columns:repeat(5,1fr);
-  box-shadow:0 -1px 0 rgba(255,255,255,.06),0 -10px 40px rgba(0,0,0,.48)}
+  box-shadow:0 -0.5px 0 rgba(255,255,255,.18),0 -6px 24px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.12)}
 .mnBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   padding:8px 4px;cursor:pointer;border:none;background:none;color:var(--ts);
   font-family:var(--mono);font-size:8px;letter-spacing:.5px;
@@ -1415,9 +1450,10 @@ input.tIn{font-size:11px;padding:5px 7px}
   display:none;
   position:fixed;left:0;right:0;z-index:24;
   bottom:calc(52px + env(safe-area-inset-bottom,0px));
-  background:var(--gl);
-  border-top:1px solid rgba(255,255,255,.07);
-  backdrop-filter:blur(32px) saturate(1.8);
+  background:rgba(8,8,18,.28);
+  border-top:0.5px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(24px) saturate(200%);
+  -webkit-backdrop-filter:blur(24px) saturate(200%);
   padding:6px 12px 5px;
   cursor:pointer;
   max-height:140px;overflow:hidden;
@@ -1464,8 +1500,11 @@ input.tIn{font-size:11px;padding:5px 7px}
   opacity:.7;
 }
 .mSheet{position:fixed;left:0;right:0;bottom:0;z-index:30;
-  background:var(--sf);border-radius:24px 24px 0 0;border-top:1px solid var(--b2);
-  box-shadow:0 -28px 72px rgba(0,0,0,.68),0 -1px 0 rgba(255,255,255,.05),inset 0 1px 0 rgba(255,255,255,.07);
+  background:rgba(8,8,18,.22);border-radius:26px 26px 0 0;
+  border-top:0.5px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(28px) saturate(200%);
+  -webkit-backdrop-filter:blur(28px) saturate(200%);
+  box-shadow:0 -8px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.16);
   flex-direction:column;overflow:hidden;
   padding-bottom:env(safe-area-inset-bottom,0);max-height:88vh;
   transform:translateY(110%);transition:transform .4s cubic-bezier(.32,.72,0,1);
@@ -1823,10 +1862,57 @@ input.tIn{font-size:11px;padding:5px 7px}
 .onlinePopup{
   display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
   background:var(--gl);border:1px solid var(--b2);border-radius:var(--r2);
-  padding:10px 14px;min-width:160px;z-index:999;
+  padding:10px 14px;min-width:180px;z-index:999;
   box-shadow:var(--shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   white-space:nowrap;
 }
+/* ユーザーリストがある時は幅を広げる */
+.onlinePopup.has-users { min-width:220px; }
+/* ユーザー一覧セクションの区切り線 */
+.onlineUserDivider{
+  display:flex;align-items:center;gap:6px;
+  margin:8px 0 6px;font-family:var(--mono);font-size:8px;
+  letter-spacing:2px;color:var(--ts);text-transform:uppercase;
+}
+.onlineUserDivider::before,.onlineUserDivider::after{
+  content:'';flex:1;height:1px;background:var(--b1);
+}
+/* ユーザーリスト */
+.onlineUserList{
+  display:flex;flex-direction:column;gap:4px;
+  max-height:180px;overflow-y:auto;
+  margin-bottom:2px;
+}
+.onlineUserRow{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 2px;border-radius:6px;
+  transition:background .12s;
+}
+.onlineUserRow:hover{ background:rgba(255,255,255,.04); }
+/* アバター */
+.onlineUserAvatarWrap{
+  width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  background:var(--ac0);border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+}
+.onlineUserAvatar{ width:100%;height:100%;object-fit:cover;display:block; }
+.onlineUserAvatarFallback{
+  font-family:var(--ui);font-size:11px;font-weight:700;
+  color:var(--ac);display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
+}
+/* テキスト情報 */
+.onlineUserInfo{ display:flex;flex-direction:column;gap:1px;min-width:0; }
+.onlineUserName{
+  font-family:var(--jp);font-size:11px;font-weight:500;
+  color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;
+}
+.onlineUserLvl{
+  display:flex;align-items:center;gap:3px;
+  font-family:var(--mono);font-size:9px;color:var(--ts);
+}
+.onlineUserLvlIcon{ font-size:10px; }
+.onlineUserTierIcon{ font-size:9px; }
 .onlinePopup::before{
   content:'';position:absolute;top:-5px;left:50%;
   width:8px;height:8px;background:var(--gl);border-left:1px solid var(--b2);border-top:1px solid var(--b2);
@@ -1891,8 +1977,12 @@ input.tIn{font-size:11px;padding:5px 7px}
 .acBtn:disabled{opacity:.5;cursor:default}
 .acDivider{display:flex;align-items:center;gap:8px;margin:12px 0;color:var(--ts);font-family:var(--mono);font-size:8px;letter-spacing:2px}
 .acDivider::before,.acDivider::after{content:'';flex:1;height:1px;background:var(--b1)}
-.acUserInfo{display:flex;align-items:center;gap:12px;padding:12px;background:var(--ac0);border-radius:var(--r);border:1px solid var(--acb);margin-bottom:12px}
-.acAvatar{width:40px;height:40px;border-radius:50%;background:var(--ac2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-family:var(--ui);font-weight:900;color:var(--bg)}
+.acUserInfo{display:flex;align-items:center;gap:12px;padding:12px;background:var(--ac0);border-radius:var(--r);border:1px solid var(--acb);margin-bottom:12px;position:relative}
+.acAvatar{width:40px;height:40px;border-radius:50%;background:var(--ac2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-family:var(--ui);font-weight:900;color:var(--bg);overflow:hidden}
+.acAvatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.acAvatarWrap{position:relative;flex-shrink:0}
+.acAvatarEdit{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;opacity:0;transition:opacity .18s;pointer-events:none}
+.acAvatarWrap:hover .acAvatarEdit{opacity:1}
 .acUserName{font-family:var(--ui);font-size:14px;font-weight:700;color:var(--tp)}
 .acUserEmail{font-family:var(--mono);font-size:9px;color:var(--ts);margin-top:2px}
 .acSyncRow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--ra);border-radius:var(--r2);border:1px solid var(--b1);margin-bottom:7px;cursor:pointer;transition:all .15s}
@@ -1909,8 +1999,9 @@ input.tIn{font-size:11px;padding:5px 7px}
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, onDisconnect, set, serverTimestamp as dbServerTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, linkWithCredential, EmailAuthProvider, updatePassword as fbUpdatePassword, updateEmail as fbUpdateEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, linkWithCredential, EmailAuthProvider, updatePassword as fbUpdatePassword, updateEmail as fbUpdateEmail, sendPasswordResetEmail as fbSendPasswordReset } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getStorage, ref as storRef, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5cNpGpJRhSheF4DWm5b6O4zsGu4AhW34",
@@ -1927,6 +2018,7 @@ const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 const fdb  = getFirestore(app);
+const stor = getStorage(app);
 
 // ─── Auth / Cloud API (window経由でメインJSから呼ぶ) ───
 onAuthStateChanged(auth, user => {
@@ -1951,6 +2043,36 @@ window._acAPI = {
   },
   // パスワード変更（既にメール認証が紐付いている場合）
   updatePassword: async (newPass) => { const u=auth.currentUser; if(!u)throw new Error('not logged in'); await fbUpdatePassword(u,newPass); },
+  // パスワードリセットメール送信
+  resetPassword: async (email) => { await fbSendPasswordReset(auth, email); },
+  // アバター削除（StorageからもAuth profileからも削除）
+  deleteAvatar: async (uid) => {
+    try { await deleteObject(storRef(stor, `avatars/${uid}`)); } catch {}
+    if (auth.currentUser) await updateProfile(auth.currentUser, { photoURL: null });
+  },
+  // アバター画像アップロード（Canvas で 128×128 JPEG に圧縮してから保存）
+  uploadAvatar: async (uid, file) => {
+    const MAX = 128;
+    const blob = await new Promise((res, rej) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const s = Math.min(img.width, img.height);
+        const sx = (img.width  - s) / 2, sy = (img.height - s) / 2;
+        const c = document.createElement('canvas'); c.width = MAX; c.height = MAX;
+        c.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, MAX, MAX);
+        c.toBlob(b => b ? res(b) : rej(new Error('canvas toBlob failed')), 'image/jpeg', 0.72);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image load failed')); };
+      img.src = url;
+    });
+    const r = storRef(stor, `avatars/${uid}`);
+    await uploadBytes(r, blob, { contentType: 'image/jpeg', cacheControl: 'public,max-age=31536000' });
+    const photoURL = await getDownloadURL(r);
+    await updateProfile(auth.currentUser, { photoURL });
+    return photoURL;
+  },
   // 現在ユーザーのプロバイダ一覧（google.com / password など）
   getProviders: () => { const u=auth.currentUser; return u ? u.providerData.map(p=>p.providerId) : []; },
 };
@@ -2002,9 +2124,39 @@ window._acAPI = {
   // ── Firebase への書き込み ──
   const _writePresence = () => {
     const payload = { t: dbServerTimestamp() };
-    if (typeof _acUser !== 'undefined' && _acUser?.uid) payload.uid = _acUser.uid;
+    const u = window._acUser;
+    if (u?.uid) {
+      payload.uid  = u.uid;
+      payload.name = u.displayName || u.email?.split('@')[0] || '?';
+      payload.photo = u.photoURL || '';
+      // レベル・ストリーク情報（メインスクリプトから取得）
+      try {
+        const tm   = window.S?.streak?.totalMinutes || 0;
+        const info = typeof window.getLevelInfo === 'function' ? window.getLevelInfo(tm) : null;
+        if (info) {
+          payload.lvl     = info.idx + 1;
+          payload.lvlIcon = info.lv.icon;
+        } else {
+          payload.lvl = 1; payload.lvlIcon = '🌱';
+        }
+        const streak = typeof window._calcStreak === 'function' ? window._calcStreak() : 0;
+        payload.tier = typeof window._streakTier === 'function' ? window._streakTier(streak) : 0;
+      } catch(e) { payload.lvl = 1; payload.lvlIcon = '🌱'; payload.tier = 0; }
+    }
     return set(_presRef, payload).catch(e => console.error("presence write error:", e));
   };
+  // メインスクリプトからプロフィール更新後に presence を再書き込みできるよう公開
+  window._refreshPresence = () => { if (_isPrimary) _writePresence(); };
+
+  // ── オンラインカウント更新（共通処理）──
+  function _applyOnlineCount(n, loggedIn, guest, users) {
+    window._onlineDetail = { total: n, loggedIn, guest, loggedInUsers: users || [] };
+    if (typeof window._setOnlineCount === 'function') {
+      window._setOnlineCount(n);
+    } else {
+      window._pendingOnlineCount = n;
+    }
+  }
 
   // ── Firebase 接続監視 ──
   const _unsubConn = onValue(_connRef, (snap) => {
@@ -2016,24 +2168,41 @@ window._acAPI = {
     onDisconnect(_presRef).remove().catch(() => {});
     _writePresence();
     if (_heartbeatTimer) clearInterval(_heartbeatTimer);
-    _heartbeatTimer = setInterval(_writePresence, 4000);
+    // ハートビート: 45秒間隔（4秒→45秒でRTDB書き込み約11倍削減）
+    _heartbeatTimer = setInterval(_writePresence, 45000);
   });
 
-  // ── presence ツリー監視 → オンライン人数を更新 ──
-  const _unsubPres = onValue(_presRoot, (snap) => {
-    const data = snap.val() || {};
+  // ── presence ツリー監視（プライマリタブのみ）→ オンライン人数を更新 ──
+  // 非プライマリは BroadcastChannel でカウントを受け取るため RTDB を監視しない
+  let _unsubPres = null;
+
+  function _extractPresenceData(data) {
     const entries = Object.values(data);
     const n = entries.length;
-    // ログイン済み（uid あり）とゲストに分類
-    const loggedIn = entries.filter(v => v && v.uid).length;
+    const loggedEntries = entries.filter(v => v && v.uid);
+    const loggedIn = loggedEntries.length;
     const guest = n - loggedIn;
-    window._onlineDetail = { total: n, loggedIn, guest };
-    if (typeof window._setOnlineCount === 'function') {
-      window._setOnlineCount(n);
-    } else {
-      window._pendingOnlineCount = n;
+    // UID重複排除（同一ユーザーの複数タブ）して、プロフィールつきユーザーリスト
+    const seen = new Set();
+    const users = [];
+    for (const v of loggedEntries) {
+      if (v.uid && !seen.has(v.uid)) {
+        seen.add(v.uid);
+        users.push({ uid: v.uid, name: v.name||'', photo: v.photo||'', lvl: v.lvl||1, lvlIcon: v.lvlIcon||'🌱', tier: v.tier||0 });
+      }
     }
-  });
+    return { n, loggedIn, guest, users };
+  }
+
+  if (_isPrimary) {
+    _unsubPres = onValue(_presRoot, (snap) => {
+      const data = snap.val() || {};
+      const { n, loggedIn, guest, users } = _extractPresenceData(data);
+      _applyOnlineCount(n, loggedIn, guest, users);
+      // 他タブにもカウント・ユーザーリストをブロードキャスト
+      if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, users }); } catch {} }
+    });
+  }
 
   // ── BroadcastChannel メッセージ処理 ──
   if (_bc) {
@@ -2043,11 +2212,26 @@ window._acAPI = {
         try { localStorage.removeItem(_LS_PRIMARY); } catch {}
         _claimPrimary();
         if (_isPrimary) {
-          // 新プライマリとして Firebase に登録
+          // 新プライマリとして Firebase に登録 & presence 監視開始
           onDisconnect(_presRef).remove().catch(() => {});
           _writePresence();
           if (_heartbeatTimer) clearInterval(_heartbeatTimer);
-          _heartbeatTimer = setInterval(_writePresence, 4000);
+          _heartbeatTimer = setInterval(_writePresence, 45000);
+          // RTDBのpresenceツリーを監視開始
+          if (!_unsubPres) {
+            _unsubPres = onValue(_presRoot, (snap) => {
+              const data = snap.val() || {};
+              const { n, loggedIn, guest, users } = _extractPresenceData(data);
+              _applyOnlineCount(n, loggedIn, guest, users);
+              if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, users }); } catch {} }
+            });
+          }
+        }
+      } else if (e.data?.type === 'ONLINE_COUNT') {
+        // プライマリからオンラインカウントを受け取る（非プライマリ用）
+        if (!_isPrimary) {
+          const { n, loggedIn, guest, users } = e.data;
+          _applyOnlineCount(n, loggedIn, guest, users);
         }
       }
     };
@@ -2060,7 +2244,7 @@ window._acAPI = {
   const _cleanupPresence = () => {
     if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
     try { _unsubConn(); } catch {}
-    try { _unsubPres(); } catch {}
+    if (_unsubPres) { try { _unsubPres(); } catch {} }
     if (_isPrimary) {
       // プライマリが閉じることを他タブに通知
       try { localStorage.removeItem(_LS_PRIMARY); } catch {}
@@ -2107,9 +2291,15 @@ window._acAPI = {
       <!-- ログイン済みビュー -->
       <div id="acLoggedIn" style="display:none">
         <div class="acUserInfo">
-          <div class="acAvatar" id="acAvatar">?</div>
+          <div class="acAvatarWrap" onclick="acAvatarClick()" title="アイコンを変更" style="position:relative;cursor:pointer">
+            <div class="acAvatar" id="acAvatar">?</div>
+            <div class="acAvatarEdit">✎</div>
+          </div>
+          <button id="acAvatarDelBtn" onclick="acDeleteAvatarUI()" title="アイコンを削除" style="display:none;position:absolute;top:-6px;left:28px;z-index:2;width:16px;height:16px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:9px;line-height:1;cursor:pointer;align-items:center;justify-content:center">✕</button>
+          <input type="file" id="acAvatarInput" accept="image/*" style="display:none" onchange="acAvatarChange(event)">
           <div><div class="acUserName" id="acDisplayName">—</div><div class="acUserEmail" id="acEmail">—</div></div>
         </div>
+        <div id="acAvatarMsg" class="acMsg" style="margin-top:4px;margin-bottom:2px"></div>
         <div class="acSyncRow" onclick="syncToCloud()">
           <span class="acSyncLabel">☁ クラウドに保存 <span style="font-size:8px;opacity:.6;margin-left:4px">（自動）</span></span>
           <span class="acSyncVal" id="acUploadStatus">今すぐ同期</span>
@@ -2171,6 +2361,18 @@ window._acAPI = {
           <div class="acField"><label>パスワード</label><input type="password" id="acLoginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')acLogin()"></div>
           <div id="acLoginMsg" class="acMsg"></div>
           <button class="acBtn primary" id="acLoginBtn" onclick="acLogin()">ログイン</button>
+          <div style="text-align:center;margin-top:6px">
+            <button onclick="acShowReset()" style="background:none;border:none;color:var(--ts);font-family:var(--mono);font-size:9px;cursor:pointer;text-decoration:underline;padding:2px 0">パスワードを忘れた方はこちら</button>
+          </div>
+          <!-- パスワードリセット欄 (hidden) -->
+          <div id="acResetSection" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">🔑 パスワードリセット</div>
+            <div style="font-family:var(--jp);font-size:11px;color:var(--ts);margin-bottom:8px;line-height:1.6">登録済みのメールアドレスにリセット用リンクを送信します。</div>
+            <div class="acField"><label>メールアドレス</label><input type="email" id="acResetEmail" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')acSendReset()"></div>
+            <div id="acResetMsg" class="acMsg"></div>
+            <button class="acBtn primary" id="acResetBtn" onclick="acSendReset()">リセットメールを送信</button>
+            <button onclick="acHideReset()" style="background:none;border:none;color:var(--ts);font-family:var(--mono);font-size:9px;cursor:pointer;text-decoration:underline;padding:4px 0;display:block;margin-top:4px;text-align:center;width:100%">キャンセル</button>
+          </div>
           <div class="acDivider">または</div>
           <button class="acBtn secondary" onclick="acGoogleLogin()">🔑 Googleでログイン</button>
         </div>
@@ -2228,7 +2430,7 @@ window._acAPI = {
       </div>
       <button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)">♪</button>
       <button class="ib" onclick="openTheme()" title="テーマ">◐</button>
-      <button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント (クラウド同期)">👤</button>
+      <button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント (クラウド同期)"><span id="ibAccountEmoji">👤</span><img id="ibAccountImg" alt="avatar" style="display:none;width:22px;height:22px;border-radius:50%;object-fit:cover"></button>
       <button class="ib" onclick="showDonate()" title="サポート">♥</button>
     </div>
   </header>
@@ -2243,7 +2445,7 @@ window._acAPI = {
 <!-- DOCK -->
 <div id="dock" class="pos-bottom">
   <div id="dockBar">
-    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.0.6</span>
+    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.3.4</span>
     <div class="dGrip"></div>
     <div class="dRight">
       <button class="dActB" id="dCollapseBtn" onclick="toggleDock()">▼</button>
@@ -2430,61 +2632,96 @@ window._acAPI = {
       </div>
     </div>
   </div>
-  <!-- Presets -->
+  <!-- Quick Ambient Presets -->
   <div class="bgmSection">
-    <div class="bgmSLbl" data-i18n="bgmPreset">プリセット</div>
-    <div class="bgmBtns">
-      <button class="bgmB" data-bgm="white"   onclick="setBgm('white')">⬜ White</button>
-      <button class="bgmB" data-bgm="pink"    onclick="setBgm('pink')">🌸 Pink</button>
-      <button class="bgmB" data-bgm="rain"    onclick="setBgm('rain')">🌧 Rain</button>
-      <button class="bgmB" data-bgm="thunder" onclick="setBgm('thunder')">⛈ Storm</button>
-      <button class="bgmB" data-bgm="lofi"    onclick="setBgm('lofi')">🎵 Lo-Fi</button>
-      <button class="bgmB" data-bgm="jazz"    onclick="setBgm('jazz')">🎷 Jazz</button>
-      <button class="bgmB" data-bgm="forest"  onclick="setBgm('forest')">🌿 Forest</button>
-      <button class="bgmB" data-bgm="ocean"   onclick="setBgm('ocean')">🌊 Ocean</button>
-      <button class="bgmB" data-bgm="cafe"    onclick="setBgm('cafe')">☕ Café</button>
-      <button class="bgmB" data-bgm="space"   onclick="setBgm('space')">🌌 Space</button>
-      <button class="bgmB" data-bgm="fire"    onclick="setBgm('fire')">🔥 Fire</button>
-    </div>
-  </div>
-  <!-- Ambient Sound Mixer -->
-  <div class="bgmSection" id="ambientMixerSection">
     <div class="bgmSLbl" style="display:flex;align-items:center;justify-content:space-between">
-      <span>🎛 アンビエントミキサー</span>
+      <span>⚡ クイックミックス</span>
       <button onclick="clearAmbient()" style="font-family:var(--mono);font-size:8px;color:var(--ts);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;background:none;cursor:pointer">全消去</button>
     </div>
+    <div class="ambPresetGrid">
+      <button class="ambPreset" data-preset="rain_focus"     onclick="setAmbientPreset('rain_focus')">🌧 雨集中</button>
+      <button class="ambPreset" data-preset="forest_morning" onclick="setAmbientPreset('forest_morning')">🌿 森の朝</button>
+      <button class="ambPreset" data-preset="cafe_rain"      onclick="setAmbientPreset('cafe_rain')">☕ カフェ</button>
+      <button class="ambPreset" data-preset="ocean_wind"     onclick="setAmbientPreset('ocean_wind')">🌊 海辺</button>
+      <button class="ambPreset" data-preset="campfire"       onclick="setAmbientPreset('campfire')">🔥 焚き火</button>
+      <button class="ambPreset" data-preset="deep_work"      onclick="setAmbientPreset('deep_work')">⌨ 深夜</button>
+      <button class="ambPreset" data-preset="storm"          onclick="setAmbientPreset('storm')">⛈ 嵐</button>
+      <button class="ambPreset" data-preset="lofi_rain"      onclick="setAmbientPreset('lofi_rain')">🎵 Lo-Fi</button>
+      <button class="ambPreset" data-preset="white_noise"    onclick="setAmbientPreset('white_noise')">⬜ ホワイト</button>
+      <button class="ambPreset" data-preset="city_rain"      onclick="setAmbientPreset('city_rain')">🏙 都市雨</button>
+      <button class="ambPreset" data-preset="deep_forest"    onclick="setAmbientPreset('deep_forest')">🌲 深林</button>
+      <button class="ambPreset" data-preset="zen_garden"     onclick="setAmbientPreset('zen_garden')">🪨 禅</button>
+      <button class="ambPreset" data-preset="space_ambient"  onclick="setAmbientPreset('space_ambient')">🌌 宇宙</button>
+      <button class="ambPreset" data-preset="keyboard_cafe"  onclick="setAmbientPreset('keyboard_cafe')">💻 タイプ音</button>
+    </div>
+  </div>
+  <!-- Ambient Sound Mixer (full featured) -->
+  <div class="bgmSection" id="ambientMixerSection">
+    <div class="bgmSLbl">🎛 アンビエントミキサー</div>
     <div class="ambientGrid" id="ambientGrid">
       <div class="ambItem" data-sound="rain">
         <button class="ambBtn" onclick="toggleAmbient('rain')" title="雨音">🌧<span>雨</span></button>
-        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('rain',this.value)" title="音量">
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('rain',this.value)" title="音量">
       </div>
       <div class="ambItem" data-sound="thunder">
         <button class="ambBtn" onclick="toggleAmbient('thunder')" title="雷雨">⛈<span>雷雨</span></button>
         <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('thunder',this.value)" title="音量">
       </div>
+      <div class="ambItem" data-sound="ocean">
+        <button class="ambBtn" onclick="toggleAmbient('ocean')" title="波音">🌊<span>波</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.45" oninput="setAmbientVol('ocean',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="river">
+        <button class="ambBtn" onclick="toggleAmbient('river')" title="川">🏞<span>川</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('river',this.value)" title="音量">
+      </div>
       <div class="ambItem" data-sound="forest">
         <button class="ambBtn" onclick="toggleAmbient('forest')" title="森">🌿<span>森</span></button>
         <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('forest',this.value)" title="音量">
       </div>
-      <div class="ambItem" data-sound="ocean">
-        <button class="ambBtn" onclick="toggleAmbient('ocean')" title="波">🌊<span>波</span></button>
-        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('ocean',this.value)" title="音量">
+      <div class="ambItem" data-sound="birds">
+        <button class="ambBtn" onclick="toggleAmbient('birds')" title="鳥のさえずり">🐦<span>鳥</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.38" oninput="setAmbientVol('birds',this.value)" title="音量">
       </div>
-      <div class="ambItem" data-sound="cafe">
-        <button class="ambBtn" onclick="toggleAmbient('cafe')" title="カフェ">☕<span>カフェ</span></button>
-        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('cafe',this.value)" title="音量">
+      <div class="ambItem" data-sound="wind">
+        <button class="ambBtn" onclick="toggleAmbient('wind')" title="風">🌬<span>風</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('wind',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="night">
+        <button class="ambBtn" onclick="toggleAmbient('night')" title="夜の虫の声">🌙<span>夜</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('night',this.value)" title="音量">
       </div>
       <div class="ambItem" data-sound="fire">
         <button class="ambBtn" onclick="toggleAmbient('fire')" title="焚き火">🔥<span>焚火</span></button>
-        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('fire',this.value)" title="音量">
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('fire',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="cafe">
+        <button class="ambBtn" onclick="toggleAmbient('cafe')" title="カフェ">☕<span>カフェ</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('cafe',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="city">
+        <button class="ambBtn" onclick="toggleAmbient('city')" title="都市">🏙<span>都市</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('city',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="keyboard">
+        <button class="ambBtn" onclick="toggleAmbient('keyboard')" title="キーボード音">⌨️<span>タイプ</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('keyboard',this.value)" title="音量">
       </div>
       <div class="ambItem" data-sound="lofi">
         <button class="ambBtn" onclick="toggleAmbient('lofi')" title="Lo-Fi BGM">🎵<span>Lo-Fi</span></button>
         <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('lofi',this.value)" title="音量">
       </div>
-      <div class="ambItem" data-sound="keyboard">
-        <button class="ambBtn" onclick="toggleAmbient('keyboard')" title="キーボード音">⌨️<span>キーボード</span></button>
-        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('keyboard',this.value)" title="音量">
+      <div class="ambItem" data-sound="space">
+        <button class="ambBtn" onclick="toggleAmbient('space')" title="宇宙">🌌<span>宇宙</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('space',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="white">
+        <button class="ambBtn" onclick="toggleAmbient('white')" title="ホワイトノイズ">⬜<span>White</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('white',this.value)" title="音量">
+      </div>
+      <div class="ambItem" data-sound="pink">
+        <button class="ambBtn" onclick="toggleAmbient('pink')" title="ピンクノイズ">🌸<span>Pink</span></button>
+        <input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('pink',this.value)" title="音量">
       </div>
     </div>
   </div>
@@ -2549,7 +2786,7 @@ window._acAPI = {
           <button class="bgOpt"    data-bg="light"   onclick="setBg('light')"   data-i18n="bgLight">ライト</button>
           <button class="bgOpt"    data-bg="white"   onclick="setBg('white')"   data-i18n="bgWhite">ホワイト</button>
           <button class="bgOpt"    data-bg="sakura"  onclick="setBg('sakura')"  data-i18n="bgSakura" style="color:#ff9ec4;border-color:rgba(255,140,180,.3)">🌸 桜</button>
-          <button class="bgOpt"    data-bg="persona" onclick="setBg('persona')" data-i18n="bgPersona" style="color:#7df4ff;border-color:rgba(0,180,255,.35)">🌙 Persona</button>
+          <button class="bgOpt"    data-bg="persona" onclick="setBg('persona')" data-i18n="bgPersona">ペルソナ</button>
         </div>
       </div>
     </div>
@@ -2837,7 +3074,7 @@ window._acAPI = {
       <span style="font-size:22px">◐</span><div><div style="font-weight:600" data-i18n="moreTheme">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreThemeSub">カラー・フォント・背景</div></div>
     </button>
     <button onclick="mSheetClose();openAccount()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%">
-      <span style="font-size:22px">👤</span><div><div style="font-weight:600" data-i18n="moreAccount">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreAccountSub">ログイン・クラウド保存</div></div>
+      <span id="mAccountIconWrap" style="font-size:22px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span id="mAccountEmoji">👤</span><img id="mAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover"></span><div><div style="font-weight:600" data-i18n="moreAccount">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreAccountSub">ログイン・クラウド保存</div></div>
     </button>
     <a href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener"
       onclick="mSheetClose()"
@@ -2858,7 +3095,7 @@ window._acAPI = {
           <div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.0.6</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.3.4</div>
     </div>
   </div>
 </div>
@@ -3015,8 +3252,7 @@ const I18N={
     thSecLangLabel:'🌐 言語',
     timerStyleLabel:'⏱ タイマー表示',
     timerStyleRing:'○ リング',timerStyleArc:'◡ アーク',timerStyleMinimal:'▬ ミニマル',timerStyleBlocks:'▦ ブロック',
-    thSecScaleLabel:'🔍 UIスケール & 文字サイズ',thScaleLabel:'UIスケール',thFontSizeLabel:'文字サイズ',
-    fszXs:'極小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
+    thSecScaleLabel:'🔍 UIスケール',thScaleLabel:'UIスケール',
     thClose:'閉じる',
     donTitle:'☕ SCHEDを応援する',donSub:'開発継続のため支援をお願いします',donBtn:'サポート',
     // Streak panel static texts
@@ -3105,8 +3341,7 @@ const I18N={
     thSecLangLabel:'🌐 Language',
     timerStyleLabel:'⏱ Timer Style',
     timerStyleRing:'○ Ring',timerStyleArc:'◡ Arc',timerStyleMinimal:'▬ Minimal',timerStyleBlocks:'▦ Blocks',
-    thSecScaleLabel:'🔍 UI Scale & Font Size',thScaleLabel:'UI Scale',thFontSizeLabel:'Font Size',
-    fszXs:'XS',fszSm:'S',fszMd:'M',fszLg:'L',fszXl:'XL',
+    thSecScaleLabel:'🔍 UI Scale',thScaleLabel:'UI Scale',
     thClose:'Close',
     donTitle:'☕ Support SCHED',donSub:'Help keep development going',donBtn:'Support',
     streakConLog:' day streak',streakPopBtn:'Got it!',streakCloseBtn:'Close',
@@ -3188,8 +3423,7 @@ const I18N={
     thSecLangLabel:'🌐 语言',
     timerStyleLabel:'⏱ 样式',
     timerStyleRing:'○ 圆环',timerStyleArc:'◡ 弧形',timerStyleMinimal:'▬ 简约',timerStyleBlocks:'▦ 方块',
-    thSecScaleLabel:'🔍 UI缩放 & 字体大小',thScaleLabel:'UI缩放',thFontSizeLabel:'字体大小',
-    fszXs:'极小',fszSm:'小',fszMd:'中',fszLg:'大',fszXl:'特大',
+    thSecScaleLabel:'🔍 UI缩放',thScaleLabel:'UI缩放',
     thClose:'关闭',
     donTitle:'☕ 支持SCHED',donSub:'帮助维持开发',donBtn:'支持',
     streakConLog:'天连续登录',streakPopBtn:'太棒了！',streakCloseBtn:'关闭',
@@ -3271,8 +3505,7 @@ const I18N={
     thSecLangLabel:'🌐 언어',
     timerStyleLabel:'⏱ 타이머 스타일',
     timerStyleRing:'○ 링',timerStyleArc:'◡ 호형',timerStyleMinimal:'▬ 미니멀',timerStyleBlocks:'▦ 블록',
-    thSecScaleLabel:'🔍 UI 크기 & 글자 크기',thScaleLabel:'UI 크기',thFontSizeLabel:'글자 크기',
-    fszXs:'극소',fszSm:'소',fszMd:'중',fszLg:'대',fszXl:'특대',
+    thSecScaleLabel:'🔍 UI 크기',thScaleLabel:'UI 크기',
     thClose:'닫기',
     donTitle:'☕ SCHED 응원하기',donSub:'개발 지속을 위해 지원해 주세요',donBtn:'지원하기',
     streakConLog:'일 연속 로그인',streakPopBtn:'좋아！',streakCloseBtn:'닫기',
@@ -3542,7 +3775,7 @@ function updateLevelUI(){
   const lvlIdx=info.idx;
   if($('lvlName'))$('lvlName').textContent=`Lv.${lvlIdx+1}`;
   if($('lvlBar'))$('lvlBar').style.width=info.pct+'%';
-  if(_lastLvlIdx>=0&&lvlIdx>_lastLvlIdx){snd('lvlup');toast(`🎉 レベルアップ！ Lv.${lvlIdx+1} ${info.lv.icon} ${info.lv.name}`);}
+  if(_lastLvlIdx>=0&&lvlIdx>_lastLvlIdx){snd('lvlup');toast(`🎉 レベルアップ！ Lv.${lvlIdx+1} ${info.lv.icon} ${info.lv.name}`);if(typeof window._refreshPresence==='function')window._refreshPresence();}
   _lastLvlIdx=lvlIdx;
   const sb=$('streakBadge');
   if(sb)sb.dataset.tier=String(tier);
@@ -3627,7 +3860,10 @@ function savStr(){_lsSave(SK.str,S.streak);_scheduleCloudSync()}
 let _cloudSyncTimer = null;
 let _cloudDirty     = false;
 let _cloudSyncing   = false;
-const CLOUD_DEBOUNCE = 30000;
+const CLOUD_DEBOUNCE = 60000; // 60秒デバウンス（Firebase書き込み節約）
+// 競合チェック間隔（最後のチェックから5分以上経過した場合のみチェック）
+const CONFLICT_CHECK_INTERVAL = 5 * 60 * 1000;
+let _lastConflictCheck = 0;
 // 最後にクラウドに送った時刻（競合検出用）
 let _lastUploadTs = parseInt(localStorage.getItem('_sched_lastUploadTs')||'0',10)||0;
 
@@ -3639,35 +3875,60 @@ function _scheduleCloudSync() {
   _cloudSyncTimer = setTimeout(_doCloudSync, CLOUD_DEBOUNCE);
 }
 
+let _lastUploadHash = '';  // 前回アップロードデータのハッシュ（差分なし書き込み防止）
+
+function _dataHash(payload) {
+  // 軽量ハッシュ: JSON文字列の長さ+先頭100文字のハッシュ（完全一致判定の簡易代替）
+  try {
+    const s = JSON.stringify(payload);
+    let h = 0;
+    for (let i = 0; i < Math.min(s.length, 500); i++) { h = (h * 31 + s.charCodeAt(i)) & 0x7fffffff; }
+    return h + '_' + s.length;
+  } catch { return ''; }
+}
+
 async function _doCloudSync() {
   if (!_acUser || !navigator.onLine || _cloudSyncing) return;
   _cloudSyncing = true;
   try {
-    // 競合検出: アップロード前にクラウドの updatedAt を確認
-    // 別デバイスからの更新がある場合は警告
-    try {
-      const latest = await window._acAPI.download(_acUser.uid);
-      if (latest && latest.updatedAt) {
-        const cloudTs = latest.updatedAt.toMillis ? latest.updatedAt.toMillis()
-                      : (latest.updatedAt.seconds ? latest.updatedAt.seconds*1000 : 0);
-        // クラウドがローカルの最終アップロード以降に別デバイスから更新されていたら警告
-        if (cloudTs > _lastUploadTs + 5000 && _lastUploadTs > 0) {
-          _pushNotif('cloudConflict','⚠️','別デバイスからの更新を検出',
-            'クラウドに新しいデータがあります。上書きしますか？',
-            `<button onclick="syncFromCloud();_closeNotif('cloudConflict')" style="padding:4px 10px;border-radius:6px;border:1px solid var(--ac);background:var(--ac0);color:var(--ac);font-size:10px;cursor:pointer;margin-top:4px">クラウドから復元</button>`,
-            'cloud warn', 12000);
-          _cloudSyncing = false;
-          return; // 自動上書きをキャンセル、ユーザーの判断を待つ
-        }
-      }
-    } catch(checkErr) { /* 競合チェック失敗は無視して通常アップロードを続行 */ }
-
-    await window._acAPI.upload(_acUser.uid, {
+    const payload = {
       tasks: S.tasks, calTasks: S.calTasks, streak: S.streak,
       theme: S.theme, fw: S.fw, dock: S.dock,
       timerTab: S.timerTab, pomoStyle: S.pomoStyle, lang: S.lang
-    });
+    };
+
+    // ── 差分チェック: 前回と同じデータなら書き込みをスキップ（Firestore節約）──
+    const hash = _dataHash(payload);
+    if (hash && hash === _lastUploadHash) {
+      _cloudDirty = false;
+      _cloudSyncing = false;
+      return;
+    }
+
+    // 競合検出: 5分以上経過時のみクラウドを確認（読み取り節約）
+    const now = Date.now();
+    if (now - _lastConflictCheck > CONFLICT_CHECK_INTERVAL && _lastUploadTs > 0) {
+      _lastConflictCheck = now;
+      try {
+        const latest = await window._acAPI.download(_acUser.uid);
+        if (latest && latest.updatedAt) {
+          const cloudTs = latest.updatedAt.toMillis ? latest.updatedAt.toMillis()
+                        : (latest.updatedAt.seconds ? latest.updatedAt.seconds*1000 : 0);
+          if (cloudTs > _lastUploadTs + 5000) {
+            _pushNotif('cloudConflict','⚠️','別デバイスからの更新を検出',
+              'クラウドに新しいデータがあります。上書きしますか？',
+              `<button onclick="syncFromCloud();_closeNotif('cloudConflict')" style="padding:4px 10px;border-radius:6px;border:1px solid var(--ac);background:var(--ac0);color:var(--ac);font-size:10px;cursor:pointer;margin-top:4px">クラウドから復元</button>`,
+              'cloud warn', 12000);
+            _cloudSyncing = false;
+            return;
+          }
+        }
+      } catch(checkErr) { /* 競合チェック失敗は無視 */ }
+    }
+
+    await window._acAPI.upload(_acUser.uid, payload);
     _lastUploadTs = Date.now();
+    _lastUploadHash = hash;
     try { localStorage.setItem('_sched_lastUploadTs', String(_lastUploadTs)); } catch {}
     _cloudDirty = false;
     const st = $('acUploadStatus');
@@ -3756,6 +4017,8 @@ document.addEventListener('visibilitychange',()=>{
     _lastMinuteTick=null;
     // Stop clock interval while hidden (saves battery/CPU)
     if(_clockIv){clearInterval(_clockIv);_clockIv=null;}
+    // ── タブ非表示時にクラウドへ同期（タブ切替・ホームボタン時）──
+    _syncBeforeUnload();
   }
 });
 // Also track pomodoro completions as bonus XP
@@ -3767,20 +4030,132 @@ function addPomoXP(mins){
   savStr();updateLevelUI();
 }
 
-/* ═══ UI SOUNDS ═══ */
+/* ═══ UI SOUNDS — High Quality Web Audio Synthesis ═══ */
 let aC=null;
 function gAC(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();if(aC.state==='suspended')aC.resume();return aC}
+
+// マスターコンプレッサー (音量正規化・クリッピング防止)
+let _masterComp=null;
+function _getMaster(){
+  const c=gAC();
+  if(!_masterComp){
+    _masterComp=c.createDynamicsCompressor();
+    _masterComp.threshold.value=-18;_masterComp.knee.value=8;
+    _masterComp.ratio.value=4;_masterComp.attack.value=0.003;_masterComp.release.value=0.25;
+    _masterComp.connect(c.destination);
+  }
+  return _masterComp;
+}
+
+// ヘルパー: 単音のサイン波を生成
+function _tone(freq,vol,start,dur,type='sine',detune=0){
+  const c=gAC(),master=_getMaster();
+  const o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,start);o.detune.value=detune;
+  g.gain.setValueAtTime(0,start);
+  g.gain.linearRampToValueAtTime(vol,start+0.008);
+  g.gain.setValueAtTime(vol,start+dur*0.6);
+  g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+  o.connect(g);g.connect(master);
+  o.start(start);o.stop(start+dur+0.01);
+}
+
+// ヘルパー: ホワイトノイズバースト
+function _noiseBurst(vol,start,dur,filterFreq=2000){
+  const c=gAC(),master=_getMaster();
+  const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+  const src=c.createBufferSource(),flt=c.createBiquadFilter(),g=c.createGain();
+  flt.type='bandpass';flt.frequency.value=filterFreq;flt.Q.value=1.5;
+  src.buffer=buf;
+  g.gain.setValueAtTime(0,start);
+  g.gain.linearRampToValueAtTime(vol,start+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+  src.connect(flt);flt.connect(g);g.connect(master);
+  src.start(start);src.stop(start+dur+0.01);
+}
+
 function snd(t){
-  try{const c=gAC(),g=c.createGain();g.connect(c.destination);
-    if(t==='add'){const o=c.createOscillator();o.type='triangle';o.frequency.value=700;g.gain.setValueAtTime(.07,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.14);o.connect(g);o.start();o.stop(c.currentTime+.14);}
-    else if(t==='done'){[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator();o.frequency.value=f;const gg=c.createGain();gg.gain.setValueAtTime(0,c.currentTime+i*.05);gg.gain.linearRampToValueAtTime(.13,c.currentTime+i*.05+.04);gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.05+.9);o.connect(gg);gg.connect(c.destination);o.start(c.currentTime+i*.05);o.stop(c.currentTime+1.2);});}
-    else if(t==='brk'){[784,659,523].forEach((f,i)=>{const o=c.createOscillator();o.frequency.value=f;const gg=c.createGain();gg.gain.setValueAtTime(0,c.currentTime+i*.18);gg.gain.linearRampToValueAtTime(.15,c.currentTime+i*.18+.04);gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.18+.7);o.connect(gg);gg.connect(c.destination);o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.8);});}
-    else if(t==='lap'){const o=c.createOscillator();o.type='square';o.frequency.value=440;g.gain.setValueAtTime(.04,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.07);o.connect(g);o.start();o.stop(c.currentTime+.07);}
-    else if(t==='lvlup'){[523,659,784,1047,1319].forEach((f,i)=>{const o=c.createOscillator();o.type='sine';o.frequency.value=f;const gg=c.createGain();gg.gain.setValueAtTime(0,c.currentTime+i*.07);gg.gain.linearRampToValueAtTime(.18,c.currentTime+i*.07+.05);gg.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.07+1.2);o.connect(gg);gg.connect(c.destination);o.start(c.currentTime+i*.07);o.stop(c.currentTime+2);});}
+  try{
+    const c=gAC();const now=c.currentTime;
+
+    if(t==='add'){
+      // ソフトな「ポン」+ 高周波スパーク — タスク追加
+      _tone(420,0.06,now,0.12,'sine');
+      _tone(840,0.04,now+0.02,0.09,'sine');
+      _tone(1260,0.025,now+0.045,0.07,'sine');
+    }
+
+    else if(t==='done'){
+      // 明るいアルペジオ — タスク完了 (C5-E5-G5-C6 マジョール)
+      const notes=[523.25,659.25,783.99,1046.5];
+      notes.forEach((f,i)=>{
+        const s=now+i*0.07;
+        _tone(f,0.10,s,0.55,'sine');
+        _tone(f*2,0.025,s,0.3,'sine');  // オクターブ上のハーモニクス
+      });
+      // 最後にキラキラ感
+      _noiseBurst(0.018,now+0.3,0.15,6000);
+    }
+
+    else if(t==='brk'){
+      // 柔らかな下降音 — 休憩開始 (G5-E5-C5)
+      [[784,0.09,0],[659,0.08,0.15],[523,0.10,0.3]].forEach(([f,v,d])=>{
+        _tone(f,v,now+d,0.5,'sine');
+        _tone(f*1.5,v*0.18,now+d,0.4,'triangle');
+      });
+      _noiseBurst(0.01,now+0.28,0.2,800);
+    }
+
+    else if(t==='lap'){
+      // クリスプな「チック」— ラップ
+      _tone(1320,0.07,now,0.04,'square');
+      _tone(880,0.06,now+0.01,0.06,'sine');
+      _noiseBurst(0.015,now,0.04,4000);
+    }
+
+    else if(t==='lvlup'){
+      // レベルアップ: ダイナミックなファンファーレ
+      // アルペジオ → コード → キラキラ
+      const seq=[[523,.09,0],[659,.09,.06],[784,.09,.12],[1047,.11,.18],[1319,.10,.26],[1047,.07,.36]];
+      seq.forEach(([f,v,d])=>{ _tone(f,v,now+d,0.65,'sine'); _tone(f*1.005,v*0.3,now+d,0.6,'sine'); });
+      // ハーモニックコード
+      [523,659,784].forEach(f=>_tone(f,0.06,now+0.42,0.7,'sine'));
+      // フィニッシュキラキラ
+      _noiseBurst(0.025,now+0.44,0.3,7000);
+      _tone(2093,0.035,now+0.48,0.4,'sine');
+    }
   }catch{}
 }
 
 /* ═══ BGM ═══ */
+// モバイルデータ接続検出 (Save-Data ヘッダー or 4G以下の接続)
+function _isMobileData(){
+  try{
+    const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    if(conn){
+      if(conn.saveData)return true;
+      const t=conn.effectiveType||'';
+      if(t==='slow-2g'||t==='2g'||t==='3g'||t==='4g')return true;
+    }
+    // iOS/Android でネットワーク種別が取れない場合はモバイルUAで判定
+    return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  }catch{return false;}
+}
+// 最低画質強制: BGMはバックグラウンド音声なので常に最低品質で十分
+function _forceLowestQuality(player){
+  if(!player)return;
+  try{
+    // tiny→small→medium の順で最低画質を試みる
+    const q=player.getAvailableQualityLevels?.();
+    if(q&&q.length>0){
+      const lowest=q[q.length-1];
+      player.setPlaybackQuality(lowest);
+    } else {
+      player.setPlaybackQuality('tiny');
+    }
+  }catch{try{player.setPlaybackQuality('small');}catch{}}
+}
 const BGM_YT={white:'nMfPqeZjc2c',pink:'ZXtimhajVh4',rain:'mPZkdNFkNps',thunder:'zNAVAb7NFKY',lofi:'5qap5aO4i9A',jazz:'DSGyEsJ17cI',forest:'xNN7iTA57jM',ocean:'WHPEKLQID4U',cafe:'gaGrAZPuHR4',space:'bGikFCOPPGI',fire:'L_LUpnjgPso'};
 let _ytApiReady=false,_ytApiLoading=false,_ytApiCbs=[],_ytLoop=true,_ytInfoIv=null,_ytVideoId='';
 window.onYouTubeIframeAPIReady=function(){_ytApiReady=true;_ytApiLoading=false;const p=_ytApiCbs.slice();_ytApiCbs=[];p.forEach(f=>{try{f();}catch(e){}});};
@@ -3790,10 +4165,19 @@ function _spawnPlayer(videoId,onReadyCb){
   const frame=$('ytFrame');frame.innerHTML='';
   const div=document.createElement('div');div.id='ytDiv';frame.appendChild(div);
   const op=(location.protocol==='file:')?{}:{origin:location.origin};
-  S.ytP=new YT.Player('ytDiv',{height:'1',width:'1',videoId,playerVars:Object.assign({autoplay:1,controls:0,disablekb:1,fs:0,rel:0,playsinline:1,enablejsapi:1,loop:_ytLoop?1:0,...(_ytLoop?{playlist:videoId}:{})},op),events:{onReady:function(e){try{e.target.setVolume(Math.round(parseFloat($('bgmVol').value)*100));}catch{}e.target.playVideo();_startInfoPolling();if(onReadyCb)onReadyCb(e.target);},onStateChange:function(e){_updateInfoBadge(e.data);if(e.data===YT.PlayerState.ENDED&&!_ytLoop)_stopInfoPolling();},onError:function(e){const m={2:T('ytInvalidId'),100:T('ytNotFound'),101:T('ytNoEmbed'),150:T('ytNoEmbed')};toast('⚠ '+(m[e.data]||T('ytError')));_destroyPlayer();_resetYtUI();}}});
+  S.ytP=new YT.Player('ytDiv',{height:'1',width:'1',videoId,playerVars:Object.assign({autoplay:1,controls:0,disablekb:1,fs:0,rel:0,playsinline:1,enablejsapi:1,modestbranding:1,iv_load_policy:3,loop:_ytLoop?1:0,...(_ytLoop?{playlist:videoId}:{})},op),events:{onReady:function(e){try{e.target.setVolume(Math.round(parseFloat($('bgmVol').value)*100));}catch{}
+    // BGMは音声のみ使用 → 常に最低画質でデータ節約
+    _forceLowestQuality(e.target);
+    e.target.playVideo();_startInfoPolling();if(onReadyCb)onReadyCb(e.target);},onStateChange:function(e){_updateInfoBadge(e.data);
+    // 再バッファリング時も品質を最低に維持
+    if(e.data===YT.PlayerState.PLAYING)_forceLowestQuality(e.target);
+    if(e.data===YT.PlayerState.ENDED&&!_ytLoop)_stopInfoPolling();},onError:function(e){const m={2:T('ytInvalidId'),100:T('ytNotFound'),101:T('ytNoEmbed'),150:T('ytNoEmbed')};toast('⚠ '+(m[e.data]||T('ytError')));_destroyPlayer();_resetYtUI();}}});
 }
 function _resetYtUI(){S.bgm.cur=null;document.querySelectorAll('.bgmB').forEach(b=>b.classList.remove('on'));$('ytNowPlaying').classList.remove('show');$('ytTitle').textContent='—';$('ytProgFill').style.width='0%';$('ytTime').textContent='0:00 / 0:00';$('ytStatusBadge').textContent=T('stopMed');$('ytStatusBadge').dataset.i18n='stopMed';$('ytStatusBadge').className='';$('ytPlayPauseBtn').textContent='▶';$('ytThumb').classList.remove('show');$('ytThumb').src='';_ytVideoId='';}
-function _showThumb(vid){if(!vid)return;const img=$('ytThumb');img.src=`https://img.youtube.com/vi/${vid}/mqdefault.jpg`;img.classList.add('show');}
+function _showThumb(vid){if(!vid)return;const img=$('ytThumb');
+  // 常に最小サムネイル(120x90)を使用 - BGMパネルでは十分なサイズ
+  img.loading='lazy';
+  img.src=`https://img.youtube.com/vi/${vid}/default.jpg`;img.classList.add('show');}
 function setBgm(type){
   if(S.bgm.cur===type){_destroyPlayer();_resetYtUI();return;}
   const vid=BGM_YT[type];if(!vid){toast(T('stopMed'));return;}
@@ -3809,33 +4193,79 @@ function ytPlayPause(){if(!S.ytP)return;try{const st=S.ytP.getPlayerState();if(s
 function ytToggleLoop(){_ytLoop=!_ytLoop;$('ytLoopBtn').classList.toggle('on',_ytLoop);if(S.ytP){try{const vid=S.ytP.getVideoData().video_id;const t=S.ytP.getCurrentTime()||0;const wp=(S.ytP.getPlayerState()===YT.PlayerState.PLAYING);if(vid){_destroyPlayer();_ensureYtApi(()=>{_spawnPlayer(vid,p=>{if(t>0)try{p.seekTo(t,true);}catch{}if(!wp)try{p.pauseVideo();}catch{}});});}}catch{}}toast(_ytLoop?T('loopOn'):T('loopOff'));}
 function ytSeek(e){if(!S.ytP)return;try{const r=$('ytProgBar').getBoundingClientRect();const ratio=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));S.ytP.seekTo(ratio*S.ytP.getDuration(),true);}catch{}}
 
-/* ═══ AMBIENT SOUND MIXER (YouTube IFrame API) ═══ */
+/* ═══ AMBIENT SOUND MIXER ═══
+   YouTube IFrame API を使用。
+   ━ 音ズレ/別音楽再生バグ修正:
+     ・loop/playlist パラメータ廃止 → onStateChange ENDED で手動ループ
+     ・rel:0 で関連動画を無効化
+     ・origin パラメータ追加でセキュリティ強化
+     ・プレイヤーを2回作らないよう初期化ガード
+*/
 const AMBIENT_VID = {
-  rain:     'q76bMs-NwRk',
-  thunder:  'nDq6TstdEi8',
-  forest:   'xNN7iTA57jM',
-  ocean:    'V1bFr2SWP1I',
-  cafe:     'gaGrHXQ_M3Y',
-  fire:     'L_LUpnjgPso',
-  lofi:     'jfKfPfyJRdk',
-  keyboard: 'H7tFaL_RJpg',
+  // ── 自然音 ──
+  rain:     'mPZkdNFkNps',  // 雨音
+  thunder:  'nDq6TstdEi8',  // 雷雨
+  ocean:    'WHPEKLQID4U',  // 波
+  river:    'H-2WpzVOEbg',  // 川
+  forest:   'xNN7iTA57jM',  // 森・自然
+  birds:    '9ok29ZtNn_M',  // 鳥のさえずり
+  wind:     'ruAq96LdMFM',  // 風
+  // ── 場所・空間 ──
+  fire:     'L_LUpnjgPso',  // 焚き火
+  cafe:     'gaGrAZPuHR4',  // カフェ
+  city:     'BOFaJBPuSsw',  // 都市
+  space:    'bGikFCOPPGI',  // 宇宙
+  // ── BGM・ノイズ ──
+  keyboard: 'H7tFaL_RJpg',  // キーボード
+  lofi:     '5qap5aO4i9A',  // Lo-Fi
+  jazz:     'DSGyEsJ17cI',  // ジャズ
+  white:    'nMfPqeZjc2c',  // ホワイトノイズ
+  pink:     'ZXtimhajVh4',  // ピンクノイズ
 };
+
+// クイックミックスプリセット（複数音を一発設定）
+const AMBIENT_PRESETS = {
+  rain_focus:     { rain: 0.55, forest: 0.2 },
+  forest_morning: { forest: 0.5, birds: 0.4, river: 0.2 },
+  cafe_rain:      { cafe: 0.5, rain: 0.25 },
+  ocean_wind:     { ocean: 0.5, wind: 0.28 },
+  campfire:       { fire: 0.55, wind: 0.2 },
+  deep_work:      { keyboard: 0.4, rain: 0.3, lofi: 0.28 },
+  storm:          { thunder: 0.5, rain: 0.6 },
+  lofi_rain:      { lofi: 0.55, rain: 0.22 },
+  white_noise:    { white: 0.7 },
+  city_rain:      { city: 0.42, rain: 0.32 },
+  river_birds:    { river: 0.5, birds: 0.38 },
+  space_focus:    { space: 0.6, white: 0.18 },
+  // ── 新プリセット ──
+  deep_forest:    { forest: 0.65, birds: 0.2, river: 0.15 },
+  zen_garden:     { river: 0.4, wind: 0.2 },
+  space_ambient:  { space: 0.7, pink: 0.2 },
+  keyboard_cafe:  { keyboard: 0.55, cafe: 0.3 },
+};
+
 const _ambPlayers = {};
 const _ambActive  = {};
+let _ambInitializing = {}; // 二重初期化防止フラグ
 
 function toggleAmbient(key) {
   const vid = AMBIENT_VID[key];
   if (!vid) return;
   if (_ambActive[key]) {
-    try { _ambPlayers[key]?.stopVideo(); } catch {}
+    // ── 停止 ──
+    try { _ambPlayers[key]?.pauseVideo(); } catch {}
     _ambActive[key] = false;
     document.querySelector(`.ambItem[data-sound="${key}"] .ambBtn`)?.classList.remove('on');
+    // アクティブなプリセットボタンのハイライトを解除
+    _updatePresetHighlight();
     return;
   }
+  // ── 再生 ──
   _ambActive[key] = true;
   document.querySelector(`.ambItem[data-sound="${key}"] .ambBtn`)?.classList.add('on');
 
   if (_ambPlayers[key]) {
+    // 既にプレイヤーが存在する → そのまま再生
     try {
       const volEl = document.querySelector(`.ambItem[data-sound="${key}"] .ambVol`);
       _ambPlayers[key].setVolume(Math.round((parseFloat(volEl?.value ?? 0.4)) * 100));
@@ -3844,33 +4274,60 @@ function toggleAmbient(key) {
     return;
   }
 
+  // 二重初期化防止
+  if (_ambInitializing[key]) return;
+  _ambInitializing[key] = true;
+
   _ensureYtApi(() => {
-    const wrap = document.getElementById('ambWrap_' + key) || (() => {
-      const d = document.createElement('div');
-      d.id = 'ambWrap_' + key;
-      d.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden';
+    // コンテナ作成
+    let wrap = document.getElementById('ambWrap_' + key);
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'ambWrap_' + key;
+      wrap.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none';
       const inner = document.createElement('div');
       inner.id = 'ambIframe_' + key;
-      d.appendChild(inner);
-      document.body.appendChild(d);
-      return d;
-    })();
+      wrap.appendChild(inner);
+      document.body.appendChild(wrap);
+    }
 
     const volEl = document.querySelector(`.ambItem[data-sound="${key}"] .ambVol`);
     const vol = Math.round((parseFloat(volEl?.value ?? 0.4)) * 100);
+    const pVars = {
+      autoplay: 1,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      rel: 0,          // ← 関連動画を無効化（別音楽再生バグ修正）
+      playsinline: 1,
+      enablejsapi: 1,
+      iv_load_policy: 3,  // アノテーション非表示
+    };
+    // origin: file:// プロトコルでは省略
+    if (location.protocol !== 'file:') pVars.origin = location.origin;
+
     _ambPlayers[key] = new YT.Player('ambIframe_' + key, {
       videoId: vid,
-      playerVars: { autoplay: 1, loop: 1, playlist: vid, controls: 0, disablekb: 1, fs: 0, modestbranding: 1 },
+      height: '1', width: '1',
+      playerVars: pVars,
       events: {
         onReady: (e) => {
+          _ambInitializing[key] = false;
           e.target.setVolume(vol);
           if (_ambActive[key]) e.target.playVideo();
-          else e.target.stopVideo();
+          else e.target.pauseVideo();
         },
         onStateChange: (e) => {
+          // 動画終了 → 先頭から再生（loop:1/playlistは別曲再生バグの原因のため不使用）
           if (e.data === YT.PlayerState.ENDED && _ambActive[key]) {
-            try { e.target.seekTo(0); e.target.playVideo(); } catch {}
+            try { e.target.seekTo(0, true); e.target.playVideo(); } catch {}
           }
+        },
+        onError: (e) => {
+          _ambInitializing[key] = false;
+          console.warn('Ambient player error', key, e.data);
+          _ambActive[key] = false;
+          document.querySelector(`.ambItem[data-sound="${key}"] .ambBtn`)?.classList.remove('on');
         }
       }
     });
@@ -3881,10 +4338,47 @@ function setAmbientVol(key, v) {
   try { _ambPlayers[key]?.setVolume(Math.round(parseFloat(v) * 100)); } catch {}
 }
 
+function setAmbientPreset(name) {
+  const mix = AMBIENT_PRESETS[name]; if (!mix) return;
+  // 現在アクティブなものを全停止（新しい組み合わせに切り替え）
+  Object.keys(AMBIENT_VID).forEach(key => {
+    if (_ambActive[key]) {
+      try { _ambPlayers[key]?.pauseVideo(); } catch {}
+      _ambActive[key] = false;
+      document.querySelector(`.ambItem[data-sound="${key}"] .ambBtn`)?.classList.remove('on');
+    }
+  });
+  // プリセットの音を設定
+  Object.entries(mix).forEach(([key, vol]) => {
+    const volEl = document.querySelector(`.ambItem[data-sound="${key}"] .ambVol`);
+    if (volEl) volEl.value = vol;
+    toggleAmbient(key);         // 再生開始
+    setAmbientVol(key, vol);    // 音量適用
+  });
+  // プリセットボタンのハイライト
+  document.querySelectorAll('.ambPreset').forEach(b => b.classList.remove('on'));
+  document.querySelector(`.ambPreset[data-preset="${name}"]`)?.classList.add('on');
+}
+
+function _updatePresetHighlight() {
+  // いずれかのプリセットのすべての音がアクティブか確認
+  for (const [name, mix] of Object.entries(AMBIENT_PRESETS)) {
+    const keys = Object.keys(mix);
+    const allOn = keys.every(k => _ambActive[k]);
+    const anyOtherOn = Object.keys(AMBIENT_VID).some(k => _ambActive[k] && !mix[k]);
+    document.querySelector(`.ambPreset[data-preset="${name}"]`)?.classList.toggle('on', allOn && !anyOtherOn);
+  }
+}
+
 function clearAmbient() {
   Object.keys(AMBIENT_VID).forEach(key => {
-    if (_ambActive[key]) toggleAmbient(key);
+    if (_ambActive[key]) {
+      try { _ambPlayers[key]?.pauseVideo(); } catch {}
+      _ambActive[key] = false;
+      document.querySelector(`.ambItem[data-sound="${key}"] .ambBtn`)?.classList.remove('on');
+    }
   });
+  document.querySelectorAll('.ambPreset').forEach(b => b.classList.remove('on'));
 }
 function _startInfoPolling(){_stopInfoPolling();$('ytNowPlaying').classList.add('show');_ytInfoIv=setInterval(_pollYtInfo,500);}
 function _stopInfoPolling(){if(_ytInfoIv){clearInterval(_ytInfoIv);_ytInfoIv=null;}}
@@ -3892,7 +4386,28 @@ function _pollYtInfo(){if(!S.ytP)return;try{const cur=S.ytP.getCurrentTime()||0;
 function _updateInfoBadge(state){const b=$('ytStatusBadge');if(state===1){b.textContent=T('playMed');b.className='playing';$('ytPlayPauseBtn').textContent='⏸';}else if(state===2){b.textContent=T('pause').replace('⏸ ','');b.className='paused';$('ytPlayPauseBtn').textContent='▶';}else if(state===0){b.textContent=T('ended');b.className='';}else if(state===3){b.textContent='…';b.className='';}else{b.textContent=T('stopMed');b.className='';}}
 
 /* BGM drag */
-(()=>{let drag=false,ox=0,oy=0;$('bgmDragBar').addEventListener('mousedown',e=>{drag=true;const r=$('bgmPanel').getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;$('bgmPanel').style.transition='none';document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});function mv(e){if(!drag)return;const p=$('bgmPanel');p.style.left=cl(e.clientX-ox,0,window.innerWidth-p.offsetWidth)+'px';p.style.top=cl(e.clientY-oy,0,window.innerHeight-p.offsetHeight)+'px';p.style.bottom='auto';p.style.transform='none';}function up(){drag=false;$('bgmPanel').style.transition='';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}})();
+(()=>{
+  let dragging=false;
+  const el=$('bgmPanel');
+  $('bgmDragBar').addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    const r=el.getBoundingClientRect();
+    // 即座にleft/topへ変換してtransform/bottomをクリア
+    el.style.left=r.left+'px';el.style.top=r.top+'px';
+    el.style.bottom='auto';el.style.transform='none';
+    el.style.transition='none';
+    const ox=e.clientX-r.left, oy=e.clientY-r.top;
+    dragging=true;
+    const mv=e2=>{
+      if(!dragging)return;
+      el.style.left=cl(e2.clientX-ox,0,window.innerWidth-el.offsetWidth)+'px';
+      el.style.top=cl(e2.clientY-oy,0,window.innerHeight-el.offsetHeight)+'px';
+    };
+    const up=()=>{dragging=false;el.style.transition='';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+  });
+})();
 function toggleBgmPanel(){const p=$('bgmPanel');const ws=p.classList.contains('hidden');if(ws&&!p.style.left){p.style.transform='';}p.classList.toggle('hidden');$('ibBgm')?.classList.toggle('on',ws);}
 
 /* ═══ WAVE — Light-mode aware / mobile-optimised ═══ */
@@ -3905,16 +4420,25 @@ const _prefersReducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduc
   const c=$('bgC'),cx=c.getContext('2d',{alpha:true});let W,H,t=0,_af=null;
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
   resize();
-  let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
-  // モバイルでは波アニメーションを無効化（チカチカ防止）
-  if(_mob()){c.style.display='none';return;}
+  let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{resize();if(_mob())drawStatic();},120);});
+  // モバイルでは静的グラデーション背景のみ（アニメなし・バグ修正済み）
+  function drawStatic(){
+    cx.clearRect(0,0,W,H);
+    const[ar,ag,ab]=[S.theme.r,S.theme.g,S.theme.b];
+    const g=cx.createRadialGradient(W*.5,H*.6,0,W*.5,H*.5,H*.8);
+    g.addColorStop(0,`rgba(${ar},${ag},${ab},.12)`);
+    g.addColorStop(1,`rgba(${ar},${ag},${ab},0)`);
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  }
+  if(_mob()){drawStatic();return;}
   function dr(){
     cx.clearRect(0,0,W,H);
     const playing=_isPlaying();
-    const target=playing?(.4+.6*Math.abs(Math.sin(t*2.7))*.7):0;
+    const target=playing?(.4+.6*Math.abs(Math.sin(t*2.7))*.7):.15;
     _waveEnergy+=( target-_waveEnergy)*0.06;
     const e=_waveEnergy,light=isLight();
-    const baseAlpha=light?.32:.035;
+    // 常時ベースアルファを上げて背景がよく透けて見えるようにする
+    const baseAlpha=light?.28:.10;
     const waves=4,step=4;
     for(let i=0;i<waves;i++){
       const base=H*(.15+i*.22);
@@ -3922,7 +4446,7 @@ const _prefersReducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduc
       const y=base+Math.sin(t*.35+i*2.1)*H*.035;
       const g=cx.createLinearGradient(0,y-80,0,y+80);
       const[ar,ag,ab]=[S.theme.r,S.theme.g,S.theme.b];
-      const alpha=(baseAlpha+i*.008)*(1+e*1.1);
+      const alpha=Math.min((baseAlpha+i*.012)*(1+e*.8),.35);
       g.addColorStop(0,`rgba(${ar},${ag},${ab},0)`);
       g.addColorStop(.5,`rgba(${ar},${ag},${ab},${alpha})`);
       g.addColorStop(1,`rgba(${ar},${ag},${ab},0)`);
@@ -3944,23 +4468,29 @@ const _prefersReducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduc
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
   resize();
   let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(resize,120);});
-  // モバイルではパーティクルも無効化（モヤモヤ・チカチカ防止）
-  if(_mob()){c.style.display='none';return;}
-  const cnt=28;
+  const isMobPt=_mob();
+  const cnt=isMobPt?8:22;
   const ps=[];
-  for(let i=0;i<cnt;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1,op:Math.random()*.28+.07,ph:Math.random()*Math.PI*2});
-  function dr(){
-    cx.clearRect(0,0,W,H);const t=performance.now()*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
-    ps.forEach(p=>{p.x+=p.vx*mul;p.y+=p.vy*mul;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
-      const a=p.op*(light?.9:(.5+.5*Math.sin(t+p.ph)))*(1+_waveEnergy*.8)*(light?3.5:1);
-      cx.beginPath();cx.arc(p.x,p.y,p.r*(1+_waveEnergy*.5),0,Math.PI*2);
-      cx.fillStyle=`rgba(${S.theme.r},${S.theme.g},${S.theme.b},${Math.min(a,.85)})`;cx.fill();});
+  for(let i=0;i<cnt;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,op:Math.random()*.4+.12,ph:Math.random()*Math.PI*2});
+  let _lastPt=0;
+  function dr(ts){
+    // モバイルは約20fpsに制限
+    if(isMobPt&&ts-_lastPt<50){_af=requestAnimationFrame(dr);return;}
+    _lastPt=ts;
+    cx.clearRect(0,0,W,H);const t=ts*.001;const mul=1+_waveEnergy*1.5;const light=isLight();
+    ps.forEach(p=>{
+      p.x+=p.vx*mul*(isMobPt?.5:1);p.y+=p.vy*mul*(isMobPt?.5:1);
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      const a=Math.min(p.op*(light?1.2:(.6+.4*Math.sin(t+p.ph)))*(1+_waveEnergy*.6)*(light?2.5:1),.9);
+      cx.beginPath();cx.arc(p.x,p.y,p.r*(1+_waveEnergy*.4),0,Math.PI*2);
+      cx.fillStyle=`rgba(${S.theme.r},${S.theme.g},${S.theme.b},${a})`;cx.fill();
+    });
     _af=requestAnimationFrame(dr);
   }
-  dr();
+  _af=requestAnimationFrame(dr);
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){cancelAnimationFrame(_af);_af=null;}
-    else if(!_af)dr();
+    else if(!_af)_af=requestAnimationFrame(dr);
   });
 })();
 
@@ -4411,6 +4941,10 @@ function _calcStreak(){
   for(let i=dates.length-1;i>=0;i--){const d=_parseLocalDate(dates[i]);d.setHours(0,0,0,0);const diff=_daysDiff(check,d);if(diff===0){streak++;check.setDate(check.getDate()-1);}else if(diff>1)break;}
   _streakCache={key:today,val:streak};return streak;
 }
+// モジュールスクリプトから参照できるよう window に公開
+window.getLevelInfo  = getLevelInfo;
+window._streakTier   = _streakTier;
+window._calcStreak   = _calcStreak;
 function updateStreakBadge(){
   const s=_calcStreak();
   const numEl=$('streakNum');if(numEl)numEl.textContent=s;
@@ -4702,8 +5236,71 @@ function _applyFW(name){const map={task:'fwTask',timer:'fwTimer',cal:'fwCalendar
 
 document.querySelectorAll('.fw').forEach(win=>{
   const tb=win.querySelector('.fwTb');
-  if(tb){tb.addEventListener('mousedown',e=>{if(e.target.closest('.fwDots'))return;if(e.button!==0)return;const r=win.getBoundingClientRect();let ox=e.clientX-r.left,oy=e.clientY-r.top;win.style.transition='none';document.querySelectorAll('.fw').forEach(w=>w.style.zIndex=50);win.style.zIndex=51;const mv=e2=>{let x=cl(e2.clientX-ox,0,window.innerWidth-win.offsetWidth);let y=cl(e2.clientY-oy,0,window.innerHeight-win.offsetHeight);win.style.left=x+'px';win.style.top=y+'px';win.style.right='auto';win.style.bottom='auto';$('sT').classList.toggle('show',e2.clientY<40);$('sB').classList.toggle('show',e2.clientY>window.innerHeight-40);$('sL').classList.toggle('show',e2.clientX<40);$('sR').classList.toggle('show',e2.clientX>window.innerWidth-40);};const up=e2=>{win.style.transition='';['sT','sB','sL','sR'].forEach(id=>$(id).classList.remove('show'));const nm=win.id==='fwTask'?'task':win.id==='fwTimer'?'timer':'cal';const edge=45;if(e2.clientY>window.innerHeight-edge||e2.clientY<edge||e2.clientX<edge||e2.clientX>window.innerWidth-edge)dockFW(nm);document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
-  win.querySelectorAll('[data-d]').forEach(h=>{h.addEventListener('mousedown',e=>{e.stopPropagation();e.preventDefault();const dir=h.dataset.d;const r=win.getBoundingClientRect();let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;const mv=e2=>{const dx=e2.clientX-sx,dy=e2.clientY-sy;let nl=sl,nt=st,nw=sw,nh=sh;if(dir.includes('e'))nw=Math.max(180,sw+dx);if(dir.includes('s'))nh=Math.max(160,sh+dy);if(dir.includes('w')){nw=Math.max(180,sw-dx);nl=sl+dx;}if(dir.includes('n')){nh=Math.max(160,sh-dy);nt=st+dy;}win.style.width=nw+'px';win.style.height=nh+'px';win.style.left=nl+'px';win.style.top=nt+'px';win.style.right='auto';win.style.bottom='auto';if(win.id==='fwTimer'){_lastPomoRenderKey='';_renderPomoStyleW();const swFszW=Math.round(cl((nh-32-34)*0.28,18,56));const sdW=$('swDispW');if(sdW)sdW.style.fontSize=swFszW+'px';}};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});});
+  if(tb){tb.addEventListener('mousedown',e=>{
+    if(e.target.closest('.fwDots'))return;
+    if(e.button!==0)return;
+    // ドラッグ開始時にright/bottom/transformをleft/topに変換してジャンプを防ぐ
+    const r=win.getBoundingClientRect();
+    win.style.left=r.left+'px';
+    win.style.top=r.top+'px';
+    win.style.right='auto';
+    win.style.bottom='auto';
+    win.style.transform='none';
+    win.style.transition='none';
+    const ox=e.clientX-r.left, oy=e.clientY-r.top;
+    document.querySelectorAll('.fw').forEach(w=>w.style.zIndex=50);
+    win.style.zIndex=51;
+    const mv=e2=>{
+      const x=cl(e2.clientX-ox,0,window.innerWidth-win.offsetWidth);
+      const y=cl(e2.clientY-oy,0,window.innerHeight-win.offsetHeight);
+      win.style.left=x+'px';win.style.top=y+'px';
+      $('sT').classList.toggle('show',e2.clientY<40);
+      $('sB').classList.toggle('show',e2.clientY>window.innerHeight-40);
+      $('sL').classList.toggle('show',e2.clientX<40);
+      $('sR').classList.toggle('show',e2.clientX>window.innerWidth-40);
+    };
+    const up=e2=>{
+      win.style.transition='';
+      ['sT','sB','sL','sR'].forEach(id=>$(id).classList.remove('show'));
+      const nm=win.id==='fwTask'?'task':win.id==='fwTimer'?'timer':'cal';
+      const edge=45;
+      if(e2.clientY>window.innerHeight-edge||e2.clientY<edge||e2.clientX<edge||e2.clientX>window.innerWidth-edge)dockFW(nm);
+      document.removeEventListener('mousemove',mv);
+      document.removeEventListener('mouseup',up);
+    };
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+  });}
+  win.querySelectorAll('[data-d]').forEach(h=>{h.addEventListener('mousedown',e=>{
+    e.stopPropagation();e.preventDefault();
+    const dir=h.dataset.d;
+    // リサイズ開始時も同様にright/bottomをleft/topへ変換
+    const r=win.getBoundingClientRect();
+    win.style.left=r.left+'px';
+    win.style.top=r.top+'px';
+    win.style.right='auto';
+    win.style.bottom='auto';
+    win.style.transform='none';
+    let sx=e.clientX,sy=e.clientY,sl=r.left,st=r.top,sw=r.width,sh=r.height;
+    const mv=e2=>{
+      const dx=e2.clientX-sx,dy=e2.clientY-sy;
+      let nl=sl,nt=st,nw=sw,nh=sh;
+      if(dir.includes('e'))nw=Math.max(180,sw+dx);
+      if(dir.includes('s'))nh=Math.max(160,sh+dy);
+      if(dir.includes('w')){nw=Math.max(180,sw-dx);nl=sl+dx;}
+      if(dir.includes('n')){nh=Math.max(160,sh-dy);nt=st+dy;}
+      win.style.width=nw+'px';win.style.height=nh+'px';
+      win.style.left=nl+'px';win.style.top=nt+'px';
+      if(win.id==='fwTimer'){
+        _lastPomoRenderKey='';_renderPomoStyleW();
+        const swFszW=Math.round(cl((nh-32-34)*0.28,18,56));
+        const sdW=$('swDispW');if(sdW)sdW.style.fontSize=swFszW+'px';
+      }
+    };
+    const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+  });});
 });
 
 /* ═══ DOCK ═══ */
@@ -4858,6 +5455,8 @@ function applyAc(r,g,b){
   rt.style.setProperty('--ac2',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.22)`);
   rt.style.setProperty('--ac4',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.40)`);
   rt.style.setProperty('--acb',`rgba(${S.theme.r},${S.theme.g},${S.theme.b},.30)`);
+  // bodyグラデーションをアクセントカラーに合わせて更新
+  document.body.style.backgroundImage=`radial-gradient(ellipse 80% 60% at 20% 80%,rgba(${S.theme.r},${S.theme.g},${S.theme.b},.10) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 80% 20%,rgba(${S.theme.r},${S.theme.g},${S.theme.b},.06) 0%,transparent 60%)`;
   if($('rgbR'))$('rgbR').value=S.theme.r;
   if($('rgbG'))$('rgbG').value=S.theme.g;
   if($('rgbB'))$('rgbB').value=S.theme.b;
@@ -5123,9 +5722,19 @@ function buildUI(){
 function setUIScale(v){
   S.theme.uiScale=v;
   document.documentElement.style.setProperty('--ui-scale',String(v));
-  document.body.style.zoom=String(v);
+  // body.zoom ではなく #main の transform を使う (backdrop-filterと干渉しないため)
+  const m=$('main');
+  if(v===1){
+    m.style.transform='';m.style.width='';m.style.height='';
+  } else {
+    m.style.transform=`scale(${v})`;
+    m.style.transformOrigin='top left';
+    m.style.width=`${100/v}%`;
+    m.style.height=`${100/v}%`;
+  }
+  // zoomは完全に使わない
+  document.body.style.zoom='';
   document.querySelectorAll('.scaleBtn').forEach(b=>b.classList.toggle('on',parseFloat(b.dataset.scale)===v));
-  // zoom後のビューポートでthPanelが見切れないよう max-height を補正
   const panelMaxH=Math.floor(90/v)+'vh';
   const thPanel=$('thPanel');if(thPanel)thPanel.style.maxHeight=panelMaxH;
   _lastPomoRenderKey='';
@@ -5719,9 +6328,42 @@ function _buildPopupHTML(d) {
   const lang = (typeof S !== 'undefined' && S?.lang) || 'ja';
   const labelLogged = lang === 'en' ? 'Logged in' : lang === 'zh' ? '已登录' : lang === 'ko' ? '로그인' : 'ログイン済み';
   const labelGuest  = lang === 'en' ? 'Guest'     : lang === 'zh' ? '访客'   : lang === 'ko' ? '게스트'  : 'ゲスト';
-  return `<div class="onlinePopupRow"><span class="onlinePopupDot logged"></span><span class="onlinePopupLabel">${labelLogged}</span><span>${d.loggedIn}</span><span>人</span></div>`
-       + `<div class="onlinePopupRow"><span class="onlinePopupDot guest"></span><span class="onlinePopupLabel">${labelGuest}</span><span>${d.guest}</span><span>人</span></div>`;
+  const labelOnline = lang === 'en' ? 'Online users' : lang === 'zh' ? '在线用户' : lang === 'ko' ? '온라인 사용자' : 'オンライン中';
+
+  let html = `<div class="onlinePopupRow"><span class="onlinePopupDot logged"></span><span class="onlinePopupLabel">${labelLogged}</span><span>${d.loggedIn}</span><span style="opacity:.5;margin-left:1px">人</span></div>`
+           + `<div class="onlinePopupRow"><span class="onlinePopupDot guest"></span><span class="onlinePopupLabel">${labelGuest}</span><span>${d.guest}</span><span style="opacity:.5;margin-left:1px">人</span></div>`;
+
+  // ログイン中の場合のみ他ユーザーリストを表示
+  const me = _acUser?.uid;
+  if (me && d.loggedInUsers && d.loggedInUsers.length > 0) {
+    const others = d.loggedInUsers.filter(u => u.uid !== me);
+    if (others.length > 0) {
+      html += `<div class="onlineUserDivider"><span>${labelOnline}</span></div>`;
+      html += `<div class="onlineUserList">`;
+      for (const u of others) {
+        const initials = (u.name || '?').charAt(0).toUpperCase();
+        const avatarHTML = u.photo
+          ? `<img src="${u.photo}" alt="" class="onlineUserAvatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            + `<span class="onlineUserAvatarFallback" style="display:none">${initials}</span>`
+          : `<span class="onlineUserAvatarFallback">${initials}</span>`;
+        const tierIcons = ['','🌿','🔥','⚡','💎','🌈','☄️','🌌','✨','♾️'];
+        const tierClass = ['','tier-sprout','tier-fire','tier-thunder','tier-crystal','tier-rainbow','tier-comet','tier-cosmic','tier-transcendent','tier-eternal'];
+        const tIcon = tierIcons[u.tier] || '';
+        const tCls  = tierClass[u.tier] || '';
+        html += `<div class="onlineUserRow">
+          <div class="onlineUserAvatarWrap">${avatarHTML}</div>
+          <div class="onlineUserInfo">
+            <span class="onlineUserName">${_escHtml(u.name || 'Player')}</span>
+            <span class="onlineUserLvl"><span class="onlineUserLvlIcon${tCls?' lvl-icon '+tCls:''}">${u.lvlIcon}</span><span>Lv.${u.lvl}</span>${tIcon?`<span class="onlineUserTierIcon${tCls?' '+tCls:''}">${tIcon}</span>`:''}</span>
+          </div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+  }
+  return html;
 }
+function _escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function toggleOnlinePopup() {
   // どちらのバッジがクリックされたか判定（デスクトップ or モバイル）
@@ -5738,6 +6380,10 @@ function toggleOnlinePopup() {
   if (_onlinePopupOpen) {
     const d = window._onlineDetail;
     popup.innerHTML = _buildPopupHTML(d);
+    // ログイン済みで他ユーザーがいる場合は幅を広げる
+    const me = _acUser?.uid;
+    const hasOthers = me && d.loggedInUsers?.some(u => u.uid !== me);
+    popup.classList.toggle('has-users', !!hasOthers);
     popup.classList.add('show');
     setTimeout(() => document.addEventListener('click', _closeOnlinePopup, { once: true }), 0);
   } else {
@@ -5786,6 +6432,7 @@ window.addXP = function(mins){
 let _acUser = null;
 window._onAuthChange = function(user) {
   _acUser = user;
+  window._acUser = user; // モジュールスクリプトからも参照できるよう公開
   const btn = $('ibAccount');
   if (user) {
     if (btn) btn.classList.add('logged-in');
@@ -5794,7 +6441,8 @@ window._onAuthChange = function(user) {
     const name = user.displayName || user.email?.split('@')[0] || 'User';
     if ($('acDisplayName')) $('acDisplayName').textContent = name;
     if ($('acEmail'))       $('acEmail').textContent       = user.email || '';
-    if ($('acAvatar'))      $('acAvatar').textContent      = (user.displayName || user.email || '?')[0].toUpperCase();
+    // アバター・全箇所アイコン一括更新（アカウントパネル + トップバー + スマホメニュー）
+    _updateAllAvatarUI(user.photoURL || null);
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
     // 表示名入力欄に現在の名前をプリセット
     if ($('acNewName')) $('acNewName').value = user.displayName || '';
@@ -5809,15 +6457,14 @@ window._onAuthChange = function(user) {
       if (_cloudSyncTimer) clearTimeout(_cloudSyncTimer);
       _cloudSyncTimer = setTimeout(_doCloudSync, 3000);
     }
-    // ログイン確定後にpresenceを再書き込み（uid付きで上書き）
-    if (typeof _writePresence === 'function' && typeof _isPrimary !== 'undefined' && _isPrimary) {
-      _writePresence();
-    }
+    // ログイン確定後にpresenceを再書き込み（プロフィール付きで上書き）
+    if (typeof window._refreshPresence === 'function') window._refreshPresence();
   } else {
     if (btn) btn.classList.remove('logged-in');
     const loggedEl = $('acLoggedIn'); if (loggedEl) loggedEl.style.display = 'none';
     const guestEl  = $('acGuest');    if (guestEl)  guestEl.style.display  = 'block';
     if ($('mAccountSub'))   $('mAccountSub').textContent   = 'ログイン・クラウド保存';
+    _updateAllAvatarUI(null); // アイコンをリセット
     if (_cloudSyncTimer) { clearTimeout(_cloudSyncTimer); _cloudSyncTimer = null; }
   }
 };
@@ -6068,6 +6715,137 @@ async function _promptSyncChoice(uid) {
 }
 
 // ── 表示名変更 ──────────────────────────────────────────────
+// ── アバターUI 全箇所一括更新 ─────────────────────────────
+// photoURL がある場合: acAvatar・ibAccount・mSheetMore にアイコン画像表示
+// photoURL がない場合: 文字アバターに戻す
+function _updateAllAvatarUI(photoURL) {
+  const u = window._acUser;
+  // ① アカウントパネル内のアバター
+  const el = $('acAvatar');
+  if (el) {
+    if (photoURL) {
+      el.innerHTML = `<img src="${photoURL}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML=(window._acUser?.displayName||window._acUser?.email||'?')[0].toUpperCase()">`;
+    } else {
+      el.innerHTML = '';
+      el.textContent = (u?.displayName || u?.email || '?')[0].toUpperCase();
+    }
+  }
+  // ✕ ボタン表示制御
+  const delBtn = $('acAvatarDelBtn');
+  if (delBtn) delBtn.style.display = photoURL ? 'flex' : 'none';
+
+  // ② トップバー ibAccount ボタン
+  const ibEmoji = $('ibAccountEmoji');
+  const ibImg   = $('ibAccountImg');
+  if (ibEmoji && ibImg) {
+    if (photoURL) {
+      ibImg.src = photoURL;
+      ibImg.onerror = () => { ibImg.style.display='none'; ibEmoji.style.display=''; };
+      ibImg.style.display = 'block';
+      ibEmoji.style.display = 'none';
+    } else {
+      ibImg.style.display = 'none';
+      ibEmoji.style.display = '';
+    }
+  }
+
+  // ③ スマホ mSheetMore アカウント行
+  const mEmoji = $('mAccountEmoji');
+  const mImg   = $('mAccountImg');
+  if (mEmoji && mImg) {
+    if (photoURL) {
+      mImg.src = photoURL;
+      mImg.onerror = () => { mImg.style.display='none'; mEmoji.style.display=''; };
+      mImg.style.display = 'block';
+      mEmoji.style.display = 'none';
+    } else {
+      mImg.style.display = 'none';
+      mEmoji.style.display = '';
+    }
+  }
+}
+
+// ── アバター削除 ─────────────────────────────────────────
+async function acDeleteAvatarUI() {
+  if (!_acUser || !window._acAPI) return;
+  const btn = $('acAvatarDelBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    await window._acAPI.deleteAvatar(_acUser.uid);
+    // Firestoreからも photoURL を削除
+    try { await window._acAPI.upload(_acUser.uid, { photoURL: null }); } catch {}
+    _updateAllAvatarUI(null);
+    _acMsg('acAvatarMsg','ok','✓ アイコンを削除しました');
+    setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
+  } catch(e) {
+    _acMsg('acAvatarMsg','err','削除失敗: ' + (e.message || '再試行してください'));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✕'; }
+  }
+}
+
+// ── パスワードリセット ──────────────────────────────────
+function acShowReset() {
+  const s = $('acResetSection'); if (s) s.style.display = 'block';
+  // ログインフォームのメールをリセット欄にプリセット
+  const email = $('acLoginEmail')?.value.trim();
+  if (email && $('acResetEmail')) $('acResetEmail').value = email;
+  _acMsg('acResetMsg','','');
+}
+function acHideReset() {
+  const s = $('acResetSection'); if (s) s.style.display = 'none';
+  _acMsg('acResetMsg','','');
+}
+async function acSendReset() {
+  if (!window._acAPI) return;
+  const email = $('acResetEmail')?.value.trim();
+  if (!email) { _acMsg('acResetMsg','err','メールアドレスを入力してください'); return; }
+  const btn = $('acResetBtn'); if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
+  try {
+    await window._acAPI.resetPassword(email);
+    _acMsg('acResetMsg','ok','✓ リセットメールを送信しました。メールをご確認ください。');
+    if ($('acResetEmail')) $('acResetEmail').value = '';
+    setTimeout(() => acHideReset(), 5000);
+  } catch(e) {
+    const msg = e.code === 'auth/user-not-found' ? 'このメールアドレスは登録されていません'
+              : e.code === 'auth/invalid-email'  ? 'メールアドレスの形式が不正です'
+              : (_acErrMsg(e.code) || 'エラーが発生しました');
+    _acMsg('acResetMsg','err', msg);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'リセットメールを送信'; }
+  }
+}
+
+// ── アバター画像アップロード ──────────────────────────────
+// 上部アイコン・スマホメニューアイコン・アカウントパネルを一括更新
+function acAvatarClick() {
+  const input = $('acAvatarInput'); if (input) input.click();
+}
+async function acAvatarChange(event) {
+  const file = event.target.files?.[0]; if (!file) return;
+  if (!_acUser || !window._acAPI) { _acMsg('acAvatarMsg','err','ログインが必要です'); return; }
+  if (file.size > 5 * 1024 * 1024) { _acMsg('acAvatarMsg','err','画像は5MB以下にしてください'); return; }
+  _acMsg('acAvatarMsg','','');
+  const avatarEl = $('acAvatar');
+  const prevHTML = avatarEl ? avatarEl.innerHTML : '';
+  if (avatarEl) avatarEl.innerHTML = '<span style="font-size:10px;opacity:.6">…</span>';
+  try {
+    const photoURL = await window._acAPI.uploadAvatar(_acUser.uid, file);
+    if (_acUser) _acUser.photoURL = photoURL; // ローカルキャッシュを更新
+    window._acUser = _acUser;
+    _updateAllAvatarUI(photoURL);
+    try { await window._acAPI.upload(_acUser.uid, { photoURL }); } catch {}
+    if (typeof window._refreshPresence === 'function') window._refreshPresence(); // presence更新
+    _acMsg('acAvatarMsg','ok','✓ アイコンを更新しました');
+    setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
+  } catch(e) {
+    if (avatarEl) avatarEl.innerHTML = prevHTML;
+    _acMsg('acAvatarMsg','err','アップロード失敗: ' + (e.message||'再試行してください'));
+  } finally {
+    if ($('acAvatarInput')) $('acAvatarInput').value = '';
+  }
+}
+
 async function acUpdateName() {
   if (!_acUser || !window._acAPI) return;
   const name = $('acNewName').value.trim();
@@ -6077,8 +6855,10 @@ async function acUpdateName() {
     try { await window._acAPI.upload(_acUser.uid, { displayName: name }); } catch(e) {}
     _acMsg('acNameMsg','ok','表示名を変更しました ✓');
     if ($('acDisplayName')) $('acDisplayName').textContent = name;
-    if ($('acAvatar'))      $('acAvatar').textContent      = name[0].toUpperCase();
+    // アバター: photoURLがあれば画像維持、なければ文字アバター更新
+    if ($('acAvatar') && !_acUser?.photoURL) $('acAvatar').textContent = name[0].toUpperCase();
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
+    if (typeof window._refreshPresence === 'function') window._refreshPresence(); // presence更新
     setTimeout(() => _acMsg('acNameMsg','',''), 3000);
   } catch(e) {
     _acMsg('acNameMsg','err', _acErrMsg(e.code) || '変更に失敗しました');
