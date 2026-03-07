@@ -2452,7 +2452,7 @@ window._acAPI = {
 <!-- DOCK -->
 <div id="dock" class="pos-bottom">
   <div id="dockBar">
-    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.3.9</span>
+    <span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5">v1.4.0</span>
     <div class="dGrip"></div>
     <div class="dRight">
       <button class="dActB" id="dCollapseBtn" onclick="toggleDock()">▼</button>
@@ -3102,7 +3102,7 @@ window._acAPI = {
           <div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.3.9</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6">v1.4.0</div>
     </div>
   </div>
 </div>
@@ -6526,6 +6526,7 @@ window.addXP = function(mins){
 
 /* ═══ ACCOUNT JS ═══ */
 let _acUser = null;
+let _avatarUploading = false; // アップロード中フラグ（onAuthStateChanged の上書きを防ぐ）
 window._onAuthChange = function(user) {
   _acUser = user;
   window._acUser = user; // モジュールスコープからも参照できるよう window にも設定
@@ -6537,21 +6538,23 @@ window._onAuthChange = function(user) {
     const name = user.displayName || user.email?.split('@')[0] || 'User';
     if ($('acDisplayName')) $('acDisplayName').textContent = name;
     if ($('acEmail'))       $('acEmail').textContent       = user.email || '';
-    // アバター: Firebase Auth の photoURL を使用。なければ localStorage キャッシュで補完
-    let resolvedPhotoURL = user.photoURL || null;
-    if (!resolvedPhotoURL) {
-      try {
-        const cached = localStorage.getItem('_sched_av_' + user.uid);
-        if (cached) {
-          resolvedPhotoURL = cached;
-          // Firebase Auth にも再設定（非同期・エラー無視）
-          if (window._acAPI && window._acAPI._restorePhoto) {
-            window._acAPI._restorePhoto(cached);
+    // アバター: アップロード中は onAuthStateChanged による上書きをスキップ
+    // （ローカルプレビューが消えるのを防ぐ）
+    if (!_avatarUploading) {
+      let resolvedPhotoURL = user.photoURL || null;
+      if (!resolvedPhotoURL) {
+        try {
+          const cached = localStorage.getItem('_sched_av_' + user.uid);
+          if (cached) {
+            resolvedPhotoURL = cached;
+            if (window._acAPI && window._acAPI._restorePhoto) {
+              window._acAPI._restorePhoto(cached);
+            }
           }
-        }
-      } catch {}
+        } catch {}
+      }
+      _updateAllAvatarUI(resolvedPhotoURL);
     }
-    _updateAllAvatarUI(resolvedPhotoURL);
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
     // 表示名入力欄に現在の名前をプリセット
     if ($('acNewName')) $('acNewName').value = user.displayName || '';
@@ -6849,21 +6852,17 @@ function _updateAllAvatarUI(photoURL) {
   const delBtn = $('acAvatarDelBtn');
   if (delBtn) delBtn.style.display = photoURL ? 'flex' : 'none';
 
-  // ② トップバー ibAccount ボタン — onload後に切替（ブランクフラッシュ防止）
+  // ② トップバー ibAccount ボタン
   const ibEmoji = $('ibAccountEmoji');
   const ibImg   = $('ibAccountImg');
   if (ibEmoji && ibImg) {
     if (photoURL) {
-      // 先に新URLをセットし、ロード完了後に表示切替
-      ibImg.onload  = () => { ibImg.style.display = 'block'; ibEmoji.style.display = 'none'; };
-      ibImg.onerror = () => { ibImg.style.display = 'none';  ibEmoji.style.display = ''; ibImg.onload = null; };
+      ibImg.onerror = () => { ibImg.style.display = 'none'; ibEmoji.style.display = ''; };
       ibImg.src = photoURL;
-      // すでにキャッシュ済みなら onload が即時に呼ばれる場合もあるので complete チェック
-      if (ibImg.complete && ibImg.naturalWidth) {
-        ibImg.style.display = 'block'; ibEmoji.style.display = 'none';
-      }
+      ibImg.style.display = 'block';
+      ibEmoji.style.display = 'none';
     } else {
-      ibImg.onload = ibImg.onerror = null;
+      ibImg.onerror = null;
       ibImg.src = '';
       ibImg.style.display = 'none';
       ibEmoji.style.display = '';
@@ -6875,21 +6874,18 @@ function _updateAllAvatarUI(photoURL) {
   const mImg   = $('mAccountImg');
   if (mEmoji && mImg) {
     if (photoURL) {
-      mImg.onload  = () => { mImg.style.display = 'block'; mEmoji.style.display = 'none'; };
-      mImg.onerror = () => { mImg.style.display = 'none';  mEmoji.style.display = ''; mImg.onload = null; };
+      mImg.onerror = () => { mImg.style.display = 'none'; mEmoji.style.display = ''; };
       mImg.src = photoURL;
-      if (mImg.complete && mImg.naturalWidth) {
-        mImg.style.display = 'block'; mEmoji.style.display = 'none';
-      }
+      mImg.style.display = 'block';
+      mEmoji.style.display = 'none';
     } else {
-      mImg.onload = mImg.onerror = null;
+      mImg.onerror = null;
       mImg.src = '';
       mImg.style.display = 'none';
       mEmoji.style.display = '';
     }
   }
 }
-
 // ── アバター削除 ─────────────────────────────────────────
 async function acDeleteAvatarUI() {
   if (!_acUser || !window._acAPI) return;
@@ -6957,22 +6953,37 @@ async function acAvatarChange(event) {
   if (!_acUser || !window._acAPI) { _acMsg('acAvatarMsg','err','ログインが必要です'); return; }
   if (file.size > 5 * 1024 * 1024) { _acMsg('acAvatarMsg','err','画像は5MB以下にしてください'); return; }
   _acMsg('acAvatarMsg','','');
-  const avatarEl = $('acAvatar');
-  const prevHTML = avatarEl ? avatarEl.innerHTML : '';
-  if (avatarEl) avatarEl.innerHTML = '<span style="font-size:10px;opacity:.6">…</span>';
+
+  // ── Step 1: ローカルプレビューを即座に表示（optimistic update）──
+  const localURL = URL.createObjectURL(file);
+  const prevPhotoURL = _acUser?.photoURL || null;
+  _avatarUploading = true; // onAuthStateChanged による上書き防止
+  _updateAllAvatarUI(localURL);
+  // ✕ボタンは確定前から表示（削除でキャンセルできるよう）
+  const delBtn = $('acAvatarDelBtn');
+  if (delBtn) delBtn.style.display = 'flex';
+
+  // ── Step 2: バックグラウンドでアップロード ──
   try {
     const photoURL = await window._acAPI.uploadAvatar(_acUser.uid, file);
-    _acUser = window._acUser; // uploadAvatar 内で同期済みの auth.currentUser を取得
+    URL.revokeObjectURL(localURL); // blob URL は解放
+    _avatarUploading = false;
+    // 最新の photoURL で UI を確定
+    _acUser = window._acUser;
     _updateAllAvatarUI(photoURL);
+    // Firestore にも保存
     try { await window._acAPI.upload(_acUser.uid, { photoURL }); } catch {}
-    // presence を再書き込み（photoURL 付き）
+    // presence 再書き込み（photoURL 付き）
     if (typeof window._writePresence === 'function' && window._isPrimaryTab) {
       window._writePresence();
     }
     _acMsg('acAvatarMsg','ok','✓ アイコンを更新しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
-    if (avatarEl) avatarEl.innerHTML = prevHTML;
+    // 失敗時はローカルURLを解放して前の状態に戻す
+    URL.revokeObjectURL(localURL);
+    _avatarUploading = false;
+    _updateAllAvatarUI(prevPhotoURL);
     _acMsg('acAvatarMsg','err','アップロード失敗: ' + (e.message||'再試行してください'));
   } finally {
     if ($('acAvatarInput')) $('acAvatarInput').value = '';
