@@ -1911,6 +1911,9 @@ input.tIn{font-size:11px;padding:5px 7px}
 .onlineSheetDivider{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--ts);text-transform:uppercase;margin-bottom:10px;opacity:.6}
 .onlineSheetNameRow{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--ra);border:1px solid var(--b1);border-radius:var(--r2);margin-bottom:6px;transition:border-color .18s}
 .onlineSheetNameRow.self{border-color:var(--acb);background:var(--ac0)}
+.onlineSheetTapHint{font-family:var(--mono);font-size:14px;color:var(--ts);opacity:.5;flex-shrink:0;margin-left:auto}
+.onlineSheetNameRow:not(.self):hover .onlineSheetTapHint{opacity:1;color:var(--ac)}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 .onlineSheetDot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--ac);box-shadow:0 0 7px var(--ac4)}
 .onlineSheetName{font-family:var(--mono);font-size:13px;color:var(--tp);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .onlineSheetName.self{color:var(--ac);font-weight:600}
@@ -1986,7 +1989,7 @@ import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/
 import { getDatabase, ref, onValue, onDisconnect, set, serverTimestamp as dbServerTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, linkWithCredential, EmailAuthProvider, updatePassword as fbUpdatePassword, updateEmail as fbUpdateEmail, sendPasswordResetEmail as fbSendPasswordReset } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-// Firebase Storage は Spark 無料プランで使用不可のため削除 → Cloudinary を使用
+// Firebase Storage は Spark 無料プランで使用不可 → Cloudinary を使用
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5cNpGpJRhSheF4DWm5b6O4zsGu4AhW34",
@@ -2003,7 +2006,7 @@ const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 const fdb  = getFirestore(app);
-// stor (Firebase Storage) は使用しない → Cloudinary を使用
+// stor (Firebase Storage) は使用しない
 
 // ─── Auth / Cloud API (window経由でメインJSから呼ぶ) ───
 onAuthStateChanged(auth, user => {
@@ -2031,103 +2034,68 @@ window._acAPI = {
   // パスワードリセットメール送信
   resetPassword: async (email) => { await fbSendPasswordReset(auth, email); },
   // ── Cloudinary 設定（Unsigned preset）──────────────────────────
-  // Firebase Storage は Spark 無料プランで使用不可 → Cloudinary 無料枠(25GB)を使用
-  // Unsigned preset では overwrite 指定不可のため、アップロードごとに新規 URL を生成し
-  // Firestore / Auth / localStorage に最新 URL を保存する方式で運用する。
-  // 古いファイルが Cloudinary 上に蓄積するが 128×128 JPEG で約5〜10KB/枚なので実用上問題なし。
   _CDN_CLOUD:  'dpu9svppl',
   _CDN_PRESET: 'sched avatar',
 
-  // アバター削除
-  // Cloudinary のファイル削除は Admin API（サーバーサイド必須）のためクライアントからは行わない。
-  // Firestore・Auth・localStorage の URL をクリアして表示から消すだけ。
+  // アバター削除（Firestore + Auth + localStorage をクリア）
   deleteAvatar: async (uid) => {
-    // Firestore の photoURL をクリア
     try { await setDoc(doc(fdb,'users',uid),{photoURL:'',updatedAt:serverTimestamp()},{merge:true}); } catch {}
-    // Firebase Auth の photoURL もクリア
     if (auth.currentUser) {
       try { await updateProfile(auth.currentUser, { photoURL: '' }); } catch {}
       try { await auth.currentUser.reload(); } catch {}
       if (window._acUser) window._acUser = auth.currentUser;
     }
-    // localStorage キャッシュも削除
     try { localStorage.removeItem('_sched_av_' + uid); } catch {}
   },
 
-  // アバター画像アップロード
-  // Canvas で 128×128 JPEG に圧縮 → Cloudinary へ送信 → URL を Firestore / Auth に保存
+  // アバター画像アップロード（Canvas 128×128 → Cloudinary → Firestore/Auth/localStorage）
   uploadAvatar: async (uid, file) => {
     const MAX = 128;
-
-    // ① Canvas で正方形クロップ + リサイズ + JPEG 圧縮
     const blob = await new Promise((res, rej) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        if (!img.naturalWidth || !img.naturalHeight) {
-          URL.revokeObjectURL(url);
-          rej(new Error('image format not supported'));
-          return;
-        }
-        const s  = Math.min(img.naturalWidth, img.naturalHeight);
-        const sx = (img.naturalWidth  - s) / 2;
-        const sy = (img.naturalHeight - s) / 2;
-        const c  = document.createElement('canvas');
-        c.width  = MAX; c.height = MAX;
+        if (!img.naturalWidth || !img.naturalHeight) { URL.revokeObjectURL(url); rej(new Error('image format not supported')); return; }
+        const s = Math.min(img.naturalWidth, img.naturalHeight);
+        const sx = (img.naturalWidth - s) / 2, sy = (img.naturalHeight - s) / 2;
+        const c = document.createElement('canvas'); c.width = MAX; c.height = MAX;
         const ctx = c.getContext('2d');
         if (!ctx) { URL.revokeObjectURL(url); rej(new Error('canvas not available')); return; }
         ctx.drawImage(img, sx, sy, s, s, 0, 0, MAX, MAX);
-        c.toBlob(b => {
-          URL.revokeObjectURL(url);
-          b ? res(b) : rej(new Error('canvas toBlob failed'));
-        }, 'image/jpeg', 0.85);
+        c.toBlob(b => { URL.revokeObjectURL(url); b ? res(b) : rej(new Error('canvas toBlob failed')); }, 'image/jpeg', 0.85);
       };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        rej(new Error('画像を読み込めませんでした。対応形式: JPEG, PNG, GIF, WebP'));
-      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('画像を読み込めませんでした。対応形式: JPEG, PNG, GIF, WebP')); };
       img.src = url;
     });
 
-    // ② Cloudinary へアップロード（Unsigned preset）
-    // public_id・overwrite は Unsigned では使用不可 → Cloudinary が自動でファイル名を生成
-    // folder 指定でアセット管理を整理する
+    // Cloudinary へアップロード（folder 指定でアセット整理）
     const form = new FormData();
     form.append('file',          blob, 'avatar.jpg');
     form.append('upload_preset', window._acAPI._CDN_PRESET);
-    form.append('folder',        'avatars'); // Cloudinary 上のフォルダに整理
-
-    const resp = await fetch(
-      `https://api.cloudinary.com/v1_1/${window._acAPI._CDN_CLOUD}/image/upload`,
-      { method: 'POST', body: form }
-    );
-    if (!resp.ok) {
-      const errJson = await resp.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Cloudinary upload failed (' + resp.status + ')');
-    }
+    form.append('folder',        'avatars');
+    const resp = await fetch(`https://api.cloudinary.com/v1_1/${window._acAPI._CDN_CLOUD}/image/upload`, { method: 'POST', body: form });
+    if (!resp.ok) { const j = await resp.json().catch(() => ({})); throw new Error(j.error?.message || 'Cloudinary upload failed (' + resp.status + ')'); }
     const json = await resp.json();
-    const photoURL = json.secure_url; // 新規生成された CDN URL
+    const photoURL = json.secure_url;
 
-    // ③ Firestore に最新 URL を保存（クラウド同期・別端末への反映用）
+    // Firestore に保存（クラウド同期・別端末への反映）
     try { await setDoc(doc(fdb,'users',uid),{photoURL,updatedAt:serverTimestamp()},{merge:true}); } catch {}
-    // ④ Firebase Auth プロフィールを更新
+    // Firebase Auth に photoURL を設定（presence の _writePresence で参照できるよう）
     if (auth.currentUser) {
       try { await updateProfile(auth.currentUser, { photoURL }); } catch {}
       try { await auth.currentUser.reload(); } catch {}
       if (window._acUser) window._acUser = auth.currentUser;
     }
-    // ⑤ localStorage にキャッシュ（高速表示・オフライン対応）
+    // localStorage にキャッシュ（高速表示・オフライン・_writePresence フォールバック用）
     try { localStorage.setItem('_sched_av_' + uid, photoURL); } catch {}
-
     return photoURL;
   },
 
-  // 現在ユーザーのプロバイダ一覧（google.com / password など）
   getProviders: () => { const u=auth.currentUser; return u ? u.providerData.map(p=>p.providerId) : []; },
 
-  // Firestore から photoURL を取得して表示を復元（リロード後・別端末でキャッシュなし時）
+  // Firestore から photoURL を取得して復元（リロード後・別端末でキャッシュなし時）
   _restorePhoto: async (uid) => {
-    try { if (localStorage.getItem('_sched_av_' + uid)) return; } catch {} // キャッシュあれば不要
+    try { if (localStorage.getItem('_sched_av_' + uid)) return; } catch {}
     try {
       const snap = await getDoc(doc(fdb,'users',uid));
       if (snap.exists()) {
@@ -2188,15 +2156,23 @@ window._acAPI = {
   // ── Firebase への書き込み ──
   const _writePresence = () => {
     const payload = { t: dbServerTimestamp() };
-    // window._acUser: モジュール外のメインスクリプトで管理されるユーザー情報を参照
     if (window._acUser?.uid) {
       payload.uid  = window._acUser.uid;
-      // 名前: displayName → メールのローカル部 → 'User' の順でフォールバック
-      payload.name = window._acUser.displayName
-        || window._acUser.email?.split('@')[0]
-        || 'User';
-      // アバター画像URL（設定されている場合のみ）
-      if (window._acUser.photoURL) payload.photoURL = window._acUser.photoURL;
+      payload.name = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
+      // photoURL: Firebase Auth → localStorage キャッシュ の順でフォールバック
+      // （Cloudinary URL は Auth に反映されない場合があるため localStorage も確認）
+      const photoURL = window._acUser.photoURL
+        || (() => { try { return localStorage.getItem('_sched_av_' + window._acUser.uid) || ''; } catch { return ''; } })();
+      if (photoURL) payload.photoURL = photoURL;
+      // ユーザー統計（タップ時プロフィール表示用）
+      if (typeof window._getMyPresenceStats === 'function') {
+        const stats = window._getMyPresenceStats();
+        payload.totalMinutes = stats.totalMinutes || 0;
+        payload.streak       = stats.streak       || 0;
+        payload.levelIdx     = stats.levelIdx     || 0;
+        payload.levelIcon    = stats.levelIcon    || '🌱';
+        payload.levelName    = stats.levelName    || 'Seedling';
+      }
     }
     return set(_presRef, payload).catch(e => console.error("presence write error:", e));
   };
@@ -2205,8 +2181,8 @@ window._acAPI = {
   Object.defineProperty(window, '_isPrimaryTab', { get: () => _isPrimary });
 
   // ── オンラインカウント更新（共通処理）──
-  function _applyOnlineCount(n, loggedIn, guest, names, photoURLs) {
-    window._onlineDetail = { total: n, loggedIn, guest, names: names || [], photoURLs: photoURLs || {} };
+  function _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users) {
+    window._onlineDetail = { total: n, loggedIn, guest, names: names || [], photoURLs: photoURLs || {}, users: users || {} };
     if (typeof window._setOnlineCount === 'function') {
       window._setOnlineCount(n);
     } else {
@@ -2245,8 +2221,16 @@ window._acAPI = {
       const n         = loggedIn + guest;
       const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
       const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
-      _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
-      if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs }); } catch {} }
+      // uid → 全データ（プロフィール表示用）
+      const users     = Object.fromEntries(
+        [...new Map(loggedEntries.map(v => [v.uid, v])).values()].map(v => [v.uid, {
+          name: v.name || 'User', photoURL: v.photoURL || '',
+          totalMinutes: v.totalMinutes || 0, streak: v.streak || 0,
+          levelIdx: v.levelIdx || 0, levelIcon: v.levelIcon || '🌱', levelName: v.levelName || 'Seedling'
+        }])
+      );
+      _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users);
+      if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs, users }); } catch {} }
     });
   }
 
@@ -2270,23 +2254,28 @@ window._acAPI = {
                 const data = snap.val() || {};
                 const entries = Object.values(data);
                 const loggedEntries = entries.filter(v => v && v.uid);
-                // 同一 uid（複数端末・タブ）は1人にカウント
                 const loggedIn  = new Set(loggedEntries.map(v => v.uid)).size;
                 const guest     = entries.length - loggedEntries.length;
                 const n         = loggedIn + guest;
                 const names     = [...new Map(loggedEntries.map(v => [v.uid, v.name || 'User'])).values()];
                 const photoURLs = Object.fromEntries(loggedEntries.filter(v=>v.photoURL).map(v=>[v.uid, v.photoURL]));
-                _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
-                if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs }); } catch {} }
+                const users     = Object.fromEntries(
+                  [...new Map(loggedEntries.map(v => [v.uid, v])).values()].map(v => [v.uid, {
+                    name: v.name || 'User', photoURL: v.photoURL || '',
+                    totalMinutes: v.totalMinutes || 0, streak: v.streak || 0,
+                    levelIdx: v.levelIdx || 0, levelIcon: v.levelIcon || '🌱', levelName: v.levelName || 'Seedling'
+                  }])
+                );
+                _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users);
+                if (_bc) { try { _bc.postMessage({ type: 'ONLINE_COUNT', n, loggedIn, guest, names, photoURLs, users }); } catch {} }
               });
             }
           }
         }, Math.floor(Math.random() * 120));
       } else if (e.data?.type === 'ONLINE_COUNT') {
-        // プライマリからオンラインカウントを受け取る（非プライマリ用）
         if (!_isPrimary) {
-          const { n, loggedIn, guest, names, photoURLs } = e.data;
-          _applyOnlineCount(n, loggedIn, guest, names, photoURLs);
+          const { n, loggedIn, guest, names, photoURLs, users } = e.data;
+          _applyOnlineCount(n, loggedIn, guest, names, photoURLs, users);
         }
       }
     };
@@ -6434,14 +6423,13 @@ function _buildSheetHTML(d) {
   const labelOnline  = lang === 'en' ? 'Online now' : lang === 'zh' ? '当前在线' : lang === 'ko' ? '접속 중' : 'オンライン中のユーザー';
   const labelYou     = lang === 'en' ? 'you'        : lang === 'zh' ? '你'      : lang === 'ko' ? '나'      : 'あなた';
   const labelLogin   = lang === 'en' ? 'Log in to see who\'s here' : lang === 'zh' ? '登录后可查看在线用户' : lang === 'ko' ? '로그인하면 접속 중인 사람을 볼 수 있어요' : 'ログインすると、今いる人を確認できます';
-  const unit         = lang === 'en' ? ' people' : lang === 'ko' ? '명' : '人';
-  const labelGuests  = lang === 'en' ? '+ guest(s) browsing' : lang === 'zh' ? `+ ${d.guest}位访客浏览中` : lang === 'ko' ? `+ 게스트 ${d.guest}명` : `+ ゲスト ${d.guest}人が閲覧中`;
+  const labelGuests  = lang === 'en' ? `+ ${d.guest} guest(s)` : lang === 'ko' ? `+ 게스트 ${d.guest}명` : `+ ゲスト ${d.guest}人が閲覧中`;
+  const labelTap     = lang === 'en' ? 'Tap to view profile' : lang === 'ko' ? '프로필 보기' : 'タップでプロフィール表示';
 
-  // サマリーカード
   let html = `<div class="onlineSheetSummary">
     <div class="onlineSheetSummaryCard">
       <div class="onlineSheetSummaryNum logged">${d.loggedIn}</div>
-      <div class="onlineSheetSummaryLabel">${labelLogged}${unit.trim() ? '' : ''}</div>
+      <div class="onlineSheetSummaryLabel">${labelLogged}</div>
     </div>
     <div class="onlineSheetSummaryCard">
       <div class="onlineSheetSummaryNum">${d.guest}</div>
@@ -6449,32 +6437,34 @@ function _buildSheetHTML(d) {
     </div>
   </div>`;
 
-  // 名前リスト（ログイン中のみ）
   const names = d.names || [];
+  const users = d.users || {};
+
   if (window._acUser && names.length > 0) {
     const selfName = window._acUser.displayName || window._acUser.email?.split('@')[0] || 'User';
-    const photoURLs = d.photoURLs || {};
     // 自分を先頭に並べる
     const sorted = [...names].sort((a, b) => (a === selfName ? -1 : b === selfName ? 1 : 0));
     html += `<div class="onlineSheetDivider">${labelOnline}</div>`;
     sorted.forEach(name => {
       const isSelf = name === selfName;
-      const selfPhoto = isSelf ? (window._acUser.photoURL || null) : null;
-      let avatarHTML = '';
-      if (selfPhoto) {
-        avatarHTML = `<div class="onlineSheetAvatar"><img src="${_escapeHTML(selfPhoto)}" alt="" onerror="this.parentElement.textContent='${_escapeHTML((name[0]||'?').toUpperCase())}'"></div>`;
-      } else {
-        avatarHTML = `<div class="onlineSheetAvatar">${_escapeHTML((name[0]||'?').toUpperCase())}</div>`;
-      }
-      html += `<div class="onlineSheetNameRow${isSelf ? ' self' : ''}">
-        ${avatarHTML}
+      // uid を名前から逆引き（users マップ活用）
+      const uid = Object.keys(users).find(k => users[k].name === name) || '';
+      const udata = users[uid] || {};
+      // アバター: 自分は localStorage も確認、他者は presence の photoURL
+      const myPhoto = isSelf
+        ? (window._acUser.photoURL || (() => { try { return localStorage.getItem('_sched_av_' + window._acUser.uid) || ''; } catch { return ''; } })())
+        : (udata.photoURL || '');
+      const avatarInner = myPhoto
+        ? `<img src="${_escapeHTML(myPhoto)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='${_escapeHTML((name[0]||'?').toUpperCase())}';">`
+        : _escapeHTML((name[0]||'?').toUpperCase());
+      const clickAttr = !isSelf && uid ? `onclick="showUserProfile('${_escapeHTML(uid)}')" title="${labelTap}" style="cursor:pointer"` : '';
+      html += `<div class="onlineSheetNameRow${isSelf ? ' self' : ''}" ${clickAttr}>
+        <div class="onlineSheetAvatar">${avatarInner}</div>
         <span class="onlineSheetName${isSelf ? ' self' : ''}">${_escapeHTML(name)}</span>
-        ${isSelf ? `<span class="onlineSheetYouBadge">${labelYou}</span>` : ''}
+        ${isSelf ? `<span class="onlineSheetYouBadge">${labelYou}</span>` : `<span class="onlineSheetTapHint">›</span>`}
       </div>`;
     });
-    if (d.guest > 0) {
-      html += `<div class="onlineSheetGuestNote">👤 ${labelGuests}</div>`;
-    }
+    if (d.guest > 0) html += `<div class="onlineSheetGuestNote">👤 ${labelGuests}</div>`;
   } else if (!window._acUser) {
     html += `<div class="onlineSheetEmpty">🔒 ${labelLogin}</div>`;
   } else if (names.length === 0 && d.loggedIn === 0) {
@@ -6487,12 +6477,68 @@ function _buildSheetHTML(d) {
 function openOnlineSheet() {
   const body = $('onlineSheetBody');
   if (!body) return;
-  body.innerHTML = _buildSheetHTML(window._onlineDetail);
+  // 最新データで描画（スマホでも必ずリフレッシュ）
+  body.innerHTML = _buildSheetHTML(window._onlineDetail || { total:1, loggedIn:0, guest:1, names:[], photoURLs:{}, users:{} });
   const ov = $('onlineSheetOv');
   const sh = $('onlineSheet');
-  if (ov) ov.style.display = 'block';
-  // 1フレーム後に open クラスを付けてアニメーション開発
+  if (ov) { ov.style.display = 'block'; }
   requestAnimationFrame(() => { if (sh) sh.classList.add('open'); });
+}
+
+// ── ユーザープロフィールポップアップ ──────────────────────────
+function showUserProfile(uid) {
+  const users = window._onlineDetail?.users || {};
+  const u = users[uid];
+  if (!u) return;
+  const lang = (typeof S !== 'undefined' && S?.lang) || 'ja';
+  const labelWork = lang === 'en' ? 'Work time' : lang === 'ko' ? '작업 시간' : '作業時間';
+  const labelStreak = lang === 'en' ? 'Streak' : lang === 'ko' ? '스트릭' : 'ストリーク';
+  const labelLevel = lang === 'en' ? 'Level' : lang === 'ko' ? '레벨' : 'レベル';
+  const labelDay = lang === 'en' ? 'days' : lang === 'ko' ? '일' : '日';
+  const labelMin = lang === 'en' ? 'min' : lang === 'ko' ? '분' : '分';
+  const labelClose = lang === 'en' ? 'Close' : lang === 'ko' ? '닫기' : '閉じる';
+
+  // 既存ポップアップを削除
+  document.getElementById('_userProfilePop')?.remove();
+
+  const hours = Math.floor((u.totalMinutes || 0) / 60);
+  const mins  = (u.totalMinutes || 0) % 60;
+  const timeStr = hours > 0 ? `${hours}h ${mins}${labelMin}` : `${mins}${labelMin}`;
+  const photoHTML = u.photoURL
+    ? `<img src="${_escapeHTML(u.photoURL)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : '';
+  const fallbackHTML = `<span style="${u.photoURL ? 'display:none' : 'display:flex'};width:100%;height:100%;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--bg);font-family:var(--ui)">${_escapeHTML((u.name[0]||'?').toUpperCase())}</span>`;
+
+  const pop = document.createElement('div');
+  pop.id = '_userProfilePop';
+  pop.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)';
+  pop.innerHTML = `
+    <div style="background:var(--sf);border:1px solid var(--b2);border-radius:18px 18px 0 0;width:100%;max-width:420px;padding:24px 20px 32px;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1)">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--ac2);flex-shrink:0;overflow:hidden;position:relative">${photoHTML}${fallbackHTML}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--ui);font-size:15px;font-weight:800;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escapeHTML(u.name)}</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ac);margin-top:2px">${_escapeHTML(u.levelIcon)} ${_escapeHTML(u.levelName)} · Lv.${(u.levelIdx||0)+1}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ac)">${(u.levelIdx||0)+1}</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelLevel}</div>
+        </div>
+        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${timeStr}</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelWork}</div>
+        </div>
+        <div style="background:var(--ra);border:1px solid var(--b1);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tp)">${u.streak||0}<span style="font-size:10px">${labelDay}</span></div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:2px;letter-spacing:1px">${labelStreak}</div>
+        </div>
+      </div>
+      <button onclick="document.getElementById('_userProfilePop').remove()" style="width:100%;padding:11px;border-radius:10px;background:var(--b1);border:1px solid var(--b2);color:var(--ts);font-family:var(--mono);font-size:11px;cursor:pointer">${labelClose}</button>
+    </div>`;
+  pop.addEventListener('click', e => { if (e.target === pop) pop.remove(); });
+  document.body.appendChild(pop);
 }
 function closeOnlineSheet() {
   const sh = $('onlineSheet');
@@ -6581,19 +6627,13 @@ window._onAuthChange = function(user) {
     if ($('acEmail'))       $('acEmail').textContent       = user.email || '';
     // アバター: アップロード中は onAuthStateChanged による上書きをスキップ
     if (!_avatarUploading) {
-      // 優先順位: ① Auth photoURL → ② localStorage キャッシュ → ③ Firestore（非同期）
+      // ① Auth photoURL → ② localStorage キャッシュ → ③ Firestore（非同期）
       let resolvedPhotoURL = user.photoURL || null;
       if (!resolvedPhotoURL) {
-        try {
-          const cached = localStorage.getItem('_sched_av_' + user.uid);
-          if (cached) resolvedPhotoURL = cached;
-        } catch {}
+        try { const c = localStorage.getItem('_sched_av_' + user.uid); if (c) resolvedPhotoURL = c; } catch {}
       }
       _updateAllAvatarUI(resolvedPhotoURL);
-      // キャッシュがなければ Firestore から非同期で取得・反映
-      if (!resolvedPhotoURL && window._acAPI && window._acAPI._restorePhoto) {
-        window._acAPI._restorePhoto(user.uid);
-      }
+      if (!resolvedPhotoURL && window._acAPI?._restorePhoto) window._acAPI._restorePhoto(user.uid);
     }
     if ($('mAccountSub'))   $('mAccountSub').textContent   = '✓ ' + name;
     // 表示名入力欄に現在の名前をプリセット
@@ -6935,9 +6975,7 @@ async function acDeleteAvatarUI() {
     await window._acAPI.deleteAvatar(_acUser.uid);
     _acUser = window._acUser;
     _updateAllAvatarUI(null);
-    if (typeof window._writePresence === 'function' && window._isPrimaryTab) {
-      window._writePresence();
-    }
+    if (typeof window._writePresence === 'function' && window._isPrimaryTab) window._writePresence();
     _acMsg('acAvatarMsg','ok','✓ アイコンを削除しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
@@ -6999,17 +7037,13 @@ async function acAvatarChange(event) {
   const delBtn = $('acAvatarDelBtn');
   if (delBtn) delBtn.style.display = 'flex';
 
-  // ── Step 2: Cloudinary へアップロード ──
   try {
-    const uid = _acUser.uid; // 非同期中に参照が変わっても安全なよう先に保存
+    const uid = _acUser.uid;
     const photoURL = await window._acAPI.uploadAvatar(uid, file);
     URL.revokeObjectURL(localURL);
-    // UI確定 → フラグ解除の順（onAuthStateChanged の上書き防止）
     _updateAllAvatarUI(photoURL);
     _avatarUploading = false;
-    if (typeof window._writePresence === 'function' && window._isPrimaryTab) {
-      window._writePresence();
-    }
+    if (typeof window._writePresence === 'function' && window._isPrimaryTab) window._writePresence();
     _acMsg('acAvatarMsg','ok','✓ アイコンを更新しました');
     setTimeout(() => _acMsg('acAvatarMsg','',''), 3000);
   } catch(e) {
@@ -7148,6 +7182,71 @@ async function syncFromCloud() {
       });
     });
   }
+})();
+
+// ── presence 統計エクスポート（Firebase モジュールから参照）──────
+// _writePresence が window 経由で呼び出すため window に公開する
+window._getMyPresenceStats = () => {
+  const tm = S?.streak?.totalMinutes || 0;
+  const streak = (typeof _calcStreak === 'function') ? _calcStreak() : 0;
+  const info = (typeof getLevelInfo === 'function') ? getLevelInfo(tm) : null;
+  return {
+    totalMinutes: tm,
+    streak,
+    levelIdx:  info ? info.idx      : 0,
+    levelIcon: info ? info.lv.icon  : '🌱',
+    levelName: info ? info.lv.name  : 'Seedling',
+  };
+};
+
+// ── アカウント登録促進 ランダム通知 ─────────────────────────────
+// 未ログイン時のみ表示。メッセージをランダムに選び、不規則な間隔で表示する
+(function _schedulePromoNotifs() {
+  // 既にログイン済みなら何もしない
+  if (window._acUser) return;
+
+  const PROMOS = [
+    { icon:'☁️', title:'データをクラウドに保存',   sub:'アカウント作成でどのデバイスからでもデータにアクセス', id:'promo_cloud'   },
+    { icon:'👥', title:'今いる人が見えるように',    sub:'ログインするとオンライン中のユーザーを確認できます',   id:'promo_online'  },
+    { icon:'🔄', title:'複数デバイスで同期',        sub:'スマホとPCでタスク・実績をリアルタイム同期',          id:'promo_sync'    },
+    { icon:'🏆', title:'実績をずっと残す',           sub:'レベルやストリークをクラウドに保存。消えない達成記録',  id:'promo_achiev'  },
+    { icon:'🆓', title:'完全無料・登録30秒',         sub:'メールアドレスだけで今すぐ始められます',              id:'promo_free'    },
+    { icon:'📊', title:'作業履歴をどこでも確認',     sub:'累計作業時間・連続日数をいつでも参照できます',        id:'promo_history' },
+  ];
+
+  let _shown = new Set();
+
+  function _makeActionHTML() {
+    return `
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start">
+        <button class="bDon" onclick="openAccount()" style="background:var(--ac);color:var(--bg);border:none;padding:5px 12px;border-radius:99px;font-family:var(--mono);font-size:8px;cursor:pointer;white-space:nowrap">アカウント作成</button>
+        <span style="font-family:var(--mono);font-size:7px;color:var(--ts);opacity:.7;letter-spacing:.3px">🔓 ログインするとこの通知は消えます</span>
+      </div>`;
+  }
+
+  function _showNextPromo() {
+    if (window._acUser) return;
+    if (_shown.size >= PROMOS.length) _shown.clear();
+    const remaining = PROMOS.filter(p => !_shown.has(p.id));
+    if (!remaining.length) return;
+    const p = remaining[Math.floor(Math.random() * remaining.length)];
+    _shown.add(p.id);
+    _pushNotif(p.id, p.icon, p.title, p.sub, _makeActionHTML(), '', 12000);
+    // 次の通知は 3〜6分後（ランダム）
+    const next = 180000 + Math.random() * 180000;
+    setTimeout(_showNextPromo, next);
+  }
+
+  // ── 起動時: 4〜8秒後にまず1件表示（UIが落ち着いてから）──
+  setTimeout(() => {
+    if (window._acUser) return; // その間にログインしていたらスキップ
+    const p = PROMOS[Math.floor(Math.random() * PROMOS.length)];
+    _shown.add(p.id);
+    _pushNotif(p.id, p.icon, p.title, p.sub, _makeActionHTML(), '', 12000);
+    // 2枚目以降は 3〜6分後
+    const next = 180000 + Math.random() * 180000;
+    setTimeout(_showNextPromo, next);
+  }, 4000 + Math.random() * 4000);
 })();
 
 function init(){
