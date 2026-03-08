@@ -147,111 +147,6 @@ input:focus-visible,textarea:focus-visible{
   .lvl-bar{transition:none!important}
 }
 /* ════════════════════════════════════════════════════════ */
-
-/* ════════════════════════════════════════════════════════
-   OPTIMIZATION PATCH v2 — ARIA / KEYBOARD / TOUCH / PERF
-   ════════════════════════════════════════════════════════ */
-
-/* B1 — role="button" elements need pointer cursor ──── */
-[role="button"]{cursor:pointer}
-
-/* B2 — range input focus ring ───────────────────────── */
-input[type="range"]:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:4px!important;
-  border-radius:3px}
-
-/* B3 — color picker focus ───────────────────────────── */
-input[type="color"]:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:3px!important;
-  border-radius:var(--r2)}
-
-/* B4 — heatmap cell keyboard focus ──────────────────── */
-.strHeatCell:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:2px!important;
-  transform:scale(1.4);
-  z-index:1;position:relative}
-
-/* B5 — ambBtn aria-pressed styling ──────────────────── */
-.ambBtn[aria-pressed="true"]{
-  border-color:var(--ac)!important;
-  background:var(--ac0)!important;
-  box-shadow:0 0 10px var(--ac2)!important}
-.ambBtn[aria-pressed="true"] span{color:var(--ac)!important}
-
-/* B6 — ambPreset aria-pressed styling ───────────────── */
-.ambPreset[aria-pressed="true"]{
-  border-color:var(--ac)!important;color:var(--ac)!important;
-  background:var(--ac0)!important;box-shadow:0 0 8px var(--ac2)!important}
-
-/* B7 — acSyncRow keyboard focus ─────────────────────── */
-.acSyncRow:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:2px!important;
-  border-radius:var(--r2)}
-
-/* B8 — fwDot keyboard focus ─────────────────────────── */
-.fwDot:focus-visible{
-  outline:2px solid rgba(255,255,255,.6)!important;
-  outline-offset:2px!important}
-
-/* B9 — calNavTitle as interactive element ───────────── */
-.calNavTitle[role="button"]:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:3px!important;
-  border-radius:var(--r2)}
-
-/* B10 — mobile nav: ensure 44px on all devices (not just coarse) */
-@media(max-width:768px){
-  .mnBtn{min-height:52px!important}
-  .ambBtn{min-height:44px!important;min-width:44px!important}
-}
-
-/* B11 — iOS input zoom prevention (comprehensive) ──── */
-@supports(-webkit-touch-callout:none){
-  input,textarea,select{font-size:max(16px, 1em)!important}
-}
-
-/* B12 — #dockBar grab cursor also touchable ─────────── */
-#dockBar{touch-action:none}
-
-/* B13 — Ensure overlay scroll doesn't leak to body ──── */
-#streakPanel,#thPanel,#accountPanel,#changelogPanel{
-  overscroll-behavior:contain}
-
-/* B14 — Visible focus for strHeatCell tabindex ─────── */
-.strHeatCell[tabindex="0"]:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:1px!important;
-  border-radius:3px}
-
-/* B15 — streakBadge / levelBadge keyboard ring ─────── */
-#streakBadge:focus-visible,#levelBadge:focus-visible,
-#onlineBadge:focus-visible,#onlineBadgeMobile:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:3px!important;
-  border-radius:7px!important}
-
-/* B16 — mTaskPreview focus ──────────────────────────── */
-#mTaskPreview:focus-visible{
-  outline:2px solid var(--ac)!important;
-  outline-offset:2px!important}
-
-/* B17 — Reduced motion: keep prefers-reduced-motion for mobile ── */
-@media(prefers-reduced-motion:reduce) and (max-width:768px){
-  .mSheet{transition-duration:.12s!important}
-  #dock{transition-duration:.12s!important}
-}
-
-/* B18 — "On" button state for ambPreset (CSS fallback) ─ */
-.ambPreset.on{
-  border-color:var(--ac)!important;color:var(--ac)!important;
-  background:var(--ac0)!important;box-shadow:0 0 8px var(--ac2)!important}
-
-/* ════════════════════════════════════════════════════════ */
-
 </style>
 
 <script type="module">
@@ -509,7 +404,7 @@ try { if (_bc) _bc.close(); } catch {}
 window.addEventListener('beforeunload', _cleanupPresence, { once: true });
 window.addEventListener('pagehide',     _cleanupPresence, { once: true });
 
-</script></head><body><a class="skip-link" href="#dock">コンテンツへスキップ</a><div id="installBanner"><span class="ib-icon">📱</span><div class="ib-text"><div class="ib-title" data-i18n="pwaInstall">ホーム画面に追加</div><div class="ib-sub">SCHEDをアプリとして使う</div></div><button onclick="doInstall()" class="ib-add">追加</button><button onclick="dismissInstall()" class="ib-close" aria-label="バナーを閉じる">×</button></div><canvas id="bgC" aria-hidden="true"></canvas><canvas id="ptC" aria-hidden="true"></canvas><canvas id="sakuraC" aria-hidden="true"></canvas><canvas id="snowC" aria-hidden="true"></canvas><canvas id="personaC" aria-hidden="true"></canvas><div class="snap" id="sT" aria-hidden="true"></div><div class="snap" id="sB" aria-hidden="true"></div><div class="snap" id="sL" aria-hidden="true"></div><div class="snap" id="sR" aria-hidden="true"></div><div id="accountOv" role="dialog" aria-modal="true" aria-labelledby="acPanelTitle" onclick="acOvCk(event)"><div id="accountPanel"><div class="acHeader"><span class="acTitle" id="acPanelTitle">👤 ACCOUNT</span><button class="acClose" onclick="closeAccount()" aria-label="閉じる">×</button></div><div class="acBody"><div id="acLoggedIn" style="display:none"><div class="acUserInfo"><div class="acAvatarWrap" role="button" tabindex="0" onclick="acAvatarClick()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();acAvatarClick()}" title="アイコンを変更" aria-label="プロフィール画像を変更" style="position:relative;cursor:pointer"><div class="acAvatar" id="acAvatar">?</div><div class="acAvatarEdit">✎</div><button id="acAvatarDelBtn" onclick="event.stopPropagation(); acDeleteAvatarUI()" title="アイコンを削除" style="display:none;position:absolute;top:-5px;right:-5px;z-index:10;width:18px;height:18px;border-radius:50%;background:var(--red);border:2px solid var(--sf);color:#fff;font-size:9px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0">✕</button></div><input type="file" id="acAvatarInput" accept="image/*" style="display:none" onchange="acAvatarChange(event)"><div><div class="acUserName" id="acDisplayName">—</div><div class="acUserEmail" id="acEmail">—</div></div></div><div id="acAvatarMsg" class="acMsg" style="margin-top:4px;margin-bottom:2px"></div><div class="acSyncRow" role="button" tabindex="0" onclick="syncToCloud()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();syncToCloud()}"><span class="acSyncLabel">☁ クラウドに保存 <span style="font-size:8px;opacity:.6;margin-left:4px">（自動）</span></span><span class="acSyncVal" id="acUploadStatus">今すぐ同期</span></div><div class="acSyncRow" role="button" tabindex="0" onclick="syncFromCloud()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();syncFromCloud()}"><span class="acSyncLabel">⬇ クラウドから復元</span><span class="acSyncVal" id="acDownloadStatus">復元する</span></div><div id="acSyncMsg" class="acMsg"></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)"><div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">👤 表示名</div><div style="display:flex;gap:6px"><input type="text" id="acNewName" placeholder="新しい表示名"
+</script></head><body><a class="skip-link" href="#dock">コンテンツへスキップ</a><div id="installBanner"><span class="ib-icon">📱</span><div class="ib-text"><div class="ib-title" data-i18n="pwaInstall">ホーム画面に追加</div><div class="ib-sub">SCHEDをアプリとして使う</div></div><button onclick="doInstall()" class="ib-add">追加</button><button onclick="dismissInstall()" class="ib-close" aria-label="バナーを閉じる">×</button></div><canvas id="bgC" aria-hidden="true"></canvas><canvas id="ptC" aria-hidden="true"></canvas><canvas id="sakuraC" aria-hidden="true"></canvas><canvas id="snowC" aria-hidden="true"></canvas><canvas id="personaC" aria-hidden="true"></canvas><div class="snap" id="sT" aria-hidden="true"></div><div class="snap" id="sB" aria-hidden="true"></div><div class="snap" id="sL" aria-hidden="true"></div><div class="snap" id="sR" aria-hidden="true"></div><div id="accountOv" role="dialog" aria-modal="true" aria-labelledby="acPanelTitle" onclick="acOvCk(event)"><div id="accountPanel"><div class="acHeader"><span class="acTitle" id="acPanelTitle">👤 ACCOUNT</span><button class="acClose" onclick="closeAccount()" aria-label="閉じる">×</button></div><div class="acBody"><div id="acLoggedIn" style="display:none"><div class="acUserInfo"><div class="acAvatarWrap" onclick="acAvatarClick()" title="アイコンを変更" style="position:relative;cursor:pointer"><div class="acAvatar" id="acAvatar">?</div><div class="acAvatarEdit">✎</div><button id="acAvatarDelBtn" onclick="event.stopPropagation(); acDeleteAvatarUI()" title="アイコンを削除" style="display:none;position:absolute;top:-5px;right:-5px;z-index:10;width:18px;height:18px;border-radius:50%;background:var(--red);border:2px solid var(--sf);color:#fff;font-size:9px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0">✕</button></div><input type="file" id="acAvatarInput" accept="image/*" style="display:none" onchange="acAvatarChange(event)"><div><div class="acUserName" id="acDisplayName">—</div><div class="acUserEmail" id="acEmail">—</div></div></div><div id="acAvatarMsg" class="acMsg" style="margin-top:4px;margin-bottom:2px"></div><div class="acSyncRow" onclick="syncToCloud()"><span class="acSyncLabel">☁ クラウドに保存 <span style="font-size:8px;opacity:.6;margin-left:4px">（自動）</span></span><span class="acSyncVal" id="acUploadStatus">今すぐ同期</span></div><div class="acSyncRow" onclick="syncFromCloud()"><span class="acSyncLabel">⬇ クラウドから復元</span><span class="acSyncVal" id="acDownloadStatus">復元する</span></div><div id="acSyncMsg" class="acMsg"></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)"><div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">👤 表示名</div><div style="display:flex;gap:6px"><input type="text" id="acNewName" placeholder="新しい表示名"
 style="flex:1;background:var(--ra);border:1px solid var(--b2);border-radius:var(--r2);
 font-family:var(--jp);font-size:12px;padding:6px 8px;color:var(--tp);
 -webkit-text-fill-color:var(--tp)"
@@ -526,8 +421,8 @@ style="-webkit-text-fill-color:var(--tp)"
 onkeydown="if(event.key==='Enter')acLinkEmailPassword()"></div><div id="acLinkMsg" class="acMsg"></div><button class="acBtn primary" data-i18n="acLinkBtn" onclick="acLinkEmailPassword()">設定する</button></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)"><button class="acBtn secondary" data-i18n="acSignOut" onclick="acSignOut()">サインアウト</button></div><div style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,70,90,.15)"><button class="acBtn" data-i18n="acDeleteBtn" onclick="acDeleteAccountUI()" style="width:100%;background:rgba(255,70,90,.07);border:1px solid rgba(255,70,90,.25);color:var(--red);font-size:10px;padding:7px 12px;border-radius:8px;letter-spacing:.5px;transition:all .2s" onmouseover="this.style.background='rgba(255,70,90,.14)'" onmouseout="this.style.background='rgba(255,70,90,.07)'">アカウントを削除する</button></div></div><div id="acGuest"><div class="acTabs"><button class="acTab on" id="acTabLogin" data-i18n="acTabLogin" onclick="acSwitchTab('login')">ログイン</button><button class="acTab" id="acTabRegister" data-i18n="acTabRegister" onclick="acSwitchTab('register')">新規登録</button></div><div id="acLoginForm"><div class="acField"><label>メールアドレス</label><input type="email" id="acLoginEmail" placeholder="you@example.com" autocomplete="email"></div><div class="acField"><label>パスワード</label><input type="password" id="acLoginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')acLogin()"></div><div id="acLoginMsg" class="acMsg"></div><button class="acBtn primary" id="acLoginBtn" data-i18n="acLoginBtn" onclick="acLogin()">ログイン</button><div style="text-align:center;margin-top:6px"><button onclick="acShowReset()" style="background:none;border:none;color:var(--ts);font-family:var(--mono);font-size:9px;cursor:pointer;text-decoration:underline;padding:2px 0">パスワードを忘れた方はこちら</button></div><div id="acResetSection" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1)"><div style="font-family:var(--mono);font-size:9px;color:var(--ts);letter-spacing:2px;margin-bottom:6px">🔑 パスワードリセット</div><div style="font-family:var(--jp);font-size:11px;color:var(--ts);margin-bottom:8px;line-height:1.6">登録済みのメールアドレスにリセット用リンクを送信します。</div><div class="acField"><label>メールアドレス</label><input type="email" id="acResetEmail" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')acSendReset()"></div><div id="acResetMsg" class="acMsg"></div><button class="acBtn primary" id="acResetBtn" data-i18n="acResetBtn" onclick="acSendReset()">リセットメールを送信</button><button onclick="acHideReset()" style="background:none;border:none;color:var(--ts);font-family:var(--mono);font-size:9px;cursor:pointer;text-decoration:underline;padding:4px 0;display:block;margin-top:4px;text-align:center;width:100%">キャンセル</button></div><div class="acDivider">または</div><button class="acBtn secondary" data-i18n="acGoogleLogin" onclick="acGoogleLogin()">🔑 Googleでログイン</button></div><div id="acRegForm" style="display:none"><div class="acField"><label>表示名</label><input type="text" id="acRegName" placeholder="あなたの名前" autocomplete="name"></div><div class="acField"><label>メールアドレス</label><input type="email" id="acRegEmail" placeholder="you@example.com" autocomplete="email"></div><div class="acField"><label>パスワード（6文字以上）</label><input type="password" id="acRegPass" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')acRegister()"></div><div id="acRegMsg" class="acMsg"></div><button class="acBtn primary" id="acRegBtn" data-i18n="acRegBtn" onclick="acRegister()">アカウント作成</button><div class="acDivider">または</div><button class="acBtn secondary" data-i18n="acGoogleReg" onclick="acGoogleLogin(true)">🔑 Googleで登録</button></div><div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--b1);text-align:center"><div style="font-family:var(--mono);font-size:8px;color:var(--ts);letter-spacing:2px;margin-bottom:8px;opacity:.6">🧪 テスト用</div><button class="acBtn" data-i18n="acDemoBtn" onclick="acDemoLogin()"
 style="background:rgba(var(--ar),var(--ag),var(--ab),.12);border:1px solid rgba(var(--ar),var(--ag),var(--ab),.3);color:var(--ac);font-size:10px">
 🧪 デモアカウントでテスト
-</button><div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:6px;opacity:.5">Firebaseなし・ローカルのみ</div></div></div></div></div></div><div id="changelogOv" role="dialog" aria-modal="true" aria-labelledby="clPanelTitle" onclick="if(event.target===this)closeChangelog()"><div id="changelogPanel"><div id="clTopBar"><div class="clTitleWrap"><div class="clSuperTitle">📋 更新履歴</div><div class="clTitle" id="clPanelTitle">Changelog</div></div><button class="clClose" onclick="closeChangelog()" aria-label="閉じる">×</button></div><div id="clMain"><div id="clSidebar"></div><div id="clContent"><div id="clVerHeader"><div class="clVersion" id="clVersionBadge">v1.4.6</div></div><div id="clBody"></div></div></div><div id="clFooter"><button class="clOkBtn" data-i18n="clClose" onclick="closeChangelog()">閉じる</button></div></div></div><div id="main" role="main"><header id="topbar" role="banner"><div class="hL"><button class="wt" id="wtTask"  onclick="toggleFW('task')"><span class="d"></span><span data-i18n="taskBtn">タスク</span></button><button class="wt" id="wtTimer" onclick="toggleFW('timer')"><span class="d"></span><span data-i18n="timerBtn">タイマー</span></button><button class="wt" id="wtCal"   onclick="toggleFW('cal')"><span class="d"></span><span data-i18n="calBtn">カレンダー</span></button><div id="onlineBadge" role="button" tabindex="0" data-i18n-title="onlineBadgeTitle" title="現在オンラインの人数" aria-label="現在オンライン中のユーザー数" onclick="toggleOnlinePopup()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleOnlinePopup()}" style="cursor:pointer;position:relative"><span class="onlineDot"></span><span id="onlineCount">1</span><span class="onlineLabel" data-i18n="onlineUnit">人</span><div id="onlinePopup" class="onlinePopup"></div></div></div><div class="clock-wrap"><div id="clockTime">00:00:00</div><div id="clockDate">—</div><div id="onlineBadgeMobile" role="button" tabindex="0" aria-label="オンライン中のユーザー数を表示" onclick="toggleOnlinePopup()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleOnlinePopup()}" style="cursor:pointer;position:relative"><span class="onlineDotM"></span><span id="onlineCountM">1</span><span data-i18n="onlineUnit">人</span></div></div><div class="hR"><div id="levelBadge" role="button" tabindex="0" onclick="openStreak()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStreak()}" data-i18n-title="levelTitle" data-i18n-aria="levelAriaLabel" title="レベル・実績" aria-label="レベル・実績を表示"><span class="lvl-icon" id="lvlIcon">🌱</span><span id="lvlName" style="font-size:8px">Lv.1</span><div class="lvl-bar-wrap"><div class="lvl-bar" id="lvlBar" style="width:0%"></div></div></div><div id="streakBadge" role="button" tabindex="0" onclick="openStreak()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStreak()}" data-i18n-title="streakTitle" data-i18n-aria="streakAriaLabel" title="ストリーク" aria-label="ストリーク情報を表示" data-tier="0"><span class="streak-icon">🔥</span><span id="streakNum">0</span><span style="font-size:7px;letter-spacing:1px">日</span></div><button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)" aria-label="BGMパネル">♪</button><button class="ib" onclick="openTheme()" title="テーマ設定" aria-label="テーマ設定">◐</button><button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント" aria-label="アカウント設定" style="overflow:hidden;padding:0"><span id="ibAccountEmoji" style="pointer-events:none">👤</span><img id="ibAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"></button><button class="ib" onclick="showDonate()" title="サポート" aria-label="開発者を支援">♥</button></div></header><section id="mid" aria-label="現在のタスク"><div id="midGlow" aria-hidden="true"></div><div class="nowBadge" aria-hidden="true"><span class="nowDot"></span><span>NOW</span></div><div id="curTask" class="empty">タスクを追加してください</div><div class="curMeta" id="curMeta"><div class="timeBadge" id="curTBadge">--:-- → --:--</div></div></section></div><div id="dock" class="pos-bottom"><div id="dockBar" aria-label="ドックバー（ドラッグまたはボタンで操作）"><span class="dBarLabel">SCHED</span><button id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5;cursor:pointer;transition:opacity .2s;background:none;border:none;color:inherit;font-family:inherit;padding:0" onclick="openChangelog()" title="更新履歴を見る" aria-label="バージョン v1.4.6 — 更新履歴を見る" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">v1.4.6</button><div class="dGrip" aria-hidden="true"></div><div class="dRight"><button class="dActB" id="dCollapseBtn" onclick="toggleDock()" aria-label="ドックを折りたたむ">▼</button></div></div><div id="dockBody"><div class="dpane" id="dpTask"><div class="ph"><span class="phLbl" data-i18n="todayTasks">📋 今日の予定</span><span class="phLbl" id="tCnt">0件</span></div><div class="addRow"><div class="mToggle"><button class="mb on" id="mNow"  data-i18n="nowBtn" onclick="setMode('now')">今すぐ</button><button class="mb"    id="mTime" data-i18n="timeBtn" onclick="setMode('time')">時間指定</button></div><input type="time" id="addTime" class="tIn hide" aria-label="開始時刻"><input type="text" id="addName" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off"><button class="bAdd" onclick="addTask()" aria-label="タスクを追加">+</button></div><div id="tScroll" class="tScroll" role="list" aria-label="今日のタスク一覧"></div></div><div id="paneDivider" title="ドラッグして幅を調整" role="separator" aria-label="ペインの区切り（ドラッグで幅調整）"></div><div class="dpane" id="dpTimer"><div class="timerTabs"><button class="ttab on" id="tPomo" data-i18n="pomoTab" onclick="switchTimer('pomo')">🍅 ポモドーロ</button><button class="ttab"    id="tSw"   data-i18n="swTab" onclick="switchTimer('sw')">⏱ ストップ</button></div><div class="tStack"><div class="tbody on pd-body" id="bPomo"
-style="flex-direction:column;justify-content:center;gap:4px;padding:4px 10px 6px"><div id="pomoStyleWrapD" style="display:flex;align-items:center;justify-content:center;flex:1;min-height:0"></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0"><div class="pDots" id="pDots"></div><div class="cr"><button class="bc p" id="pBtn" data-pomo-toggle onclick="pomoToggle()" aria-label="ポモドーロ 開始/一時停止">▶ 開始</button><button class="bc g" data-pomo-reset onclick="pomoReset()" data-i18n="reset" aria-label="リセット">↺</button><button class="bc g" data-pomo-skip onclick="pomoSkip()" data-i18n="skip" aria-label="スキップ">⏭</button></div><div class="tSubLbl" id="pSub">作業時間</div></div><span id="pRT" style="display:none">25:00</span><span id="pRM" style="display:none">作業</span><div id="pRing" style="display:none"></div><svg style="display:none"><circle id="pArc" stroke-dasharray="175.9" stroke-dashoffset="0"/></svg><div class="pSR"><div class="pF"><label>作業(分)</label><input type="number" id="pWork" value="25" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>休憩(分)</label><input type="number" id="pBreak" value="5" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>長休憩(分)</label><input type="number" id="pLong" value="15" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>セット数</label><input type="number" id="pSets" value="4" min="1" max="8" onchange="pomoChg()"></div></div></div><div class="tbody sw-body" id="bSw"><div class="tDisp" id="swDisp">00:00:00</div><div class="cr"><button class="bc p" id="swBtn" onclick="swToggle()" aria-label="ストップウォッチ 開始/停止">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLaps"></div></div></div></div></div></div><div class="fw hidden" id="fwTask" style="width:350px;min-height:200px;top:80px;left:28px"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" role="button" tabindex="0" aria-label="閉じる" onclick="closeFW('task')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();closeFW('task');}"></div><div class="fwDot m" role="button" tabindex="0" aria-label="ドックに戻す" onclick="dockFW('task')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dockFW('task');}"></div></div><div class="fwTitle">TASK LIST</div></div><div style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:120px"><div class="ph"><span class="phLbl" data-i18n="taskListTitle">予定リスト</span><span class="phLbl" id="tCntW">0件</span></div><div class="addRow"><div class="mToggle"><button class="mb on" id="mNowW" data-i18n="nowBtn" onclick="setModeW('now')">今すぐ</button><button class="mb" id="mTimeW" data-i18n="timeBtn" onclick="setModeW('time')">時間指定</button></div><input type="time" id="addTimeW" class="tIn hide" aria-label="開始時刻"><input type="text" id="addNameW" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off"><button class="bAdd" onclick="addTaskW()" aria-label="タスクを追加">+</button></div><div id="tScrollW" class="tScroll" role="list" aria-label="タスクリスト" style="overflow-y:auto;flex:1"></div></div></div><div class="fw hidden" id="fwTimer" style="width:290px;min-height:200px;top:80px;right:28px"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" role="button" tabindex="0" aria-label="閉じる" onclick="closeFW('timer')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();closeFW('timer');}"></div><div class="fwDot m" role="button" tabindex="0" aria-label="ドックに戻す" onclick="dockFW('timer')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dockFW('timer');}"></div></div><div class="fwTitle">TIMER</div></div><div class="fwTimerInner"><div class="timerTabs"><button class="ttab on" id="tPomoW" onclick="switchTimerAll('pomo')">🍅 Pomodoro</button><button class="ttab" id="tSwW" onclick="switchTimerAll('sw')">⏱ Stopwatch</button></div><div class="tStack"><div class="tbody on pd-body" id="bPomoW"><div class="ps-switcher"><button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')" aria-label="リング表示">○</button><button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')" aria-label="アーク表示">◡</button><button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')" aria-label="ミニマル表示">▬</button><button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')" aria-label="ブロック表示">▦</button></div><div id="pomoStyleWrap"></div><div style="margin-top:8px"><div class="pDots" id="pDotsW"></div><div class="cr" style="margin-top:6px"><button class="bc p" id="pBtnW" onclick="pomoToggle()">▶ 開始</button><button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button><button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button></div></div><span id="pRTW" style="display:none">25:00</span><span id="pRMW" style="display:none">作業</span><div id="pRingW" style="display:none"></div><svg style="display:none"><circle id="pArcW" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg></div><div class="tbody sw-body" id="bSwW"><div class="tDisp" id="swDispW" style="font-size:28px">00:00:00</div><div class="cr"><button class="bc p" id="swBtnW" onclick="swToggle()">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLapsW"></div></div></div></div></div><div class="fw hidden" id="fwCalendar" style="width:440px;min-height:360px;top:80px;left:calc(50% - 220px)"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" role="button" tabindex="0" aria-label="閉じる" onclick="closeFW('cal')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();closeFW('cal');}"></div><div class="fwDot m" role="button" tabindex="0" aria-label="ドックに戻す" onclick="dockFW('cal')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dockFW('cal');}"></div></div><div class="fwTitle">CALENDAR</div></div><div class="calInner"><div class="calViewTabs"><button class="calTab" id="cvYear" onclick="setCalView('year')" data-i18n="calYear">年</button><button class="calTab on" id="cvMonth" onclick="setCalView('month')" data-i18n="calMonth">月</button><button class="calTab" id="cvDay" onclick="setCalView('day')" data-i18n="calDay">日</button></div><div class="calNav"><button class="calNavBtn" onclick="calMove(-1)" aria-label="前の期間へ">‹</button><div class="calNavTitle" id="calTitle" role="button" tabindex="0" onclick="cycleCalView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cycleCalView()}">2025年1月</div><button class="calNavBtn" onclick="calMove(1)" aria-label="次の期間へ">›</button></div><div id="calBody" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div></div></div><div id="calDayDetail" class="calDayDetail" role="dialog" aria-modal="true" aria-labelledby="cddDate"><div class="cddHeader"><div class="cddDate" id="cddDate">—</div><button class="cddClose" onclick="closeDayDetail()" aria-label="閉じる">×</button></div><div class="cddAddRow"><div class="mToggle" style="flex-shrink:0"><button class="mb on" id="cddModeNow" onclick="setCddMode('now')" data-i18n="nowBtn">今すぐ</button><button class="mb"    id="cddModeTime" onclick="setCddMode('time')">時間指定</button></div><input type="time" id="cddTimeInput" class="tIn hide" style="flex-shrink:0;width:90px"><input type="text" id="cddInput" placeholder="タスク・予定を追加…" aria-label="タスク・予定を追加" data-i18n-ph="cddPh" onkeydown="cddKeydown(event)"><button class="bAdd" onclick="cddAddTask()" aria-label="タスク・予定を追加">+</button></div><div id="cddTaskList" class="cddTaskList"></div></div><div id="bgmPanel" class="hidden"><div class="bgmDragBar" id="bgmDragBar" aria-hidden="true"><div class="bgmGrip" aria-hidden="true"></div></div><div id="ytNowPlaying" role="region" aria-label="BGMプレイヤー"><div class="ytNPTop"><img id="ytThumb" src="" alt=""><div class="ytNPMeta"><div id="ytTitle" aria-label="再生中の楽曲">—</div><span id="ytStatusBadge" aria-live="polite" aria-atomic="true" data-i18n="stopMed">停止中</span></div></div><div class="ytNPBot"><div id="ytProgBar" role="slider" aria-label="再生位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" onclick="ytSeek(event)" tabindex="0"><div id="ytProgFill"></div></div><div class="ytNPRow2"><span id="ytTime">0:00 / 0:00</span><div class="ytCtrl"><button class="ytMiniBtn" id="ytPlayPauseBtn" onclick="ytPlayPause()">⏸</button><button class="ytMiniBtn" id="ytLoopBtn" onclick="ytToggleLoop()" title="ループ">↺</button></div></div></div></div><div class="bgmSection"><div class="bgmSLbl" style="display:flex;align-items:center;justify-content:space-between"><span data-i18n="ambQuickMix">⚡ クイックミックス</span><button onclick="clearAmbient()" data-i18n="ambClear" style="font-family:var(--mono);font-size:8px;color:var(--ts);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;background:none;cursor:pointer">全消去</button></div><div class="ambPresetGrid"><button class="ambPreset" aria-pressed="false" data-preset="rain_focus"     onclick="setAmbientPreset('rain_focus')" data-i18n="ambPreset_rain_focus">🌧 雨と集中</button><button class="ambPreset" aria-pressed="false" data-preset="forest_morning" data-i18n="ambPreset_forest_morning" onclick="setAmbientPreset('forest_morning')">🌿 森の朝</button><button class="ambPreset" aria-pressed="false" data-preset="cafe_rain"      onclick="setAmbientPreset('cafe_rain')" data-i18n="ambPreset_cafe_rain">☕ 雨のカフェ</button><button class="ambPreset" aria-pressed="false" data-preset="ocean_wind"     onclick="setAmbientPreset('ocean_wind')" data-i18n="ambPreset_ocean_wind">🌊 波と風</button><button class="ambPreset" aria-pressed="false" data-preset="campfire"       onclick="setAmbientPreset('campfire')" data-i18n="ambPreset_campfire">🔥 焚き火</button><button class="ambPreset" aria-pressed="false" data-preset="deep_work"      onclick="setAmbientPreset('deep_work')" data-i18n="ambPreset_deep_work">⌨ 深夜作業</button><button class="ambPreset" aria-pressed="false" data-preset="storm"          onclick="setAmbientPreset('storm')" data-i18n="ambPreset_storm">⛈ 嵐</button><button class="ambPreset" aria-pressed="false" data-preset="lofi_rain"      onclick="setAmbientPreset('lofi_rain')" data-i18n="ambPreset_lofi_rain">🎵 Lo-Fi 雨</button><button class="ambPreset" aria-pressed="false" data-preset="white_noise"    onclick="setAmbientPreset('white_noise')" data-i18n="ambPreset_white_noise">⬜ ホワイトノイズ</button><button class="ambPreset" aria-pressed="false" data-preset="city_rain"      onclick="setAmbientPreset('city_rain')" data-i18n="ambPreset_city_rain">🏙 雨の街</button><button class="ambPreset" aria-pressed="false" data-preset="deep_forest"    onclick="setAmbientPreset('deep_forest')" data-i18n="ambPreset_deep_forest">🌲 深い森</button><button class="ambPreset" aria-pressed="false" data-preset="zen_garden"     onclick="setAmbientPreset('zen_garden')" data-i18n="ambPreset_zen_garden">🪨 禅の庭</button><button class="ambPreset" aria-pressed="false" data-preset="space_ambient"  onclick="setAmbientPreset('space_ambient')" data-i18n="ambPreset_space_ambient">🌌 宇宙の響き</button><button class="ambPreset" aria-pressed="false" data-preset="keyboard_cafe"  onclick="setAmbientPreset('keyboard_cafe')" data-i18n="ambPreset_keyboard_cafe">💻 タイプ×カフェ</button></div></div><div class="bgmSection" id="ambientMixerSection"><div class="bgmSLbl" data-i18n="ambMixerTitle">🎛 アンビエントミキサー</div><div class="ambientGrid" id="ambientGrid"><div class="ambItem" data-sound="rain"><button class="ambBtn" onclick="toggleAmbient('rain')" aria-pressed="false" title="雨音">🌧<span data-i18n="ambSound_rain">雨音</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('rain',this.value)" title="音量"></div><div class="ambItem" data-sound="thunder"><button class="ambBtn" onclick="toggleAmbient('thunder')" aria-pressed="false" title="雷雨">⛈<span data-i18n="ambSound_thunder">雷雨</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('thunder',this.value)" title="音量"></div><div class="ambItem" data-sound="ocean"><button class="ambBtn" onclick="toggleAmbient('ocean')" aria-pressed="false" title="波音">🌊<span data-i18n="ambSound_ocean">波音</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.45" oninput="setAmbientVol('ocean',this.value)" title="音量"></div><div class="ambItem" data-sound="river"><button class="ambBtn" onclick="toggleAmbient('river')" aria-pressed="false" title="川">🏞<span data-i18n="ambSound_river">川音</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('river',this.value)" title="音量"></div><div class="ambItem" data-sound="forest"><button class="ambBtn" onclick="toggleAmbient('forest')" aria-pressed="false" title="森">🌿<span data-i18n="ambSound_forest">森林</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('forest',this.value)" title="音量"></div><div class="ambItem" data-sound="birds"><button class="ambBtn" onclick="toggleAmbient('birds')" aria-pressed="false" title="鳥のさえずり">🐦<span data-i18n="ambSound_birds">鳥声</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.38" oninput="setAmbientVol('birds',this.value)" title="音量"></div><div class="ambItem" data-sound="wind"><button class="ambBtn" onclick="toggleAmbient('wind')" aria-pressed="false" title="風">🌬<span data-i18n="ambSound_wind">風音</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('wind',this.value)" title="音量"></div><div class="ambItem" data-sound="night"><button class="ambBtn" onclick="toggleAmbient('night')" aria-pressed="false" title="夜の虫の声">🌙<span data-i18n="ambSound_night">虫声</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('night',this.value)" title="音量"></div><div class="ambItem" data-sound="fire"><button class="ambBtn" onclick="toggleAmbient('fire')" aria-pressed="false" title="焚き火">🔥<span data-i18n="ambSound_fire">焚火</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('fire',this.value)" title="音量"></div><div class="ambItem" data-sound="cafe"><button class="ambBtn" onclick="toggleAmbient('cafe')" aria-pressed="false" title="カフェ">☕<span data-i18n="ambSound_cafe">カフェ</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('cafe',this.value)" title="音量"></div><div class="ambItem" data-sound="city"><button class="ambBtn" onclick="toggleAmbient('city')" aria-pressed="false" title="都市">🏙<span data-i18n="ambSound_city">都市</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('city',this.value)" title="音量"></div><div class="ambItem" data-sound="keyboard"><button class="ambBtn" onclick="toggleAmbient('keyboard')" aria-pressed="false" title="キーボード音">⌨️<span data-i18n="ambSound_keyboard">タイプ</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('keyboard',this.value)" title="音量"></div><div class="ambItem" data-sound="lofi"><button class="ambBtn" onclick="toggleAmbient('lofi')" aria-pressed="false" title="Lo-Fi BGM">🎵<span data-i18n="ambSound_lofi">Lo-Fi</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('lofi',this.value)" title="音量"></div><div class="ambItem" data-sound="space"><button class="ambBtn" onclick="toggleAmbient('space')" aria-pressed="false" title="宇宙">🌌<span data-i18n="ambSound_space">宇宙</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('space',this.value)" title="音量"></div><div class="ambItem" data-sound="white"><button class="ambBtn" onclick="toggleAmbient('white')" aria-pressed="false" title="ホワイトノイズ">⬜<span data-i18n="ambSound_white">ホワイト</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('white',this.value)" title="音量"></div><div class="ambItem" data-sound="pink"><button class="ambBtn" onclick="toggleAmbient('pink')" aria-pressed="false" title="ピンクノイズ">🌸<span data-i18n="ambSound_pink">ピンク</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('pink',this.value)" title="音量"></div></div></div><div class="bgmSection"><div class="bgmSLbl">YouTube URL</div><div class="bgmYtRow"><input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=…"><button class="ytBtn" onclick="playYt()" data-i18n="bgmPlay">▶ 再生</button><button class="ytStop" onclick="stopYt()" data-i18n="bgmStop">■ 停止</button></div></div><div class="bgmFootRow"><span class="volLbl">VOL</span><input type="range" id="bgmVol" min="0" max="1" step="0.02" value="0.35" oninput="setBgmVol(this.value)"><button class="bgmClose" onclick="toggleBgmPanel()" aria-label="BGMパネルを閉じる">×</button></div></div><div id="ytFrame" aria-hidden="true"></div><div id="thOv" role="dialog" aria-modal="true" aria-labelledby="thPanelTitle" onclick="thOvCk(event)"><div id="thPanel"><div class="thHeader"><span class="thHeaderTitle" data-i18n="themeTitle" id="thPanelTitle">🎨 テーマ設定</span><button class="thHeaderClose" onclick="openTheme()" aria-label="閉じる">✕</button></div><div class="thSection"><button class="thSectionHead open" onclick="thToggle('thSecColor')"><span data-i18n="thSecColorLabel">カラー</span><span class="thArrow">▸</span></button><div class="thSectionBody open" id="thSecColor"><div class="swGrid" id="swGrid"></div><div style="margin-top:12px"><div class="sLbl" data-i18n="thColorCode">カラーコード</div><div class="hexRow"><input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)"><input type="text" id="hexInput" value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false"><div id="rgbPrev" style="flex:0 0 28px;height:28px;border-radius:var(--r2);border:1px solid var(--b2)"></div></div><div class="rgbGrid" style="margin-top:8px"><div class="rgbF"><label>R</label><input type="number" id="rgbR" min="0" max="255" value="220" oninput="onRgb()"></div><div class="rgbF"><label>G</label><input type="number" id="rgbG" min="0" max="255" value="175" oninput="onRgb()"></div><div class="rgbF"><label>B</label><input type="number" id="rgbB" min="0" max="255" value="70"  oninput="onRgb()"></div></div><div style="margin-top:10px"><div class="sLbl" data-i18n="hueLabel">色相</div><input type="range" id="hueSlider" min="0" max="360" value="38" oninput="onHue(this.value)"></div></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecBg')"><span data-i18n="thSecBgLabel">背景</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecBg"><div class="bgOpts"><button class="bgOpt on" data-bg="dark"    onclick="setBg('dark')"    data-i18n="bgDark">ダーク</button><button class="bgOpt"    data-bg="amoled"  onclick="setBg('amoled')"  data-i18n="bgAmoled">AMOLED</button><button class="bgOpt"    data-bg="dim"     onclick="setBg('dim')"     data-i18n="bgDim">ディム</button><button class="bgOpt"    data-bg="light"   onclick="setBg('light')"   data-i18n="bgLight">ライト</button><button class="bgOpt"    data-bg="white"   onclick="setBg('white')"   data-i18n="bgWhite">ホワイト</button><button class="bgOpt"    data-bg="sakura"  onclick="setBg('sakura')"  data-i18n="bgSakura" style="color:#ff9ec4;border-color:rgba(255,140,180,.3)">🌸 桜</button><button class="bgOpt"    data-bg="persona" onclick="setBg('persona')" data-i18n="bgPersona">ペルソナ</button><button class="bgOpt"    data-bg="snow" onclick="setBg('snow')" data-i18n="bgSnow" style="color:#a8d8f0;border-color:rgba(140,210,255,.3)">❄️ 雪</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecFont')"><span data-i18n="thSecFontLabel">フォント</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecFont"><div class="fpBtns" id="fpBtns"></div><div class="fCust"><input type="text" id="fIn" data-i18n-ph="thFontPh" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()" data-i18n="thFontApply">適用</button></div><div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div><div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecLang')"><span data-i18n="thSecLangLabel">言語</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecLang"><div class="langBtns"><button class="langBtn on" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button><button class="langBtn"    data-lang="en" onclick="setLang('en')">🇺🇸 English</button><button class="langBtn"    data-lang="zh" onclick="setLang('zh')">🇨🇳 中文</button><button class="langBtn"    data-lang="ko" onclick="setLang('ko')">🇰🇷 한국어</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecTimer')"><span data-i18n="timerStyleLabel">タイマー表示</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecTimer"><div class="timerStyleBtns"><button class="pomoStyleBtn on" data-style="ring"    onclick="setPomoStyle('ring')" aria-label="リング表示"    data-i18n="timerStyleRing">○ リング</button><button class="pomoStyleBtn"    data-style="arc"     onclick="setPomoStyle('arc')" aria-label="アーク表示"     data-i18n="timerStyleArc">◡ アーク</button><button class="pomoStyleBtn"    data-style="minimal" onclick="setPomoStyle('minimal')" aria-label="ミニマル表示" data-i18n="timerStyleMinimal">▬ ミニマル</button><button class="pomoStyleBtn"    data-style="blocks"  onclick="setPomoStyle('blocks')" aria-label="ブロック表示"  data-i18n="timerStyleBlocks">▦ ブロック</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecScale')"><span data-i18n="thSecScaleLabel">UIスケール</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecScale"><div class="scaleBtns" id="scaleBtns"><button class="scaleBtn"    data-scale="0.8"  onclick="setUIScale(0.8)">80%</button><button class="scaleBtn"    data-scale="0.9"  onclick="setUIScale(0.9)">90%</button><button class="scaleBtn on" data-scale="1"    onclick="setUIScale(1.0)">100%</button><button class="scaleBtn"    data-scale="1.1"  onclick="setUIScale(1.1)">110%</button><button class="scaleBtn"    data-scale="1.2"  onclick="setUIScale(1.2)">120%</button><button class="scaleBtn"    data-scale="1.4"  onclick="setUIScale(1.4)">140%</button></div></div></div><div class="thResetSection"><div class="thResetLbl" data-i18n="resetSection">⚠ データ管理</div><button class="thResetBtn" onclick="confirmReset()" data-i18n="resetBtn">データをリセット</button></div></div></div><div id="resetOv" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle" style="display:none;position:fixed;inset:0;z-index:1200;
+</button><div style="font-family:var(--mono);font-size:8px;color:var(--ts);margin-top:6px;opacity:.5">Firebaseなし・ローカルのみ</div></div></div></div></div></div><div id="changelogOv" role="dialog" aria-modal="true" aria-labelledby="clPanelTitle" onclick="if(event.target===this)closeChangelog()"><div id="changelogPanel"><div id="clTopBar"><div class="clTitleWrap"><div class="clSuperTitle">📋 更新履歴</div><div class="clTitle" id="clPanelTitle">Changelog</div></div><button class="clClose" onclick="closeChangelog()" aria-label="閉じる">×</button></div><div id="clMain"><div id="clSidebar"></div><div id="clContent"><div id="clVerHeader"><div class="clVersion" id="clVersionBadge">v1.4.6</div></div><div id="clBody"></div></div></div><div id="clFooter"><button class="clOkBtn" data-i18n="clClose" onclick="closeChangelog()">閉じる</button></div></div></div><div id="main" role="main"><header id="topbar" role="banner"><div class="hL"><button class="wt" id="wtTask"  onclick="toggleFW('task')"><span class="d"></span><span data-i18n="taskBtn">タスク</span></button><button class="wt" id="wtTimer" onclick="toggleFW('timer')"><span class="d"></span><span data-i18n="timerBtn">タイマー</span></button><button class="wt" id="wtCal"   onclick="toggleFW('cal')"><span class="d"></span><span data-i18n="calBtn">カレンダー</span></button><div id="onlineBadge" data-i18n-title="onlineBadgeTitle" title="現在オンラインの人数" onclick="toggleOnlinePopup()" style="cursor:pointer;position:relative"><span class="onlineDot"></span><span id="onlineCount">1</span><span class="onlineLabel" data-i18n="onlineUnit">人</span><div id="onlinePopup" class="onlinePopup"></div></div></div><div class="clock-wrap"><div id="clockTime">00:00:00</div><div id="clockDate">—</div><div id="onlineBadgeMobile" onclick="toggleOnlinePopup()" style="cursor:pointer;position:relative"><span class="onlineDotM"></span><span id="onlineCountM">1</span><span data-i18n="onlineUnit">人</span></div></div><div class="hR"><div id="levelBadge" onclick="openStreak()" data-i18n-title="levelTitle" data-i18n-aria="levelAriaLabel" title="レベル・実績" aria-label="レベル・実績を表示"><span class="lvl-icon" id="lvlIcon">🌱</span><span id="lvlName" style="font-size:8px">Lv.1</span><div class="lvl-bar-wrap"><div class="lvl-bar" id="lvlBar" style="width:0%"></div></div></div><div id="streakBadge" onclick="openStreak()" data-i18n-title="streakTitle" data-i18n-aria="streakAriaLabel" title="ストリーク" aria-label="ストリーク情報を表示" data-tier="0"><span class="streak-icon">🔥</span><span id="streakNum">0</span><span style="font-size:7px;letter-spacing:1px">日</span></div><button class="ib" id="ibBgm" onclick="toggleBgmPanel()" title="BGM (B)" aria-label="BGMパネル">♪</button><button class="ib" onclick="openTheme()" title="テーマ設定" aria-label="テーマ設定">◐</button><button class="ib" id="ibAccount" onclick="openAccount()" title="アカウント" aria-label="アカウント設定" style="overflow:hidden;padding:0"><span id="ibAccountEmoji" style="pointer-events:none">👤</span><img id="ibAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"></button><button class="ib" onclick="showDonate()" title="サポート" aria-label="開発者を支援">♥</button></div></header><section id="mid" aria-label="現在のタスク"><div id="midGlow" aria-hidden="true"></div><div class="nowBadge"><span class="nowDot"></span><span>NOW</span></div><div id="curTask" class="empty">タスクを追加してください</div><div class="curMeta" id="curMeta"><div class="timeBadge" id="curTBadge">--:-- → --:--</div></div></section></div><div id="dock" class="pos-bottom"><div id="dockBar"><span class="dBarLabel">SCHED</span><span id="appVersion" class="dBarLabel" style="letter-spacing:2px;margin-left:6px;opacity:.5;cursor:pointer;transition:opacity .2s" onclick="openChangelog()" title="更新履歴を見る" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">v1.4.6</span><div class="dGrip"></div><div class="dRight"><button class="dActB" id="dCollapseBtn" onclick="toggleDock()" aria-label="ドックを折りたたむ">▼</button></div></div><div id="dockBody"><div class="dpane" id="dpTask"><div class="ph"><span class="phLbl" data-i18n="todayTasks">📋 今日の予定</span><span class="phLbl" id="tCnt">0件</span></div><div class="addRow"><div class="mToggle"><button class="mb on" id="mNow"  data-i18n="nowBtn" onclick="setMode('now')">今すぐ</button><button class="mb"    id="mTime" data-i18n="timeBtn" onclick="setMode('time')">時間指定</button></div><input type="time" id="addTime" class="tIn hide" aria-label="開始時刻"><input type="text" id="addName" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off"><button class="bAdd" onclick="addTask()" aria-label="タスクを追加">+</button></div><div id="tScroll" class="tScroll" role="list" aria-label="今日のタスク一覧"></div></div><div id="paneDivider" title="ドラッグして幅を調整"></div><div class="dpane" id="dpTimer"><div class="timerTabs"><button class="ttab on" id="tPomo" data-i18n="pomoTab" onclick="switchTimer('pomo')">🍅 ポモドーロ</button><button class="ttab"    id="tSw"   data-i18n="swTab" onclick="switchTimer('sw')">⏱ ストップ</button></div><div class="tStack"><div class="tbody on pd-body" id="bPomo"
+style="flex-direction:column;justify-content:center;gap:4px;padding:4px 10px 6px"><div id="pomoStyleWrapD" style="display:flex;align-items:center;justify-content:center;flex:1;min-height:0"></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0"><div class="pDots" id="pDots"></div><div class="cr"><button class="bc p" id="pBtn" data-pomo-toggle onclick="pomoToggle()" aria-label="ポモドーロ 開始/一時停止">▶ 開始</button><button class="bc g" data-pomo-reset onclick="pomoReset()" data-i18n="reset" aria-label="リセット">↺</button><button class="bc g" data-pomo-skip onclick="pomoSkip()" data-i18n="skip" aria-label="スキップ">⏭</button></div><div class="tSubLbl" id="pSub">作業時間</div></div><span id="pRT" style="display:none">25:00</span><span id="pRM" style="display:none">作業</span><div id="pRing" style="display:none"></div><svg style="display:none"><circle id="pArc" stroke-dasharray="175.9" stroke-dashoffset="0"/></svg><div class="pSR"><div class="pF"><label>作業(分)</label><input type="number" id="pWork" value="25" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>休憩(分)</label><input type="number" id="pBreak" value="5" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>長休憩(分)</label><input type="number" id="pLong" value="15" min="1" max="99" onchange="pomoChg()"></div><div class="pF"><label>セット数</label><input type="number" id="pSets" value="4" min="1" max="8" onchange="pomoChg()"></div></div></div><div class="tbody sw-body" id="bSw"><div class="tDisp" id="swDisp">00:00:00</div><div class="cr"><button class="bc p" id="swBtn" onclick="swToggle()" aria-label="ストップウォッチ 開始/停止">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLaps"></div></div></div></div></div></div><div class="fw hidden" id="fwTask" style="width:350px;min-height:200px;top:80px;left:28px"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('task')"></div><div class="fwDot m" onclick="dockFW('task')"></div></div><div class="fwTitle">TASK LIST</div></div><div style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:120px"><div class="ph"><span class="phLbl" data-i18n="taskListTitle">予定リスト</span><span class="phLbl" id="tCntW">0件</span></div><div class="addRow"><div class="mToggle"><button class="mb on" id="mNowW" data-i18n="nowBtn" onclick="setModeW('now')">今すぐ</button><button class="mb" id="mTimeW" data-i18n="timeBtn" onclick="setModeW('time')">時間指定</button></div><input type="time" id="addTimeW" class="tIn hide" aria-label="開始時刻"><input type="text" id="addNameW" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off"><button class="bAdd" onclick="addTaskW()" aria-label="タスクを追加">+</button></div><div id="tScrollW" class="tScroll" role="list" aria-label="タスクリスト" style="overflow-y:auto;flex:1"></div></div></div><div class="fw hidden" id="fwTimer" style="width:290px;min-height:200px;top:80px;right:28px"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('timer')"></div><div class="fwDot m" onclick="dockFW('timer')"></div></div><div class="fwTitle">TIMER</div></div><div class="fwTimerInner"><div class="timerTabs"><button class="ttab on" id="tPomoW" onclick="switchTimerAll('pomo')">🍅 Pomodoro</button><button class="ttab" id="tSwW" onclick="switchTimerAll('sw')">⏱ Stopwatch</button></div><div class="tStack"><div class="tbody on pd-body" id="bPomoW"><div class="ps-switcher"><button class="pomoStyleBtn on" data-style="ring" onclick="setPomoStyle('ring')" aria-label="リング表示">○</button><button class="pomoStyleBtn" data-style="arc" onclick="setPomoStyle('arc')" aria-label="アーク表示">◡</button><button class="pomoStyleBtn" data-style="minimal" onclick="setPomoStyle('minimal')" aria-label="ミニマル表示">▬</button><button class="pomoStyleBtn" data-style="blocks" onclick="setPomoStyle('blocks')" aria-label="ブロック表示">▦</button></div><div id="pomoStyleWrap"></div><div style="margin-top:8px"><div class="pDots" id="pDotsW"></div><div class="cr" style="margin-top:6px"><button class="bc p" id="pBtnW" onclick="pomoToggle()">▶ 開始</button><button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button><button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button></div></div><span id="pRTW" style="display:none">25:00</span><span id="pRMW" style="display:none">作業</span><div id="pRingW" style="display:none"></div><svg style="display:none"><circle id="pArcW" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg></div><div class="tbody sw-body" id="bSwW"><div class="tDisp" id="swDispW" style="font-size:28px">00:00:00</div><div class="cr"><button class="bc p" id="swBtnW" onclick="swToggle()">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLapsW"></div></div></div></div></div><div class="fw hidden" id="fwCalendar" style="width:440px;min-height:360px;top:80px;left:calc(50% - 220px)"><div class="rn" data-d="n"></div><div class="rs" data-d="s"></div><div class="rw" data-d="w"></div><div class="re" data-d="e"></div><div class="rnw" data-d="nw"></div><div class="rne" data-d="ne"></div><div class="rsw" data-d="sw"></div><div class="rse" data-d="se"></div><div class="fwTb"><div class="fwDots"><div class="fwDot c" onclick="closeFW('cal')"></div><div class="fwDot m" onclick="dockFW('cal')"></div></div><div class="fwTitle">CALENDAR</div></div><div class="calInner"><div class="calViewTabs"><button class="calTab" id="cvYear" onclick="setCalView('year')" data-i18n="calYear">年</button><button class="calTab on" id="cvMonth" onclick="setCalView('month')" data-i18n="calMonth">月</button><button class="calTab" id="cvDay" onclick="setCalView('day')" data-i18n="calDay">日</button></div><div class="calNav"><button class="calNavBtn" onclick="calMove(-1)" aria-label="前の期間へ">‹</button><div class="calNavTitle" id="calTitle" onclick="cycleCalView()">2025年1月</div><button class="calNavBtn" onclick="calMove(1)" aria-label="次の期間へ">›</button></div><div id="calBody" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div></div></div><div id="calDayDetail" class="calDayDetail"><div class="cddHeader"><div class="cddDate" id="cddDate">—</div><button class="cddClose" onclick="closeDayDetail()" aria-label="閉じる">×</button></div><div class="cddAddRow"><div class="mToggle" style="flex-shrink:0"><button class="mb on" id="cddModeNow" onclick="setCddMode('now')" data-i18n="nowBtn">今すぐ</button><button class="mb"    id="cddModeTime" onclick="setCddMode('time')">時間指定</button></div><input type="time" id="cddTimeInput" class="tIn hide" style="flex-shrink:0;width:90px"><input type="text" id="cddInput" placeholder="タスク・予定を追加…" aria-label="タスク・予定を追加" data-i18n-ph="cddPh" onkeydown="cddKeydown(event)"><button class="bAdd" onclick="cddAddTask()" aria-label="タスク・予定を追加">+</button></div><div id="cddTaskList" class="cddTaskList"></div></div><div id="bgmPanel" class="hidden"><div class="bgmDragBar" id="bgmDragBar"><div class="bgmGrip"></div></div><div id="ytNowPlaying"><div class="ytNPTop"><img id="ytThumb" src="" alt=""><div class="ytNPMeta"><div id="ytTitle">—</div><span id="ytStatusBadge" data-i18n="stopMed">停止中</span></div></div><div class="ytNPBot"><div id="ytProgBar" onclick="ytSeek(event)"><div id="ytProgFill"></div></div><div class="ytNPRow2"><span id="ytTime">0:00 / 0:00</span><div class="ytCtrl"><button class="ytMiniBtn" id="ytPlayPauseBtn" onclick="ytPlayPause()">⏸</button><button class="ytMiniBtn" id="ytLoopBtn" onclick="ytToggleLoop()" title="ループ">↺</button></div></div></div></div><div class="bgmSection"><div class="bgmSLbl" style="display:flex;align-items:center;justify-content:space-between"><span>⚡ クイックミックス</span><button onclick="clearAmbient()" data-i18n="ambClear" style="font-family:var(--mono);font-size:8px;color:var(--ts);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;background:none;cursor:pointer">全消去</button></div><div class="ambPresetGrid"><button class="ambPreset" data-preset="rain_focus"     onclick="setAmbientPreset('rain_focus')">🌧 雨集中</button><button class="ambPreset" data-preset="forest_morning" onclick="setAmbientPreset('forest_morning')">🌿 森の朝</button><button class="ambPreset" data-preset="cafe_rain"      onclick="setAmbientPreset('cafe_rain')">☕ カフェ</button><button class="ambPreset" data-preset="ocean_wind"     onclick="setAmbientPreset('ocean_wind')">🌊 海辺</button><button class="ambPreset" data-preset="campfire"       onclick="setAmbientPreset('campfire')">🔥 焚き火</button><button class="ambPreset" data-preset="deep_work"      onclick="setAmbientPreset('deep_work')">⌨ 深夜</button><button class="ambPreset" data-preset="storm"          onclick="setAmbientPreset('storm')">⛈ 嵐</button><button class="ambPreset" data-preset="lofi_rain"      onclick="setAmbientPreset('lofi_rain')">🎵 Lo-Fi</button><button class="ambPreset" data-preset="white_noise"    onclick="setAmbientPreset('white_noise')">⬜ ホワイト</button><button class="ambPreset" data-preset="city_rain"      onclick="setAmbientPreset('city_rain')">🏙 都市雨</button><button class="ambPreset" data-preset="deep_forest"    onclick="setAmbientPreset('deep_forest')">🌲 深林</button><button class="ambPreset" data-preset="zen_garden"     onclick="setAmbientPreset('zen_garden')">🪨 禅</button><button class="ambPreset" data-preset="space_ambient"  onclick="setAmbientPreset('space_ambient')">🌌 宇宙</button><button class="ambPreset" data-preset="keyboard_cafe"  onclick="setAmbientPreset('keyboard_cafe')">💻 タイプ音</button></div></div><div class="bgmSection" id="ambientMixerSection"><div class="bgmSLbl">🎛 アンビエントミキサー</div><div class="ambientGrid" id="ambientGrid"><div class="ambItem" data-sound="rain"><button class="ambBtn" onclick="toggleAmbient('rain')" title="雨音">🌧<span>雨</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('rain',this.value)" title="音量"></div><div class="ambItem" data-sound="thunder"><button class="ambBtn" onclick="toggleAmbient('thunder')" title="雷雨">⛈<span>雷雨</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('thunder',this.value)" title="音量"></div><div class="ambItem" data-sound="ocean"><button class="ambBtn" onclick="toggleAmbient('ocean')" title="波音">🌊<span>波</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.45" oninput="setAmbientVol('ocean',this.value)" title="音量"></div><div class="ambItem" data-sound="river"><button class="ambBtn" onclick="toggleAmbient('river')" title="川">🏞<span>川</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('river',this.value)" title="音量"></div><div class="ambItem" data-sound="forest"><button class="ambBtn" onclick="toggleAmbient('forest')" title="森">🌿<span>森</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('forest',this.value)" title="音量"></div><div class="ambItem" data-sound="birds"><button class="ambBtn" onclick="toggleAmbient('birds')" title="鳥のさえずり">🐦<span>鳥</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.38" oninput="setAmbientVol('birds',this.value)" title="音量"></div><div class="ambItem" data-sound="wind"><button class="ambBtn" onclick="toggleAmbient('wind')" title="風">🌬<span>風</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('wind',this.value)" title="音量"></div><div class="ambItem" data-sound="night"><button class="ambBtn" onclick="toggleAmbient('night')" title="夜の虫の声">🌙<span>夜</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('night',this.value)" title="音量"></div><div class="ambItem" data-sound="fire"><button class="ambBtn" onclick="toggleAmbient('fire')" title="焚き火">🔥<span>焚火</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('fire',this.value)" title="音量"></div><div class="ambItem" data-sound="cafe"><button class="ambBtn" onclick="toggleAmbient('cafe')" title="カフェ">☕<span>カフェ</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('cafe',this.value)" title="音量"></div><div class="ambItem" data-sound="city"><button class="ambBtn" onclick="toggleAmbient('city')" title="都市">🏙<span>都市</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.35" oninput="setAmbientVol('city',this.value)" title="音量"></div><div class="ambItem" data-sound="keyboard"><button class="ambBtn" onclick="toggleAmbient('keyboard')" title="キーボード音">⌨️<span>タイプ</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.3" oninput="setAmbientVol('keyboard',this.value)" title="音量"></div><div class="ambItem" data-sound="lofi"><button class="ambBtn" onclick="toggleAmbient('lofi')" title="Lo-Fi BGM">🎵<span>Lo-Fi</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('lofi',this.value)" title="音量"></div><div class="ambItem" data-sound="space"><button class="ambBtn" onclick="toggleAmbient('space')" title="宇宙">🌌<span>宇宙</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.4" oninput="setAmbientVol('space',this.value)" title="音量"></div><div class="ambItem" data-sound="white"><button class="ambBtn" onclick="toggleAmbient('white')" title="ホワイトノイズ">⬜<span>White</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('white',this.value)" title="音量"></div><div class="ambItem" data-sound="pink"><button class="ambBtn" onclick="toggleAmbient('pink')" title="ピンクノイズ">🌸<span>Pink</span></button><input type="range" class="ambVol" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVol('pink',this.value)" title="音量"></div></div></div><div class="bgmSection"><div class="bgmSLbl">YouTube URL</div><div class="bgmYtRow"><input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=…"><button class="ytBtn" onclick="playYt()" data-i18n="bgmPlay">▶ 再生</button><button class="ytStop" onclick="stopYt()" data-i18n="bgmStop">■ 停止</button></div></div><div class="bgmFootRow"><span class="volLbl">VOL</span><input type="range" id="bgmVol" min="0" max="1" step="0.02" value="0.35" oninput="setBgmVol(this.value)"><button class="bgmClose" onclick="toggleBgmPanel()" aria-label="BGMパネルを閉じる">×</button></div></div><div id="ytFrame" aria-hidden="true"></div><div id="thOv" role="dialog" aria-modal="true" aria-labelledby="thPanelTitle" onclick="thOvCk(event)"><div id="thPanel"><div class="thHeader"><span class="thHeaderTitle" data-i18n="themeTitle" id="thPanelTitle">🎨 テーマ設定</span><button class="thHeaderClose" onclick="openTheme()" aria-label="閉じる">✕</button></div><div class="thSection"><button class="thSectionHead open" onclick="thToggle('thSecColor')"><span data-i18n="thSecColorLabel">カラー</span><span class="thArrow">▸</span></button><div class="thSectionBody open" id="thSecColor"><div class="swGrid" id="swGrid"></div><div style="margin-top:12px"><div class="sLbl" data-i18n="thColorCode">カラーコード</div><div class="hexRow"><input type="color" id="hexPicker" value="#DCAF46" oninput="onHexPicker(this.value)"><input type="text" id="hexInput" value="#DCAF46" placeholder="#RRGGBB" oninput="onHexInput(this.value)" maxlength="7" spellcheck="false"><div id="rgbPrev" style="flex:0 0 28px;height:28px;border-radius:var(--r2);border:1px solid var(--b2)"></div></div><div class="rgbGrid" style="margin-top:8px"><div class="rgbF"><label>R</label><input type="number" id="rgbR" min="0" max="255" value="220" oninput="onRgb()"></div><div class="rgbF"><label>G</label><input type="number" id="rgbG" min="0" max="255" value="175" oninput="onRgb()"></div><div class="rgbF"><label>B</label><input type="number" id="rgbB" min="0" max="255" value="70"  oninput="onRgb()"></div></div><div style="margin-top:10px"><div class="sLbl" data-i18n="hueLabel">色相</div><input type="range" id="hueSlider" min="0" max="360" value="38" oninput="onHue(this.value)"></div></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecBg')"><span data-i18n="thSecBgLabel">背景</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecBg"><div class="bgOpts"><button class="bgOpt on" data-bg="dark"    onclick="setBg('dark')"    data-i18n="bgDark">ダーク</button><button class="bgOpt"    data-bg="amoled"  onclick="setBg('amoled')"  data-i18n="bgAmoled">AMOLED</button><button class="bgOpt"    data-bg="dim"     onclick="setBg('dim')"     data-i18n="bgDim">ディム</button><button class="bgOpt"    data-bg="light"   onclick="setBg('light')"   data-i18n="bgLight">ライト</button><button class="bgOpt"    data-bg="white"   onclick="setBg('white')"   data-i18n="bgWhite">ホワイト</button><button class="bgOpt"    data-bg="sakura"  onclick="setBg('sakura')"  data-i18n="bgSakura" style="color:#ff9ec4;border-color:rgba(255,140,180,.3)">🌸 桜</button><button class="bgOpt"    data-bg="persona" onclick="setBg('persona')" data-i18n="bgPersona">ペルソナ</button><button class="bgOpt"    data-bg="snow" onclick="setBg('snow')" data-i18n="bgSnow" style="color:#a8d8f0;border-color:rgba(140,210,255,.3)">❄️ 雪</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecFont')"><span data-i18n="thSecFontLabel">フォント</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecFont"><div class="fpBtns" id="fpBtns"></div><div class="fCust"><input type="text" id="fIn" data-i18n-ph="thFontPh" placeholder="Google Fontsのフォント名"><button class="bAp" onclick="custFont()" data-i18n="thFontApply">適用</button></div><div class="fPrev" id="fPrev">あいうえお ABCDEFG 12:34</div><div class="fNote">※ <a href="https://fonts.google.com/?subset=japanese" target="_blank" rel="noopener" style="color:var(--ac)">Google Fonts</a></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecLang')"><span data-i18n="thSecLangLabel">言語</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecLang"><div class="langBtns"><button class="langBtn on" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button><button class="langBtn"    data-lang="en" onclick="setLang('en')">🇺🇸 English</button><button class="langBtn"    data-lang="zh" onclick="setLang('zh')">🇨🇳 中文</button><button class="langBtn"    data-lang="ko" onclick="setLang('ko')">🇰🇷 한국어</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecTimer')"><span data-i18n="timerStyleLabel">タイマー表示</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecTimer"><div class="timerStyleBtns"><button class="pomoStyleBtn on" data-style="ring"    onclick="setPomoStyle('ring')" aria-label="リング表示"    data-i18n="timerStyleRing">○ リング</button><button class="pomoStyleBtn"    data-style="arc"     onclick="setPomoStyle('arc')" aria-label="アーク表示"     data-i18n="timerStyleArc">◡ アーク</button><button class="pomoStyleBtn"    data-style="minimal" onclick="setPomoStyle('minimal')" aria-label="ミニマル表示" data-i18n="timerStyleMinimal">▬ ミニマル</button><button class="pomoStyleBtn"    data-style="blocks"  onclick="setPomoStyle('blocks')" aria-label="ブロック表示"  data-i18n="timerStyleBlocks">▦ ブロック</button></div></div></div><div class="thSection"><button class="thSectionHead" onclick="thToggle('thSecScale')"><span data-i18n="thSecScaleLabel">UIスケール</span><span class="thArrow">▸</span></button><div class="thSectionBody" id="thSecScale"><div class="scaleBtns" id="scaleBtns"><button class="scaleBtn"    data-scale="0.8"  onclick="setUIScale(0.8)">80%</button><button class="scaleBtn"    data-scale="0.9"  onclick="setUIScale(0.9)">90%</button><button class="scaleBtn on" data-scale="1"    onclick="setUIScale(1.0)">100%</button><button class="scaleBtn"    data-scale="1.1"  onclick="setUIScale(1.1)">110%</button><button class="scaleBtn"    data-scale="1.2"  onclick="setUIScale(1.2)">120%</button><button class="scaleBtn"    data-scale="1.4"  onclick="setUIScale(1.4)">140%</button></div></div></div><div class="thResetSection"><div class="thResetLbl" data-i18n="resetSection">⚠ データ管理</div><button class="thResetBtn" onclick="confirmReset()" data-i18n="resetBtn">データをリセット</button></div></div></div><div id="resetOv" style="display:none;position:fixed;inset:0;z-index:1200;
 background:rgba(0,0,0,.88);backdrop-filter:blur(18px);
 align-items:center;justify-content:center"><div onclick="event.stopPropagation()" style="background:var(--sf);border:1px solid rgba(255,71,87,.35);
 border-radius:var(--r3);padding:28px 24px;width:340px;max-width:calc(100vw - 32px);
@@ -545,11 +440,11 @@ color:#fff;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:
 background:rgba(255,71,87,.85);transition:all .15s;text-transform:uppercase;cursor:pointer"
 onmouseover="this.style.background='rgba(255,71,87,1)';this.style.boxShadow='0 0 20px rgba(255,71,87,.4)'"
 onmouseout="this.style.background='rgba(255,71,87,.85)';this.style.boxShadow='none'"
-data-i18n="resetExec">🗑 実行</button></div></div></div><div id="streakOv" role="dialog" aria-modal="true" aria-labelledby="strPanelTitle" onclick="strOvCk(event)"><div id="streakPanel"><div class="strTitle" id="strPanelTitle">⚡ 実績 &amp; ストリーク</div><div class="strLvlCard"><div class="strLvlIcon" id="spLvlIcon">🌱</div><div class="strLvlInfo"><div class="strLvlName" id="spLvlName">Seedling</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div class="strLvlNum" id="spLvlNum">Level 1 / 60</div><div id="spLvlTitle" style="font-family:var(--mono);font-size:8px;color:var(--ac);letter-spacing:2px;opacity:.8">始まりの一歩</div></div><div class="strLvlBarWrap"><div class="strLvlBarFill" id="spLvlFill" style="width:0%"></div></div><div class="strLvlXP" id="spLvlXP">—</div></div></div><div class="strStats"><div class="strStat"><div class="val" id="spStreak">0</div><div class="lbl" data-i18n="streakDays">🔥 連続日</div></div><div class="strStat"><div class="val" id="spMax">0</div><div class="lbl" data-i18n="streakMaxLbl">🏆 最長</div></div><div class="strStat"><div class="val" id="spTotal">0</div><div class="lbl" data-i18n="streakTotalLbl">📅 累計日</div></div><div class="strStat"><div class="val" id="spMinutes">0</div><div class="lbl" data-i18n="streakMinutes">⏱ 総分数</div></div></div><div class="strMainBadge"><div class="strFlame">🔥</div><div class="strDays" id="strDays">0</div><div class="strLabel" data-i18n="streakConLog">日連続ログイン</div></div><div class="strHeatWrap"><div class="strHeatHeader"><div class="strHeatLbl" data-i18n="heatLabel">アクティビティ (過去16週間)</div><div class="strHeatLegend"><span data-i18n="heatLow">少</span><span style="width:10px;height:10px;border-radius:2px;background:var(--b1);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.25);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.55);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.85);display:inline-block"></span><span data-i18n="heatHigh">多</span></div></div><div class="strHeatBody"><div class="strHeatDays" id="strHeatDays"><div class="strHeatDay"></div><div class="strHeatDay" id="heatMon">月</div><div class="strHeatDay"></div><div class="strHeatDay" id="heatWed">水</div><div class="strHeatDay"></div><div class="strHeatDay" id="heatFri">金</div><div class="strHeatDay"></div></div><div id="strHeatGrid" class="strHeatGrid"></div></div><div id="strMonthRow" class="strHeatMonths"></div></div><button class="strCloseBtn" onclick="closeStreak()" data-i18n="streakCloseBtn">閉じる</button></div></div><div id="notifStack" aria-live="assertive" aria-atomic="false"></div><div id="toast" role="status" aria-live="polite" aria-atomic="true"></div><nav id="mobileNav" aria-label="メインナビゲーション"><button class="mnBtn on" id="mnTask" onclick="mNav('task')" aria-current="page"><span class="mni">📋</span><span class="mnl" data-i18n="taskBtn">タスク</span></button><button class="mnBtn"    id="mnTimer"  onclick="mNav('timer')"><span class="mni">⏱</span><span class="mnl" data-i18n="timerBtn">タイマー</span></button><button class="mnBtn"    id="mnCal"    onclick="mNav('cal')"><span class="mni">📅</span><span class="mnl" data-i18n="calBtn">カレンダー</span></button><button class="mnBtn"    id="mnBgm"    onclick="mNav('bgm')"><span class="mni">🎵</span><span class="mnl">BGM</span></button><button class="mnBtn"    id="mnMore"   onclick="mNav('more')"><span class="mni">⚙️</span><span class="mnl" data-i18n="settingsBtn">設定</span></button></nav><div id="mTaskPreview" role="button" tabindex="0" aria-label="タスクを表示" onclick="mNav('task')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mNav('task')}"><div id="mTaskPreviewInner"></div><div id="mTaskPreviewEmpty">タスクをタップして追加</div></div><div id="mSheetOv" onclick="mSheetClose()"></div><div class="mSheet" id="mSheetTask"><div class="mSheetPull" aria-hidden="true"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="todayTasks">📋 今日の予定</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="display:flex;flex-direction:column;overflow:hidden;max-height:calc(80vh - 60px)"><div class="addRow" style="flex-direction:column;gap:6px;align-items:stretch"><div style="display:flex;gap:6px;align-items:center"><div class="mToggle"><button class="mb on" id="mNowM" data-i18n="nowBtn" onclick="setModeM('now')">今すぐ</button><button class="mb" id="mTimeM" data-i18n="timeBtn" onclick="setModeM('time')">時間指定</button></div><input type="time" id="addTimeM" class="tIn hide"></div><div style="display:flex;gap:6px;align-items:center"><input type="text" id="addNameM" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off" style="font-size:16px"><button class="bAdd" onclick="addTaskM()" aria-label="タスクを追加" style="width:40px;height:40px;font-size:22px;flex-shrink:0">+</button></div></div><div id="tScrollM" class="tScroll" role="list" aria-label="今日のタスク一覧" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div></div></div><div class="mSheet" id="mSheetTimer"><div class="mSheetPull" aria-hidden="true"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="timerSheet" id="_timerSheetTitle">⏱ タイマー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="padding:12px 16px 20px"><div class="timerTabs" style="margin-bottom:16px"><button class="ttab on" id="tPomoM" data-i18n="pomoTab" onclick="switchTimerAll('pomo')">🍅 ポモドーロ</button><button class="ttab"    id="tSwM"   data-i18n="swTab" onclick="switchTimerAll('sw')">⏱ ストップ</button></div><div id="bPomoM" style="display:flex;flex-direction:column;align-items:center;gap:14px"><div style="display:flex;align-items:center;gap:16px"><div class="pomoRing" id="pRingM" style="width:88px;height:88px"><svg width="88" height="88" viewBox="0 0 88 88"><circle class="pr-bg" cx="44" cy="44" r="36" stroke-width="5"/><circle class="pr-arc" id="pArcM" cx="44" cy="44" r="36" stroke-width="5" stroke-dasharray="226.2" stroke-dashoffset="0"/></svg><div class="pRingIn"><div class="pRT" id="pRTM" style="font-size:15px">25:00</div><div class="pRM" id="pRMM" style="font-size:8px">作業</div></div></div><div style="display:flex;flex-direction:column;gap:8px"><div class="pDots" id="pDotsM"></div><div class="cr"><button class="bc p" id="pBtnM" onclick="pomoToggle()">▶</button><button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button><button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button></div></div></div><div class="pSR" style="width:100%;max-width:320px"><div class="pF"><label>作業(分)</label><input type="number" id="pWorkM"  value="25" min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>休憩(分)</label><input type="number" id="pBreakM" value="5"  min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>長休憩(分)</label><input type="number" id="pLongM" value="15" min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>セット数</label><input type="number" id="pSetsM"  value="4"  min="1" max="8"  onchange="pomoChgM()" style="font-size:16px;padding:6px"></div></div></div><div id="bSwM" style="display:none;flex-direction:column;align-items:center;gap:14px"><div class="tDisp" id="swDispM" style="font-size:48px;color:var(--blue);text-shadow:0 0 36px rgba(63,169,245,.35)">00:00:00</div><div class="cr"><button class="bc p" id="swBtnM" onclick="swToggle()">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLapsM" style="width:100%;max-height:120px"></div></div></div></div><div class="mSheet" id="mSheetCal"><div class="mSheetPull" aria-hidden="true"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="calSheet">📅 カレンダー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody"><div class="calInner" style="min-height:0;max-height:calc(80vh - 60px)"><div class="calViewTabs"><button class="calTab" id="cvYearM"  onclick="setCalViewM('year')" data-i18n="calYear">年</button><button class="calTab on" id="cvMonthM" onclick="setCalViewM('month')" data-i18n="calMonth">月</button><button class="calTab" id="cvDayM"   onclick="setCalViewM('day')" data-i18n="calDay">日</button></div><div class="calNav"><button class="calNavBtn" onclick="calMoveM(-1)" aria-label="前の期間へ">‹</button><div class="calNavTitle" id="calTitleM" role="button" tabindex="0" onclick="cycleCalViewM()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cycleCalViewM()}" style="font-size:15px">2025年1月</div><button class="calNavBtn" onclick="calMoveM(1)" aria-label="次の期間へ">›</button></div><div id="calBodyM" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div></div></div></div><div class="mSheet" id="mSheetMore"><div class="mSheetPull" aria-hidden="true"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="moreMenu">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px"><button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span style="font-size:22px">⚡</span><div><div style="font-weight:600" data-i18n="streakTitle">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="streakDays">レベル・ヒートマップ</div></div></button><button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span style="font-size:22px">◐</span><div><div style="font-weight:600" data-i18n="moreTheme">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreThemeSub">カラー・フォント・背景</div></div></button><button onclick="mSheetClose();openAccount()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span id="mAccountIconWrap" style="font-size:22px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span id="mAccountEmoji">👤</span><img id="mAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover"></span><div><div style="font-weight:600" data-i18n="moreAccount">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreAccountSub">ログイン・クラウド保存</div></div></button><a href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener"
+data-i18n="resetExec">🗑 実行</button></div></div></div><div id="streakOv" role="dialog" aria-modal="true" aria-labelledby="strPanelTitle" onclick="strOvCk(event)"><div id="streakPanel"><div class="strTitle" id="strPanelTitle">⚡ 実績 &amp; ストリーク</div><div class="strLvlCard"><div class="strLvlIcon" id="spLvlIcon">🌱</div><div class="strLvlInfo"><div class="strLvlName" id="spLvlName">Seedling</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div class="strLvlNum" id="spLvlNum">Level 1 / 60</div><div id="spLvlTitle" style="font-family:var(--mono);font-size:8px;color:var(--ac);letter-spacing:2px;opacity:.8">始まりの一歩</div></div><div class="strLvlBarWrap"><div class="strLvlBarFill" id="spLvlFill" style="width:0%"></div></div><div class="strLvlXP" id="spLvlXP">—</div></div></div><div class="strStats"><div class="strStat"><div class="val" id="spStreak">0</div><div class="lbl" data-i18n="streakDays">🔥 連続日</div></div><div class="strStat"><div class="val" id="spMax">0</div><div class="lbl" data-i18n="streakMaxLbl">🏆 最長</div></div><div class="strStat"><div class="val" id="spTotal">0</div><div class="lbl" data-i18n="streakTotalLbl">📅 累計日</div></div><div class="strStat"><div class="val" id="spMinutes">0</div><div class="lbl" data-i18n="streakMinutes">⏱ 総分数</div></div></div><div class="strMainBadge"><div class="strFlame">🔥</div><div class="strDays" id="strDays">0</div><div class="strLabel" data-i18n="streakConLog">日連続ログイン</div></div><div class="strHeatWrap"><div class="strHeatHeader"><div class="strHeatLbl" data-i18n="heatLabel">アクティビティ (過去16週間)</div><div class="strHeatLegend"><span data-i18n="heatLow">少</span><span style="width:10px;height:10px;border-radius:2px;background:var(--b1);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.25);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.55);display:inline-block"></span><span style="width:10px;height:10px;border-radius:2px;background:rgba(var(--ar),var(--ag),var(--ab),.85);display:inline-block"></span><span data-i18n="heatHigh">多</span></div></div><div class="strHeatBody"><div class="strHeatDays" id="strHeatDays"><div class="strHeatDay"></div><div class="strHeatDay" id="heatMon">月</div><div class="strHeatDay"></div><div class="strHeatDay" id="heatWed">水</div><div class="strHeatDay"></div><div class="strHeatDay" id="heatFri">金</div><div class="strHeatDay"></div></div><div id="strHeatGrid" class="strHeatGrid"></div></div><div id="strMonthRow" class="strHeatMonths"></div></div><button class="strCloseBtn" onclick="closeStreak()" data-i18n="streakCloseBtn">閉じる</button></div></div><div id="notifStack" aria-live="assertive" aria-atomic="false"></div><div id="toast" role="status" aria-live="polite" aria-atomic="true"></div><nav id="mobileNav" aria-label="メインナビゲーション"><button class="mnBtn on" id="mnTask" onclick="mNav('task')" aria-current="page"><span class="mni">📋</span><span class="mnl" data-i18n="taskBtn">タスク</span></button><button class="mnBtn"    id="mnTimer"  onclick="mNav('timer')"><span class="mni">⏱</span><span class="mnl" data-i18n="timerBtn">タイマー</span></button><button class="mnBtn"    id="mnCal"    onclick="mNav('cal')"><span class="mni">📅</span><span class="mnl" data-i18n="calBtn">カレンダー</span></button><button class="mnBtn"    id="mnBgm"    onclick="mNav('bgm')"><span class="mni">🎵</span><span class="mnl">BGM</span></button><button class="mnBtn"    id="mnMore"   onclick="mNav('more')"><span class="mni">⚙️</span><span class="mnl" data-i18n="settingsBtn">設定</span></button></nav><div id="mTaskPreview" onclick="mNav('task')"><div id="mTaskPreviewInner"></div><div id="mTaskPreviewEmpty">タスクをタップして追加</div></div><div id="mSheetOv" onclick="mSheetClose()"></div><div class="mSheet" id="mSheetTask"><div class="mSheetPull"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="todayTasks">📋 今日の予定</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="display:flex;flex-direction:column;overflow:hidden;max-height:calc(80vh - 60px)"><div class="addRow" style="flex-direction:column;gap:6px;align-items:stretch"><div style="display:flex;gap:6px;align-items:center"><div class="mToggle"><button class="mb on" id="mNowM" data-i18n="nowBtn" onclick="setModeM('now')">今すぐ</button><button class="mb" id="mTimeM" data-i18n="timeBtn" onclick="setModeM('time')">時間指定</button></div><input type="time" id="addTimeM" class="tIn hide"></div><div style="display:flex;gap:6px;align-items:center"><input type="text" id="addNameM" class="nIn" placeholder="タスク名を入力…" aria-label="タスク名" autocomplete="off" style="font-size:16px"><button class="bAdd" onclick="addTaskM()" aria-label="タスクを追加" style="width:40px;height:40px;font-size:22px;flex-shrink:0">+</button></div></div><div id="tScrollM" class="tScroll" role="list" aria-label="今日のタスク一覧" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div></div></div><div class="mSheet" id="mSheetTimer"><div class="mSheetPull"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="timerSheet" id="_timerSheetTitle">⏱ タイマー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="padding:12px 16px 20px"><div class="timerTabs" style="margin-bottom:16px"><button class="ttab on" id="tPomoM" data-i18n="pomoTab" onclick="switchTimerAll('pomo')">🍅 ポモドーロ</button><button class="ttab"    id="tSwM"   data-i18n="swTab" onclick="switchTimerAll('sw')">⏱ ストップ</button></div><div id="bPomoM" style="display:flex;flex-direction:column;align-items:center;gap:14px"><div style="display:flex;align-items:center;gap:16px"><div class="pomoRing" id="pRingM" style="width:88px;height:88px"><svg width="88" height="88" viewBox="0 0 88 88"><circle class="pr-bg" cx="44" cy="44" r="36" stroke-width="5"/><circle class="pr-arc" id="pArcM" cx="44" cy="44" r="36" stroke-width="5" stroke-dasharray="226.2" stroke-dashoffset="0"/></svg><div class="pRingIn"><div class="pRT" id="pRTM" style="font-size:15px">25:00</div><div class="pRM" id="pRMM" style="font-size:8px">作業</div></div></div><div style="display:flex;flex-direction:column;gap:8px"><div class="pDots" id="pDotsM"></div><div class="cr"><button class="bc p" id="pBtnM" onclick="pomoToggle()">▶</button><button class="bc g" onclick="pomoReset()" data-i18n="reset">↺</button><button class="bc g" onclick="pomoSkip()" data-i18n="skip">⏭</button></div></div></div><div class="pSR" style="width:100%;max-width:320px"><div class="pF"><label>作業(分)</label><input type="number" id="pWorkM"  value="25" min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>休憩(分)</label><input type="number" id="pBreakM" value="5"  min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>長休憩(分)</label><input type="number" id="pLongM" value="15" min="1" max="99" onchange="pomoChgM()" style="font-size:16px;padding:6px"></div><div class="pF"><label>セット数</label><input type="number" id="pSetsM"  value="4"  min="1" max="8"  onchange="pomoChgM()" style="font-size:16px;padding:6px"></div></div></div><div id="bSwM" style="display:none;flex-direction:column;align-items:center;gap:14px"><div class="tDisp" id="swDispM" style="font-size:48px;color:var(--blue);text-shadow:0 0 36px rgba(63,169,245,.35)">00:00:00</div><div class="cr"><button class="bc p" id="swBtnM" onclick="swToggle()">▶</button><button class="bc g" onclick="swLap()" data-i18n="lap">◎ ラップ</button><button class="bc g" onclick="swReset()" data-i18n="reset">↺</button></div><div class="swLaps" id="swLapsM" style="width:100%;max-height:120px"></div></div></div></div><div class="mSheet" id="mSheetCal"><div class="mSheetPull"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="calSheet">📅 カレンダー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody"><div class="calInner" style="min-height:0;max-height:calc(80vh - 60px)"><div class="calViewTabs"><button class="calTab" id="cvYearM"  onclick="setCalViewM('year')" data-i18n="calYear">年</button><button class="calTab on" id="cvMonthM" onclick="setCalViewM('month')" data-i18n="calMonth">月</button><button class="calTab" id="cvDayM"   onclick="setCalViewM('day')" data-i18n="calDay">日</button></div><div class="calNav"><button class="calNavBtn" onclick="calMoveM(-1)" aria-label="前の期間へ">‹</button><div class="calNavTitle" id="calTitleM" onclick="cycleCalViewM()" style="font-size:15px">2025年1月</div><button class="calNavBtn" onclick="calMoveM(1)" aria-label="次の期間へ">›</button></div><div id="calBodyM" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div></div></div></div><div class="mSheet" id="mSheetMore"><div class="mSheetPull"></div><div class="mSheetHeader"><span class="mSheetTitle" data-i18n="moreMenu">⚙️ メニュー</span><button class="mSheetClose" onclick="mSheetClose()" aria-label="閉じる">×</button></div><div class="mSheetBody" style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px"><button onclick="mSheetClose();openStreak()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span style="font-size:22px">⚡</span><div><div style="font-weight:600" data-i18n="streakTitle">実績 &amp; ストリーク</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="streakDays">レベル・ヒートマップ</div></div></button><button onclick="mSheetClose();openTheme()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span style="font-size:22px">◐</span><div><div style="font-weight:600" data-i18n="moreTheme">テーマ設定</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreThemeSub">カラー・フォント・背景</div></div></button><button onclick="mSheetClose();openAccount()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--b2);background:var(--ra);color:var(--tp);font-family:var(--jp);font-size:15px;text-align:left;width:100%"><span id="mAccountIconWrap" style="font-size:22px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span id="mAccountEmoji">👤</span><img id="mAccountImg" alt="avatar" style="display:none;width:28px;height:28px;border-radius:50%;object-fit:cover"></span><div><div style="font-weight:600" data-i18n="moreAccount">アカウント</div><div id="mAccountSub" style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreAccountSub">ログイン・クラウド保存</div></div></button><a href="https://ko-fi.com/shallotteboba" target="_blank" rel="noopener"
 onclick="mSheetClose()"
 style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);
 border:1px solid var(--acb);background:var(--ac0);color:var(--tp);
-font-family:var(--jp);font-size:15px;text-align:left;text-decoration:none;width:100%"><span style="font-size:22px">☕</span><div><div style="font-weight:600;color:var(--ac)" data-i18n="moreDonate">SCHEDを応援する</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreDonSub">開発継続のため支援をお願いします</div></div></a><div style="padding:10px 0;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div id="mLvlIcon" style="font-size:24px">🌱</div><div><div id="mLvlName" style="font-family:var(--mono);font-size:12px;color:var(--ac);font-weight:700">Lv.1 Beginner</div><div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div></div></div><div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="mSheetClose();setTimeout(()=>openChangelog(),180)" title="更新履歴を見る">v1.4.6 📋</div></div></div></div><div id="onlineSheetOv" onclick="closeOnlineSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:31;backdrop-filter:blur(4px)"></div><div id="onlineSheet" class="mSheet" style="z-index:32;max-height:75vh"><div class="mSheetPull" aria-hidden="true"></div><div class="mSheetHeader"><span class="mSheetTitle">👥 オンライン中</span><button class="mSheetClose" onclick="closeOnlineSheet()" aria-label="閉じる">×</button></div><div class="mSheetBody" id="onlineSheetBody" style="padding:16px 20px 24px"></div></div><button id="dockShowBtn" onclick="toggleDock()" aria-label="ドックを表示" data-i18n-title="dockShowTitle" title="ドックを表示"><span>▲</span><span class="dsbTooltip" data-i18n="dockShowTitle">ドック表示 (D)</span></button><div id="streakPop" role="dialog" aria-modal="true" aria-labelledby="spPopLabel" onclick="closeStreakPop()"><div id="streakPopCard" onclick="event.stopPropagation()"><div class="spConfetti" id="spConfetti" aria-hidden="true"></div><div class="spFlame">🔥</div><div class="spDays" id="spPopDays">1<span class="spDayUnit" id="spPopUnit">日目</span></div><div class="spLabel" id="spPopLabel">1日連続ログイン！</div><div class="spSub" id="spPopSub">毎日続けて目標を達成しよう</div><button class="spBtn" onclick="closeStreakPop()" data-i18n="streakPopBtn">やった！</button></div></div><div id="streakBreakPop" role="dialog" aria-modal="true" aria-labelledby="sbTitle" onclick="closeStreakBreakPop()"><div id="streakBreakCard" onclick="event.stopPropagation()"><div class="sbFlame" id="sbFlame">🔥</div><div class="sbTitle" id="sbTitle">連続日数が途切れました…</div><div class="sbDays" id="sbDays"><span id="sbPrevDays">0</span><span class="sbDayUnit">日</span></div><div class="sbSub" id="sbSub">また今日から始めよう！</div><button class="spBtn sbBtn" data-i18n="streakRestartBtn" onclick="closeStreakBreakPop()">よし、再スタート！</button></div></div><script>
+font-family:var(--jp);font-size:15px;text-align:left;text-decoration:none;width:100%"><span style="font-size:22px">☕</span><div><div style="font-weight:600;color:var(--ac)" data-i18n="moreDonate">SCHEDを応援する</div><div style="font-size:11px;color:var(--ts);font-family:var(--mono);margin-top:2px" data-i18n="moreDonSub">開発継続のため支援をお願いします</div></div></a><div style="padding:10px 0;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div id="mLvlIcon" style="font-size:24px">🌱</div><div><div id="mLvlName" style="font-family:var(--mono);font-size:12px;color:var(--ac);font-weight:700">Lv.1 Beginner</div><div id="mStreak" style="font-family:var(--mono);font-size:10px;color:var(--ts)">🔥 0日連続</div></div></div><div style="font-family:var(--mono);font-size:10px;color:var(--ts);letter-spacing:1.5px;opacity:.6;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="mSheetClose();setTimeout(()=>openChangelog(),180)" title="更新履歴を見る">v1.4.6 📋</div></div></div></div><div id="onlineSheetOv" onclick="closeOnlineSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:31;backdrop-filter:blur(4px)"></div><div id="onlineSheet" class="mSheet" style="z-index:32;max-height:75vh"><div class="mSheetPull"></div><div class="mSheetHeader"><span class="mSheetTitle">👥 オンライン中</span><button class="mSheetClose" onclick="closeOnlineSheet()">×</button></div><div class="mSheetBody" id="onlineSheetBody" style="padding:16px 20px 24px"></div></div><button id="dockShowBtn" onclick="toggleDock()" aria-label="ドックを表示" data-i18n-title="dockShowTitle" title="ドックを表示"><span>▲</span><span class="dsbTooltip" data-i18n="dockShowTitle">ドック表示 (D)</span></button><div id="streakPop" onclick="closeStreakPop()"><div id="streakPopCard" onclick="event.stopPropagation()"><div class="spConfetti" id="spConfetti"></div><div class="spFlame">🔥</div><div class="spDays" id="spPopDays">1<span class="spDayUnit" id="spPopUnit">日目</span></div><div class="spLabel" id="spPopLabel">1日連続ログイン！</div><div class="spSub" id="spPopSub">毎日続けて目標を達成しよう</div><button class="spBtn" onclick="closeStreakPop()" data-i18n="streakPopBtn">やった！</button></div></div><div id="streakBreakPop" onclick="closeStreakBreakPop()"><div id="streakBreakCard" onclick="event.stopPropagation()"><div class="sbFlame" id="sbFlame">🔥</div><div class="sbTitle" id="sbTitle">連続日数が途切れました…</div><div class="sbDays" id="sbDays"><span id="sbPrevDays">0</span><span class="sbDayUnit">日</span></div><div class="sbSub" id="sbSub">また今日から始めよう！</div><button class="spBtn sbBtn" data-i18n="streakRestartBtn" onclick="closeStreakBreakPop()">よし、再スタート！</button></div></div><script>
 
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
 const $=id=>document.getElementById(id);
@@ -662,39 +557,7 @@ resetCloudLabel:'☁ クラウドのデータも削除する',
 resetCloudNote:'（アカウントは削除されません）',
 resetCancel:'キャンセル',resetExec:'🗑 実行',
 syncFromCloudConfirm:'クラウドからデータを復元しますか？\nローカルデータが上書きされます。',
-bgSnow:'❄️ 雪',acSaveName:'変更',acSaveBio:'保存',acLinkBtn:'設定する',acSignOut:'サインアウト',acDeleteBtn:'アカウントを削除する',acTabLogin:'ログイン',acTabRegister:'新規登録',acLoginBtn:'ログイン',acResetBtn:'リセットメールを送信',acGoogleLogin:'🔑 Googleでログイン',acRegBtn:'アカウント作成',acGoogleReg:'🔑 Googleで登録',acDemoBtn:'🧪 デモアカウントでテスト',clClose:'閉じる',pomoTab:'🍅 ポモドーロ',swTab:'⏱ ストップ',ambClear:'全消去',streakRestartBtn:'よし、再スタート！',
-ambQuickMix:'⚡ クイックミックス',
-ambMixerTitle:'🎛 アンビエントミキサー',
-ambPreset_rain_focus:'🌧 雨と集中',
-ambPreset_forest_morning:'🌿 森の朝',
-ambPreset_cafe_rain:'☕ 雨のカフェ',
-ambPreset_ocean_wind:'🌊 波と風',
-ambPreset_campfire:'🔥 焚き火',
-ambPreset_deep_work:'⌨ 深夜作業',
-ambPreset_storm:'⛈ 嵐',
-ambPreset_lofi_rain:'🎵 Lo-Fi 雨',
-ambPreset_white_noise:'⬜ ホワイトノイズ',
-ambPreset_city_rain:'🏙 雨の街',
-ambPreset_deep_forest:'🌲 深い森',
-ambPreset_zen_garden:'🪨 禅の庭',
-ambPreset_space_ambient:'🌌 宇宙の響き',
-ambPreset_keyboard_cafe:'💻 タイプ×カフェ',
-ambSound_rain:'雨音',
-ambSound_thunder:'雷雨',
-ambSound_ocean:'波音',
-ambSound_river:'川音',
-ambSound_forest:'森林',
-ambSound_birds:'鳥声',
-ambSound_wind:'風音',
-ambSound_night:'虫声',
-ambSound_fire:'焚火',
-ambSound_cafe:'カフェ',
-ambSound_city:'都市',
-ambSound_keyboard:'タイプ',
-ambSound_lofi:'Lo-Fi',
-ambSound_space:'宇宙',
-ambSound_white:'ホワイト',
-ambSound_pink:'ピンク'},
+bgSnow:'❄️ 雪',acSaveName:'変更',acSaveBio:'保存',acLinkBtn:'設定する',acSignOut:'サインアウト',acDeleteBtn:'アカウントを削除する',acTabLogin:'ログイン',acTabRegister:'新規登録',acLoginBtn:'ログイン',acResetBtn:'リセットメールを送信',acGoogleLogin:'🔑 Googleでログイン',acRegBtn:'アカウント作成',acGoogleReg:'🔑 Googleで登録',acDemoBtn:'🧪 デモアカウントでテスト',clClose:'閉じる',pomoTab:'🍅 ポモドーロ',swTab:'⏱ ストップ',ambClear:'全消去',streakRestartBtn:'よし、再スタート！'},
 en:{start:'▶ Start',pause:'⏸ Pause',
 reset:'↺',skip:'⏭',lap:'◎ Lap',taskPh:'Enter task name…',nowBtn:'Now',timeBtn:'Timed',
 workLbl:'Work (min)',brkLbl:'Break (min)',longLbl:'Long (min)',setsLbl:'Sets',
@@ -764,39 +627,7 @@ resetCloudLabel:'☁ Also delete cloud data',
 resetCloudNote:'(Your account will not be deleted)',
 resetCancel:'Cancel',resetExec:'🗑 Reset',
 syncFromCloudConfirm:'Restore data from cloud?\nLocal data will be overwritten.',
-bgSnow:'❄️ Snow',acSaveName:'Save',acSaveBio:'Save',acLinkBtn:'Set Up',acSignOut:'Sign Out',acDeleteBtn:'Delete Account',acTabLogin:'Login',acTabRegister:'Register',acLoginBtn:'Login',acResetBtn:'Send Reset Email',acGoogleLogin:'🔑 Login with Google',acRegBtn:'Create Account',acGoogleReg:'🔑 Register with Google',acDemoBtn:'🧪 Try Demo Account',clClose:'Close',pomoTab:'🍅 Pomodoro',swTab:'⏱ Stopwatch',ambClear:'Clear All',streakRestartBtn:'Let\'s go again!',
-ambQuickMix:'⚡ Quick Mix',
-ambMixerTitle:'🎛 Ambient Mixer',
-ambPreset_rain_focus:'🌧 Rain Focus',
-ambPreset_forest_morning:'🌿 Forest Morning',
-ambPreset_cafe_rain:'☕ Café Rain',
-ambPreset_ocean_wind:'🌊 Ocean Wind',
-ambPreset_campfire:'🔥 Campfire',
-ambPreset_deep_work:'⌨ Deep Work',
-ambPreset_storm:'⛈ Storm',
-ambPreset_lofi_rain:'🎵 Lo-Fi Rain',
-ambPreset_white_noise:'⬜ White Noise',
-ambPreset_city_rain:'🏙 City Rain',
-ambPreset_deep_forest:'🌲 Deep Forest',
-ambPreset_zen_garden:'🪨 Zen Garden',
-ambPreset_space_ambient:'🌌 Space',
-ambPreset_keyboard_cafe:'💻 Keyboard Café',
-ambSound_rain:'Rain',
-ambSound_thunder:'Thunder',
-ambSound_ocean:'Ocean',
-ambSound_river:'River',
-ambSound_forest:'Forest',
-ambSound_birds:'Birds',
-ambSound_wind:'Wind',
-ambSound_night:'Night',
-ambSound_fire:'Fire',
-ambSound_cafe:'Café',
-ambSound_city:'City',
-ambSound_keyboard:'Typing',
-ambSound_lofi:'Lo-Fi',
-ambSound_space:'Space',
-ambSound_white:'White',
-ambSound_pink:'Pink'},
+bgSnow:'❄️ Snow',acSaveName:'Save',acSaveBio:'Save',acLinkBtn:'Set Up',acSignOut:'Sign Out',acDeleteBtn:'Delete Account',acTabLogin:'Login',acTabRegister:'Register',acLoginBtn:'Login',acResetBtn:'Send Reset Email',acGoogleLogin:'🔑 Login with Google',acRegBtn:'Create Account',acGoogleReg:'🔑 Register with Google',acDemoBtn:'🧪 Try Demo Account',clClose:'Close',pomoTab:'🍅 Pomodoro',swTab:'⏱ Stopwatch',ambClear:'Clear All',streakRestartBtn:'Let\'s go again!'},
 zh:{start:'▶ 开始',pause:'⏸ 暂停',
 reset:'↺',skip:'⏭',lap:'◎ 计圈',taskPh:'输入任务名称…',nowBtn:'现在',timeBtn:'定时',
 workLbl:'专注(分)',brkLbl:'休息(分)',longLbl:'长休息(分)',setsLbl:'组数',
@@ -866,39 +697,7 @@ resetCloudLabel:'☁ 同时删除云端数据',
 resetCloudNote:'（不会删除账户）',
 resetCancel:'取消',resetExec:'🗑 执行',
 syncFromCloudConfirm:'从云端恢复数据？\n本地数据将被覆盖。',
-bgSnow:'❄️ 雪景',acSaveName:'保存',acSaveBio:'保存',acLinkBtn:'设置',acSignOut:'退出登录',acDeleteBtn:'删除账户',acTabLogin:'登录',acTabRegister:'注册',acLoginBtn:'登录',acResetBtn:'发送重置邮件',acGoogleLogin:'🔑 Google登录',acRegBtn:'创建账户',acGoogleReg:'🔑 Google注册',acDemoBtn:'🧪 试用演示账户',clClose:'关闭',pomoTab:'🍅 番茄钟',swTab:'⏱ 计时器',ambClear:'全部清除',streakRestartBtn:'重新开始！',
-ambQuickMix:'⚡ 快速混音',
-ambMixerTitle:'🎛 环境音混音器',
-ambPreset_rain_focus:'🌧 雨声专注',
-ambPreset_forest_morning:'🌿 晨林鸟鸣',
-ambPreset_cafe_rain:'☕ 咖啡馆雨',
-ambPreset_ocean_wind:'🌊 海风浪声',
-ambPreset_campfire:'🔥 篝火',
-ambPreset_deep_work:'⌨ 深夜专注',
-ambPreset_storm:'⛈ 暴风雨',
-ambPreset_lofi_rain:'🎵 Lo-Fi 雨声',
-ambPreset_white_noise:'⬜ 白噪音',
-ambPreset_city_rain:'🏙 城市雨声',
-ambPreset_deep_forest:'🌲 深林',
-ambPreset_zen_garden:'🪨 禅意庭院',
-ambPreset_space_ambient:'🌌 宇宙氛围',
-ambPreset_keyboard_cafe:'💻 键盘咖啡馆',
-ambSound_rain:'雨声',
-ambSound_thunder:'雷声',
-ambSound_ocean:'海浪',
-ambSound_river:'溪流',
-ambSound_forest:'森林',
-ambSound_birds:'鸟鸣',
-ambSound_wind:'风声',
-ambSound_night:'夜声',
-ambSound_fire:'篝火',
-ambSound_cafe:'咖啡馆',
-ambSound_city:'城市',
-ambSound_keyboard:'键盘',
-ambSound_lofi:'Lo-Fi',
-ambSound_space:'宇宙',
-ambSound_white:'白噪',
-ambSound_pink:'粉噪'},
+bgSnow:'❄️ 雪景',acSaveName:'保存',acSaveBio:'保存',acLinkBtn:'设置',acSignOut:'退出登录',acDeleteBtn:'删除账户',acTabLogin:'登录',acTabRegister:'注册',acLoginBtn:'登录',acResetBtn:'发送重置邮件',acGoogleLogin:'🔑 Google登录',acRegBtn:'创建账户',acGoogleReg:'🔑 Google注册',acDemoBtn:'🧪 试用演示账户',clClose:'关闭',pomoTab:'🍅 番茄钟',swTab:'⏱ 计时器',ambClear:'全部清除',streakRestartBtn:'重新开始！'},
 ko:{start:'▶ 시작',pause:'⏸ 일시정지',
 reset:'↺',skip:'⏭',lap:'◎ 랩',taskPh:'작업 이름 입력…',nowBtn:'바로',timeBtn:'시간 지정',
 workLbl:'작업(분)',brkLbl:'휴식(분)',longLbl:'긴 휴식(분)',setsLbl:'세트',
@@ -969,39 +768,7 @@ resetCloudNote:'（계정은 삭제되지 않습니다）',
 resetCancel:'취소',resetExec:'🗑 실행',
 syncFromCloudConfirm:'클라우드에서 데이터를 복원하시겠습니까？\n로컬 데이터가 덮어씌워집니다。',
 },
-bgSnow:'❄️ 눈',acSaveName:'변경',acSaveBio:'저장',acLinkBtn:'설정',acSignOut:'로그아웃',acDeleteBtn:'계정 삭제',acTabLogin:'로그인',acTabRegister:'회원가입',acLoginBtn:'로그인',acResetBtn:'초기화 이메일 보내기',acGoogleLogin:'🔑 Google로 로그인',acRegBtn:'계정 만들기',acGoogleReg:'🔑 Google로 가입',acDemoBtn:'🧪 데모 계정으로 테스트',clClose:'닫기',pomoTab:'🍅 포모도로',swTab:'⏱ 스톱워치',ambClear:'전체 지우기',streakRestartBtn:'다시 시작하자!',
-ambQuickMix:'⚡ 퀵 믹스',
-ambMixerTitle:'🎛 앰비언트 믹서',
-ambPreset_rain_focus:'🌧 빗소리 집중',
-ambPreset_forest_morning:'🌿 숲속 아침',
-ambPreset_cafe_rain:'☕ 카페 빗소리',
-ambPreset_ocean_wind:'🌊 바다 바람',
-ambPreset_campfire:'🔥 모닥불',
-ambPreset_deep_work:'⌨ 심야 집중',
-ambPreset_storm:'⛈ 폭풍우',
-ambPreset_lofi_rain:'🎵 Lo-Fi 빗소리',
-ambPreset_white_noise:'⬜ 화이트 노이즈',
-ambPreset_city_rain:'🏙 도시 빗소리',
-ambPreset_deep_forest:'🌲 깊은 숲',
-ambPreset_zen_garden:'🪨 선 정원',
-ambPreset_space_ambient:'🌌 우주 앰비언트',
-ambPreset_keyboard_cafe:'💻 타이핑 카페',
-ambSound_rain:'빗소리',
-ambSound_thunder:'천둥비',
-ambSound_ocean:'파도',
-ambSound_river:'강물',
-ambSound_forest:'숲',
-ambSound_birds:'새소리',
-ambSound_wind:'바람',
-ambSound_night:'밤소리',
-ambSound_fire:'모닥불',
-ambSound_cafe:'카페',
-ambSound_city:'도시',
-ambSound_keyboard:'타이핑',
-ambSound_lofi:'Lo-Fi',
-ambSound_space:'우주',
-ambSound_white:'화이트',
-ambSound_pink:'핑크'};
+bgSnow:'❄️ 눈',acSaveName:'변경',acSaveBio:'저장',acLinkBtn:'설정',acSignOut:'로그아웃',acDeleteBtn:'계정 삭제',acTabLogin:'로그인',acTabRegister:'회원가입',acLoginBtn:'로그인',acResetBtn:'초기화 이메일 보내기',acGoogleLogin:'🔑 Google로 로그인',acRegBtn:'계정 만들기',acGoogleReg:'🔑 Google로 가입',acDemoBtn:'🧪 데모 계정으로 테스트',clClose:'닫기',pomoTab:'🍅 포모도로',swTab:'⏱ 스톱워치',ambClear:'전체 지우기',streakRestartBtn:'다시 시작하자!'};
 const T=k=>{const v=(I18N[S.lang]||I18N.ja)[k];if(v!==undefined)return v;const j=I18N.ja[k];return j!==undefined?j:k;};
 function setLang(l){S.lang=l;savUI();applyLang();toast((I18N[l]||I18N.ja).langLabel+': '+(l==='ja'?'日本語':l==='en'?'English':l==='zh'?'中文':'한국어'));}
 function applyLang(){
@@ -4642,306 +4409,6 @@ _renderPomoStyleW();
 setTimeout(showDonate,20000);
 setTimeout(_reqNotif, 3000);
 }
-
-/* ═══════════════════════════════════════════════════════════
-   JS PATCH v2 — KEYBOARD TRAP / ESCAPE / ARIA-PRESSED / PERF
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── P1. Global Escape key handler for all overlays ──────── */
-(function(){
-  const OVERLAY_MAP = [
-    {ov:'streakOv',    close:()=>{ if(typeof closeStreak==='function')closeStreak(); }},
-    {ov:'thOv',        close:()=>{ if(typeof closeTheme==='function')closeTheme();
-                                    else { const o=document.getElementById('thOv'); if(o){o.classList.remove('open');document.body.classList.remove('overlay-open');} } }},
-    {ov:'accountOv',   close:()=>{ if(typeof closeAccount==='function')closeAccount(); }},
-    {ov:'changelogOv', close:()=>{ if(typeof closeChangelog==='function')closeChangelog(); }},
-    {ov:'streakPop',   close:()=>{ if(typeof closeStreakPop==='function')closeStreakPop(); }},
-    {ov:'streakBreakPop',close:()=>{ if(typeof closeStreakBreakPop==='function')closeStreakBreakPop(); }},
-    {ov:'resetOv',     close:()=>{ if(typeof closeReset==='function')closeReset(); }},
-    {ov:'bgmPanel',    close:()=>{ if(typeof toggleBgmPanel==='function'){
-                                    const p=document.getElementById('bgmPanel');
-                                    if(p&&!p.classList.contains('hidden'))toggleBgmPanel(); } }},
-  ];
-  document.addEventListener('keydown', function(e){
-    if(e.key !== 'Escape') return;
-    // Check mobile sheets first
-    const openSheet = document.querySelector('.mSheet.open');
-    if(openSheet){ if(typeof mSheetClose==='function')mSheetClose(); return; }
-    // Check overlay panels (last-opened wins)
-    for(let i=OVERLAY_MAP.length-1;i>=0;i--){
-      const o=document.getElementById(OVERLAY_MAP[i].ov);
-      if(!o) continue;
-      const isOpen = o.classList.contains('open') || o.classList.contains('show') ||
-                     (o.style.display && o.style.display!=='none');
-      if(isOpen){ OVERLAY_MAP[i].close(); e.preventDefault(); return; }
-    }
-    // Close calDayDetail if open
-    const cdd = document.getElementById('calDayDetail');
-    if(cdd&&cdd.classList.contains('show')){ if(typeof closeDayDetail==='function')closeDayDetail(); e.preventDefault(); }
-  });
-})();
-
-/* ── P2. aria-pressed sync for ambBtn ────────────────────── */
-/* Patch toggleAmbient and setAmbientPreset to sync aria-pressed */
-(function(){
-  function _syncAmbAria(){
-    document.querySelectorAll('.ambItem').forEach(item=>{
-      const btn = item.querySelector('.ambBtn');
-      if(!btn) return;
-      btn.setAttribute('aria-pressed', btn.classList.contains('on') ? 'true' : 'false');
-    });
-    document.querySelectorAll('.ambPreset').forEach(btn=>{
-      btn.setAttribute('aria-pressed', btn.classList.contains('on') ? 'true' : 'false');
-    });
-  }
-  // Patch after a short delay to let init() finish
-  setTimeout(function(){
-    const _origToggle = window.toggleAmbient;
-    if(typeof _origToggle==='function'){
-      window.toggleAmbient = function(key){
-        _origToggle.apply(this, arguments);
-        _syncAmbAria();
-      };
-    }
-    const _origPreset = window.setAmbientPreset;
-    if(typeof _origPreset==='function'){
-      window.setAmbientPreset = function(key){
-        _origPreset.apply(this, arguments);
-        _syncAmbAria();
-      };
-    }
-    const _origClear = window.clearAmbient;
-    if(typeof _origClear==='function'){
-      window.clearAmbient = function(){
-        _origClear.apply(this, arguments);
-        _syncAmbAria();
-      };
-    }
-    _syncAmbAria();
-  }, 800);
-})();
-
-/* ── P3. Focus management: trap focus inside open overlays ── */
-(function(){
-  const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[role="button"]:not([disabled])';
-  function _trapFocus(panelId){
-    const panel = document.getElementById(panelId);
-    if(!panel) return;
-    const focusable = Array.from(panel.querySelectorAll(FOCUSABLE)).filter(el=>{
-      const s=getComputedStyle(el);
-      return s.display!=='none'&&s.visibility!=='hidden'&&!el.closest('[style*="display:none"]');
-    });
-    if(!focusable.length) return;
-    const first=focusable[0], last=focusable[focusable.length-1];
-    function _handler(e){
-      if(e.key!=='Tab') return;
-      if(e.shiftKey){ if(document.activeElement===first){e.preventDefault();last.focus();} }
-      else { if(document.activeElement===last){e.preventDefault();first.focus();} }
-    }
-    panel._trapCleanup=_handler;
-    panel.addEventListener('keydown',_handler);
-    // Focus first element
-    setTimeout(()=>{ try{ first.focus(); }catch{} }, 50);
-  }
-  function _releaseFocus(panelId, returnEl){
-    const panel=document.getElementById(panelId);
-    if(panel&&panel._trapCleanup){
-      panel.removeEventListener('keydown',panel._trapCleanup);
-      delete panel._trapCleanup;
-    }
-    if(returnEl){ try{ returnEl.focus(); }catch{} }
-  }
-  window._trapFocus   = _trapFocus;
-  window._releaseFocus= _releaseFocus;
-
-  // Patch overlay openers / closers to use focus trap
-  setTimeout(function(){
-    const _origOpenStreak = window.openStreak;
-    const _origCloseStreak= window.closeStreak;
-    if(typeof _origOpenStreak==='function'){
-      window.openStreak=function(){ const r=document.activeElement; _origOpenStreak.apply(this,arguments); _trapFocus('streakPanel'); window._streakRetEl=r; };
-    }
-    if(typeof _origCloseStreak==='function'){
-      window.closeStreak=function(){ _origCloseStreak.apply(this,arguments); _releaseFocus('streakPanel',window._streakRetEl); };
-    }
-    const _origOpenTheme = window.openTheme;
-    if(typeof _origOpenTheme==='function'){
-      window.openTheme=function(){ const r=document.activeElement; _origOpenTheme.apply(this,arguments); _trapFocus('thPanel'); window._themeRetEl=r; };
-    }
-    const _origOpenAccount = window.openAccount;
-    if(typeof _origOpenAccount==='function'){
-      window.openAccount=function(){ const r=document.activeElement; _origOpenAccount.apply(this,arguments); _trapFocus('accountPanel'); window._accountRetEl=r; };
-    }
-    const _origCloseAccount = window.closeAccount;
-    if(typeof _origCloseAccount==='function'){
-      window.closeAccount=function(){ _origCloseAccount.apply(this,arguments); _releaseFocus('accountPanel',window._accountRetEl); };
-    }
-  }, 300);
-})();
-
-/* ── P4. heatmap cells: make keyboard focusable ─────────── */
-/* Called once after streak panel opens */
-(function(){
-  const _origOpenStreak2 = window.openStreak;
-  setTimeout(function(){
-    const _base = window.openStreak;
-    if(typeof _base==='function'){
-      window.openStreak = function(){
-        _base.apply(this, arguments);
-        setTimeout(function(){
-          document.querySelectorAll('.strHeatCell').forEach(function(cell){
-            if(!cell.getAttribute('tabindex')) cell.setAttribute('tabindex','0');
-            if(!cell._heatKb){
-              cell._heatKb=true;
-              cell.addEventListener('keydown',function(e){
-                if(e.key==='Enter'||e.key===' '){e.preventDefault();cell.click();}
-              });
-            }
-          });
-        }, 200);
-      };
-    }
-  }, 400);
-})();
-
-/* ── P5. Improve clock: use requestAnimationFrame for smooth seconds ─── */
-/* The existing _startClock uses setInterval(fn,500) which is fine;
-   we only add a visibility-change pause to reduce background CPU */
-(function(){
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden){
-      if(window._clockIv){ clearInterval(window._clockIv); window._clockIv=null; }
-    } else {
-      if(!window._clockIv && typeof _startClock==='function') _startClock();
-    }
-  });
-})();
-
-/* ── P6. Debounce pomodoro timer to avoid excessive re-renders ─────── */
-/* The existing code uses setInterval for pomo — we improve state tracking */
-(function(){
-  let _lastPomoKey2='';
-  const _origRenderPomo = window.renderPomo;
-  if(typeof _origRenderPomo==='function'){
-    window.renderPomo = function(){
-      const sec=window.S?.pomo?.sec||0;
-      const mode=window.S?.pomo?.mode||'';
-      const running=window.S?.pomo?.running||false;
-      const style=window.S?.pomoStyle||'';
-      const key=`${sec}|${mode}|${running}|${style}`;
-      if(key===_lastPomoKey2) return;
-      _lastPomoKey2=key;
-      _origRenderPomo.apply(this,arguments);
-    };
-  }
-})();
-
-
-/* ══════════════════════════════════════════════════════════
-   OPTIMIZATION PATCH v3 — Performance & Accessibility (C series)
-   C1: calDayDetail focus trap
-   C2: YT progress polling setInterval → requestAnimationFrame
-   C3: savTh debounce (throttle localStorage on color slider drag)
-   C4: aria-live region injection for YT track announcements
-   ══════════════════════════════════════════════════════════ */
-
-/* C1 — calDayDetail focus trap ──────────────────────────── */
-(function(){
-  const _origOpenCdd = window.openDayDetail;
-  const _origCloseCdd = window.closeDayDetail;
-  if(typeof _origOpenCdd==='function'){
-    window.openDayDetail = function(year,month,day){
-      window._cddRetEl = document.activeElement;
-      _origOpenCdd.apply(this,arguments);
-      setTimeout(function(){
-        if(typeof window._trapFocus==='function') window._trapFocus('calDayDetail');
-      },120);
-    };
-  }
-  if(typeof _origCloseCdd==='function'){
-    window.closeDayDetail = function(){
-      _origCloseCdd.apply(this,arguments);
-      if(typeof window._releaseFocus==='function') window._releaseFocus('calDayDetail',window._cddRetEl);
-    };
-  }
-})();
-
-/* C2 — YT progress: setInterval(500) → requestAnimationFrame ── */
-/* Benefits: 60fps smooth progress bar, lower CPU when tab hidden,
-   automatic pause when player is stopped via rAF chain termination */
-(function(){
-  let _ytRaf=null, _ytTextTs=0;
-  function _fmtS(s){const m=Math.floor((s||0)/60),ss=Math.floor((s||0)%60);return m+':'+(ss<10?'0':'')+ss;}
-
-  function _ytRafPoll(ts){
-    const ytP=window.S&&window.S.ytP;
-    if(!ytP){_ytRaf=null;return;}
-    try{
-      const cur=ytP.getCurrentTime()||0;
-      const dur=ytP.getDuration()||0;
-      const pct=dur>0?(cur/dur*100):0;
-      const fill=document.getElementById('ytProgFill');
-      if(fill) fill.style.width=pct.toFixed(2)+'%';
-      const bar=document.getElementById('ytProgBar');
-      if(bar) bar.setAttribute('aria-valuenow',Math.round(pct));
-      // Throttle text updates ~2fps (every 500ms)
-      if(ts-_ytTextTs>=500){
-        _ytTextTs=ts;
-        const timeEl=document.getElementById('ytTime');
-        if(timeEl) timeEl.textContent=(window.fmtSec||_fmtS)(cur)+' / '+(window.fmtSec||_fmtS)(dur);
-        try{
-          const t=ytP.getVideoData&&ytP.getVideoData().title;
-          if(t){
-            const titleEl=document.getElementById('ytTitle');
-            if(titleEl&&titleEl.textContent!==t){
-              titleEl.textContent=t;
-              const lv=document.getElementById('_ytLive');
-              if(lv) lv.textContent=t; // announce to screen readers
-            }
-          }
-        }catch{}
-      }
-    }catch{}
-    _ytRaf=requestAnimationFrame(_ytRafPoll);
-  }
-
-  window._startInfoPolling=function(){
-    if(_ytRaf){cancelAnimationFrame(_ytRaf);_ytRaf=null;}
-    const np=document.getElementById('ytNowPlaying');
-    if(np) np.classList.add('show');
-    _ytRaf=requestAnimationFrame(_ytRafPoll);
-  };
-  window._stopInfoPolling=function(){
-    if(_ytRaf){cancelAnimationFrame(_ytRaf);_ytRaf=null;}
-  };
-})();
-
-/* C3 — savTh debounce: throttle localStorage writes on color drag ── */
-(function(){
-  const _orig=window.savTh;
-  if(typeof _orig==='function'){
-    let _t=null;
-    window.savTh=function(){
-      clearTimeout(_t);
-      _t=setTimeout(function(){_orig();},150);
-    };
-  }
-})();
-
-/* C4 — Hidden aria-live region for YT now-playing announcements ─── */
-(function(){
-  if(!document.getElementById('_ytLive')){
-    const el=document.createElement('div');
-    el.id='_ytLive';
-    el.setAttribute('aria-live','polite');
-    el.setAttribute('aria-atomic','true');
-    el.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;pointer-events:none';
-    document.body.appendChild(el);
-  }
-})();
-
-/* ══════════════════════════════════════════════════════════ */
-
 init();
 
 </script>
